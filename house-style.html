@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-body="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In Plain Sight — House Style</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- SHIPPING FACE: Newsreader (a legal-document serif, no license required). Public Sans = body sans; IBM Plex Mono = record. Redaction is a PARKED upgrade — see MCKL-redaction-license-email.md. -->
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E81B39; --red-deep:#B0122B; --red-mark:rgba(232,27,57,.20);
+  --ink:#1A2438; --ink-soft:#515A70;
+  --paper:#FBF7F0; --surface:#FFFFFF; --surface-2:#F5EEE1; --line:#E7DDC9; --rule:#1A2438;
+  /* Shipping face = Newsreader (no license). To upgrade to Redaction later, prepend 'Redaction','Redaction 35', here. */
+  --font-display:'Newsreader',Georgia,'Times New Roman',serif;
+  --font-serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --font-sans:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-record:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --font-body:var(--font-sans);
+}
+[data-body='serif']{ --font-body:var(--font-serif); }
+[data-theme='dark']{
+  --red:#FF4A60; --red-deep:#E81B39; --red-mark:rgba(255,74,96,.22);
+  --ink:#F3ECDD; --ink-soft:#B3AB9B;
+  --paper:#141A26; --surface:#1D2433; --surface-2:#232C3E; --line:#313A52; --rule:#F3ECDD;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+.wrap{max-width:1040px;margin:0 auto;padding:0 clamp(1.1rem,4vw,2.2rem)}
+.mono{font-family:var(--font-record)}
+.disp{font-family:var(--font-display)}
+.serif{font-family:var(--font-serif)}
+svg.star{fill:currentColor}
+
+/* ---- MASTHEAD ---- */
+header{position:sticky;top:0;z-index:30;background:var(--paper);border-bottom:3px double var(--rule)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem 0}
+.hd-brand{display:flex;align-items:center;gap:.6rem}
+.hd-brand .nm{font-family:var(--font-display);font-weight:700;font-size:1.15rem;letter-spacing:.12em}
+.hd-mark{color:var(--red);width:34px;height:23px}
+.controls{display:flex;gap:.5rem}
+.ctl{font-family:var(--font-record);font-size:.66rem;letter-spacing:.1em;border:1px solid var(--rule);
+  background:transparent;color:var(--ink);padding:.45rem .7rem;cursor:pointer;text-transform:uppercase}
+.ctl:hover{background:var(--ink);color:var(--paper)}
+
+/* ---- NAMEPLATE / HERO ---- */
+.plate{padding:2.4rem 0 0;text-align:center;border-bottom:1px solid var(--line)}
+.plate .stars{color:var(--red);display:inline-flex;gap:.7rem;margin-bottom:.7rem}
+.plate .stars svg{width:15px;height:15px}
+.plate .name{font-family:var(--font-display);font-weight:700;font-size:clamp(2.6rem,9vw,4.6rem);letter-spacing:.06em;line-height:.92}
+.plate .twobar{width:min(420px,80%);margin:1rem auto 0;display:flex;flex-direction:column;gap:5px}
+.plate .twobar i{height:5px;background:var(--red);display:block}
+.plate .sub{font-family:var(--font-record);font-size:.72rem;letter-spacing:.22em;color:var(--ink-soft);margin:1rem 0 1.6rem;text-transform:uppercase}
+
+.lead{padding:2rem 0;border-bottom:1px solid var(--line)}
+.dateline{font-family:var(--font-record);font-size:.74rem;letter-spacing:.12em;color:var(--red-deep);font-weight:600}
+.lead h1{font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,6vw,3.2rem);line-height:1.02;letter-spacing:-.01em;margin:.6rem 0 1rem}
+.lead h1 .red{color:var(--red-deep)}
+.lead-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:1.6rem;border-top:1px solid var(--line);padding-top:1.2rem}
+@media(max-width:680px){.lead-grid{grid-template-columns:1fr}}
+.lead-body{font-family:var(--font-serif);font-size:1.12rem;line-height:1.5}
+.lead-side{border-left:2px solid var(--rule);padding-left:1.1rem}
+.stat b{font-family:var(--font-record);font-size:1.7rem;display:block;letter-spacing:-.02em;font-feature-settings:"tnum"}
+.stat span{font-family:var(--font-record);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.reveal-link{display:inline-block;margin-top:1rem;font-weight:700;color:var(--red-deep);border-bottom:2px solid var(--red-deep);padding-bottom:2px;text-decoration:none}
+
+/* ---- SECTIONS ---- */
+section{padding:2.6rem 0;border-bottom:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:.8rem;margin-bottom:1.4rem}
+.sec-no{font-family:var(--font-record);font-size:.8rem;color:var(--red);font-weight:600}
+.sec-t{font-family:var(--font-display);font-weight:700;font-size:1.5rem;letter-spacing:.01em}
+.sec-rule{flex:1;height:0;border-top:1px solid var(--rule)}
+.note{font-family:var(--font-serif);color:var(--ink-soft);max-width:64ch;font-size:1.02rem}
+
+/* palette */
+.pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0;border:1px solid var(--rule)}
+.pal .c{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:0}
+.pal .c .chip{height:54px;border-bottom:1px solid var(--line)}
+.pal .c .meta{padding:.5rem .6rem}
+.pal .c b{font-size:.84rem;display:block}
+.pal .c code{font-family:var(--font-record);font-size:.72rem;color:var(--ink-soft)}
+.pal .c em{font-style:normal;font-size:.68rem;color:var(--ink-soft);display:block;margin-top:.15rem}
+
+/* type */
+.ty{border:1px solid var(--rule);padding:1.1rem 1.3rem;margin-bottom:-1px}
+.ty .lab{font-family:var(--font-record);font-size:.66rem;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+.ty .d{font-family:var(--font-display);font-weight:700;font-size:2.1rem;line-height:1.05;margin:.4rem 0 .2rem;letter-spacing:-.01em}
+.ty .b{font-family:var(--font-body);font-size:1.08rem;margin:.4rem 0 .2rem}
+.ty .r{font-family:var(--font-record);font-size:1rem;margin:.5rem 0 .2rem;font-feature-settings:"tnum"}
+.ty .m{font-size:.78rem;color:var(--ink-soft);font-family:var(--font-sans)}
+
+/* motifs */
+.mo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--rule)}
+.mo{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.2rem;text-align:center}
+.mo .art{height:62px;display:flex;align-items:center;justify-content:center;gap:.5rem;font-family:var(--font-display);font-weight:700;font-size:1.2rem}
+.mo b{display:block;font-size:.9rem;margin-top:.3rem;font-family:var(--font-sans)}
+.mo em{font-style:normal;font-size:.74rem;color:var(--ink-soft);font-family:var(--font-sans)}
+.redact{background:var(--ink);color:var(--ink);padding:.08em .5em;cursor:pointer;transition:color .45s}
+.redact:hover{color:var(--paper)}
+.redact.red{background:var(--red);color:var(--red)}
+.redact.red:hover{color:#fff}
+.mk{background:linear-gradient(transparent 58%,var(--red-mark) 58%);padding:0 .1em}
+.und{border-bottom:2px solid var(--red);padding-bottom:1px}
+.tb{display:flex;flex-direction:column;gap:5px;width:74px;margin:0 auto}
+.tb i{height:6px;background:var(--red);display:block}
+.mo .star3{color:var(--red);display:inline-flex;gap:.45rem}
+.mo .star3 svg{width:20px;height:20px}
+
+/* components */
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border:1px solid var(--rule)}
+.cell{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.2rem}
+.cap{font-family:var(--font-record);font-size:.64rem;letter-spacing:.12em;color:var(--ink-soft);text-transform:uppercase;margin-bottom:.8rem}
+.btn{font-family:var(--font-sans);font-weight:600;font-size:.9rem;background:var(--red);color:#fff;border:0;padding:.6rem 1rem;cursor:pointer}
+.btn:hover{background:var(--red-deep)}
+.btn.ghost{background:transparent;color:var(--red-deep);border:1.5px solid var(--red-deep)}
+.tag{display:inline-block;font-family:var(--font-record);font-size:.64rem;letter-spacing:.1em;border:1px solid var(--rule);padding:.28rem .6rem;text-transform:uppercase}
+.tag.on{background:var(--red);color:#fff;border-color:var(--red)}
+.idx{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start}
+.idx .no{font-family:var(--font-record);color:var(--red);font-weight:600}
+.idx .h{font-family:var(--font-display);font-weight:700;font-size:1.15rem}
+.idx .p{font-size:.86rem;color:var(--ink-soft)}
+
+/* in use */
+.use{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:1rem}
+.fr{border:1px solid var(--rule)}
+.fr .fl{font-family:var(--font-record);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);padding:.4rem .6rem;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.web{padding:1.2rem;background:var(--paper)}
+.web .dl{font-family:var(--font-record);font-size:.6rem;letter-spacing:.1em;color:var(--red-deep)}
+.web .h{font-family:var(--font-display);font-weight:700;font-size:1.5rem;line-height:1.05;margin:.4rem 0 .5rem}
+.web .p{font-family:var(--font-serif);font-size:.9rem;color:var(--ink-soft)}
+.social{background:var(--ink);color:var(--paper);padding:1.3rem;min-height:182px;display:flex;flex-direction:column;justify-content:space-between}
+[data-theme='dark'] .social{background:#0d1119}
+.social .t{font-family:var(--font-record);font-size:.62rem;letter-spacing:.18em;color:var(--red)}
+.social .big{font-family:var(--font-display);font-weight:700;font-size:2.3rem;line-height:.95}
+.social .bb{display:flex;flex-direction:column;gap:4px;width:66px}
+.social .bb i{height:5px;background:var(--red)}
+.slide{padding:1.2rem;min-height:182px;display:flex;flex-direction:column;background:var(--surface)}
+.slide .k{font-family:var(--font-record);font-size:.62rem;letter-spacing:.12em;color:var(--red)}
+.slide .h{font-family:var(--font-display);font-weight:700;font-size:1.35rem;line-height:1.1;margin:.5rem 0}
+.slide .ru{width:40px;height:4px;background:var(--red);margin-top:auto}
+.slide .ft{font-family:var(--font-record);font-size:.58rem;letter-spacing:.1em;color:var(--ink-soft);margin-top:.5rem}
+.doc{padding:1.3rem;text-align:center;background:var(--paper);min-height:182px}
+.doc .mk2{color:var(--red);width:30px;height:20px}
+.doc .org{font-family:var(--font-display);font-weight:700;font-size:1rem;letter-spacing:.08em;margin-top:.2rem}
+.doc .tb2{width:46px;margin:.5rem auto;display:flex;flex-direction:column;gap:3px}
+.doc .tb2 i{height:3px;background:var(--red)}
+.doc .ti{font-family:var(--font-display);font-weight:600;font-size:1.1rem;margin-top:.5rem}
+.doc .me{font-family:var(--font-record);font-size:.6rem;letter-spacing:.1em;color:var(--ink-soft);margin-top:.4rem;text-transform:uppercase}
+
+/* special / colophon */
+.special{text-align:center;padding:2.2rem 0}
+.special .ghost{font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,7vw,3.4rem);letter-spacing:.06em;
+  color:var(--ink);opacity:.16;position:relative}
+.special .ghost b{color:var(--ink);opacity:1;background:var(--red);color:var(--red);padding:0 .12em;border-radius:1px}
+.special .cap2{font-family:var(--font-record);font-size:.68rem;letter-spacing:.14em;color:var(--ink-soft);text-transform:uppercase;margin-top:.6rem}
+.colophon{font-family:var(--font-record);font-size:.72rem;line-height:1.9;letter-spacing:.04em;color:var(--ink-soft);
+  border:1px solid var(--rule);padding:1.2rem 1.4rem}
+.colophon b{color:var(--ink)}
+footer{padding:2.2rem 0;text-align:center}
+footer .m{color:var(--red);display:inline-flex;gap:.6rem}
+footer .m svg{width:13px;height:13px}
+</style>
+</head>
+<body>
+
+<!-- SVG sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  <symbol id="mark" viewBox="0 0 60 40">
+    <use href="#star" x="0" y="-2" width="16" height="16"/>
+    <use href="#star" x="22" y="-2" width="16" height="16"/>
+    <use href="#star" x="44" y="-2" width="16" height="16"/>
+    <rect x="0" y="26" width="60" height="4"/><rect x="0" y="33" width="60" height="4"/>
+  </symbol>
+</svg>
+
+<header>
+  <div class="wrap hd">
+    <div class="hd-brand">
+      <svg class="hd-mark"><use href="#mark"/></svg>
+      <span class="nm">IN PLAIN SIGHT</span>
+    </div>
+    <div class="controls">
+      <button class="ctl" id="body-tg">Body: Sans</button>
+      <button class="ctl" id="theme-tg">Dark</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- NAMEPLATE -->
+  <div class="plate">
+    <span class="stars"><svg class="star"><use href="#star"/></svg><svg class="star"><use href="#star"/></svg><svg class="star"><use href="#star"/></svg></span>
+    <div class="name">IN PLAIN SIGHT</div>
+    <div class="twobar"><i></i><i></i></div>
+    <div class="sub">A Public Record of the District · House Style · No. 12</div>
+  </div>
+
+  <!-- LEAD -->
+  <div class="lead">
+    <div class="dateline">FILED — JUNE 27, 2026 &nbsp;|&nbsp; WASHINGTON, DC</div>
+    <h1>The budget is public.<br>The spending <span class="red">is&nbsp;not</span>.</h1>
+    <div class="lead-grid">
+      <div class="lead-body">An open investigation into how the District lets, prices, and reports its contracts — read straight from the filings, and shown in the open. The rules that govern us should be readable by the people they govern.</div>
+      <div class="lead-side">
+        <div class="stat"><b>$4,200,000</b><span>unaccounted · FY25</span></div>
+        <a class="reveal-link" href="#">Reveal the records →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 01 PALETTE -->
+  <section>
+    <div class="sec-head"><span class="sec-no">01</span><span class="sec-t">Palette</span><span class="sec-rule"></span></div>
+    <p class="note" style="margin-bottom:1.2rem">From the DC flag: one red, warmed with cream and a navy-indigo ink. Red is the 5% — used as ink, rule, and mark, never as a flat fill behind reading text.</p>
+    <div class="pal">
+      <div class="c"><div class="chip" style="background:#E81B39"></div><div class="meta"><b>DC Red</b><code>#E81B39</code><em>Signature accent</em></div></div>
+      <div class="c"><div class="chip" style="background:#B0122B"></div><div class="meta"><b>Deep Red</b><code>#B0122B</code><em>Hover · links</em></div></div>
+      <div class="c"><div class="chip" style="background:#1A2438"></div><div class="meta"><b>Ink</b><code>#1A2438</code><em>Text · rules · bars</em></div></div>
+      <div class="c"><div class="chip" style="background:#515A70"></div><div class="meta"><b>Ink Soft</b><code>#515A70</code><em>Secondary</em></div></div>
+      <div class="c"><div class="chip" style="background:#FBF7F0"></div><div class="meta"><b>Paper</b><code>#FBF7F0</code><em>Warm cream</em></div></div>
+      <div class="c"><div class="chip" style="background:#F5EEE1"></div><div class="meta"><b>Surface 2</b><code>#F5EEE1</code><em>Banding</em></div></div>
+      <div class="c"><div class="chip" style="background:#E7DDC9"></div><div class="meta"><b>Line</b><code>#E7DDC9</code><em>Hairlines</em></div></div>
+      <div class="c"><div class="chip" style="background:#FFFFFF"></div><div class="meta"><b>Surface</b><code>#FFFFFF</code><em>Cards</em></div></div>
+    </div>
+  </section>
+
+  <!-- 02 TYPE -->
+  <section>
+    <div class="sec-head"><span class="sec-no">02</span><span class="sec-t">Type</span><span class="sec-rule"></span></div>
+    <p class="note" style="margin-bottom:1.2rem">Display is <b>Redaction</b> — a legal-document serif (Newsreader stands in here until it's installed). Body toggles between serif and sans (top right). Record is mono, for the case-file voice.</p>
+    <div class="ty"><div class="lab">Display · Redaction / legal serif</div><div class="d">Bringing the fine print into plain sight.</div><div class="m">Nameplate, headlines, pull quotes.</div></div>
+    <div class="ty"><div class="lab">Body · toggles serif ⇄ sans</div><div class="b">It was all there, in the filings — you just had to know where to look. In Plain Sight reads the fine print so you don't have to, and shows its work in the open.</div><div class="m">All reading text and UI. Use the “Body” button to compare.</div></div>
+    <div class="ty"><div class="lab">Record · IBM Plex Mono</div><div class="r">FOIA-2025-0421 · FILED 06.27.26 · $4,200,000</div><div class="m">Labels, datelines, metadata, tabular figures.</div></div>
+  </section>
+
+  <!-- 03 MOTIFS -->
+  <section>
+    <div class="sec-head"><span class="sec-no">03</span><span class="sec-t">Motifs</span><span class="sec-rule"></span></div>
+    <div class="mo-grid">
+      <div class="mo"><div class="art"><span class="redact">CLASSIFIED</span> <span class="redact red">$4.2M</span></div><b>Redaction bar</b><em>Conceal → reveal. Hover it.</em></div>
+      <div class="mo"><div class="art star3"><svg class="star"><use href="#star"/></svg><svg class="star"><use href="#star"/></svg><svg class="star"><use href="#star"/></svg></div><b>Three stars</b><em>Drawn mark · kicker · divider.</em></div>
+      <div class="mo"><div class="art"><span class="tb"><i></i><i></i></span></div><b>Two bars</b><em>Masthead & footer rule.</em></div>
+      <div class="mo"><div class="art">the <span class="und">key fact</span> &amp; <span class="mk">one mark</span></div><b>Red as ink</b><em>Underline or light swipe.</em></div>
+    </div>
+  </section>
+
+  <!-- 04 COMPONENTS -->
+  <section>
+    <div class="sec-head"><span class="sec-no">04</span><span class="sec-t">Components</span><span class="sec-rule"></span></div>
+    <div class="cmp">
+      <div class="cell"><div class="cap">Buttons (squared)</div><button class="btn">Reveal the records →</button><div style="height:.6rem"></div><button class="btn ghost">Read the brief</button></div>
+      <div class="cell"><div class="cap">Status tags</div><span class="tag on">In the works</span> <span class="tag">Coming soon</span><p style="margin-top:.7rem;font-size:.84rem;color:var(--ink-soft);font-family:var(--font-sans)">Mono, squared, ruled.</p></div>
+      <div class="cell"><div class="cap">Index entry</div><div class="idx"><span class="no">01</span><div><div class="h">DC Laws — But Better</div><div class="p">Read what a regulation <span class="mk">actually says</span>.</div></div><span class="tag">WIP</span></div></div>
+    </div>
+  </section>
+
+  <!-- 05 IN USE -->
+  <section>
+    <div class="sec-head"><span class="sec-no">05</span><span class="sec-t">In use</span><span class="sec-rule"></span></div>
+    <div class="use">
+      <div class="fr"><div class="fl">Website index</div><div class="web"><div class="dl">FILED — WASHINGTON, DC</div><div class="h">The budget is <span class="mk">public</span>.</div><div class="p">An open investigation into District contracts.</div></div></div>
+      <div class="fr"><div class="fl">Social / share</div><div class="social"><div class="t">IN PLAIN SIGHT</div><div class="big">$4.2M<br>unaccounted</div><div class="bb"><i></i><i></i></div></div></div>
+      <div class="fr"><div class="fl">Slide</div><div class="slide"><div class="k">★ FINDING 03</div><div class="h">No competitive bid on record</div><div class="ru"></div><div class="ft">IN PLAIN SIGHT · 04</div></div></div>
+      <div class="fr"><div class="fl">Document</div><div class="doc"><svg class="mk2"><use href="#mark"/></svg><div class="org">IN PLAIN SIGHT</div><div class="tb2"><i></i><i></i></div><div class="ti">Disclosure Brief No. 12</div><div class="me">Public Record · June 2026</div></div></div>
+    </div>
+  </section>
+
+  <!-- 06 SPECIAL: the degraded grade, used sparingly -->
+  <section>
+    <div class="sec-head"><span class="sec-no">06</span><span class="sec-t">The reveal, used sparingly</span><span class="sec-rule"></span></div>
+    <div class="special">
+      <div class="ghost">IN PLAIN <b>SIGHT</b></div>
+      <div class="cap2">Redaction's degraded grade — reserved for a hero, a section break, or a 404. One moment, not a texture.</div>
+    </div>
+  </section>
+
+  <!-- COLOPHON -->
+  <section style="border-bottom:none">
+    <div class="sec-head"><span class="sec-no">07</span><span class="sec-t">Colophon</span><span class="sec-rule"></span></div>
+    <div class="colophon">
+      Set in <b>Newsreader</b> with <b>Public Sans</b> and <b>IBM Plex Mono</b> &nbsp;(<b>Redaction</b>, Mickel / MCKL — from US legal typography — is a planned upgrade).<br>
+      Color and motifs after the <b>flag of the District of Columbia</b>: one red, three stars, two bars.<br>
+      Built in the open by <b>Philippa Hawker</b> · Washington, DC · designed to be forked.
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <span class="m"><svg class="star"><use href="#star"/></svg><svg class="star"><use href="#star"/></svg><svg class="star"><use href="#star"/></svg></span>
+</footer>
+
+<script>
+  var root=document.documentElement;
+  var th=document.getElementById('theme-tg'), bd=document.getElementById('body-tg');
+  th.addEventListener('click',function(){
+    var d=root.getAttribute('data-theme')==='dark';
+    root.setAttribute('data-theme',d?'light':'dark');
+    th.textContent=d?'Dark':'Light';
+  });
+  bd.addEventListener('click',function(){
+    var s=root.getAttribute('data-body')==='serif';
+    root.setAttribute('data-body',s?'sans':'serif');
+    bd.textContent=s?'Body: Sans':'Body: Serif';
+  });
+</script>
+</body>
+</html>

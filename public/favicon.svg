@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="In Plain Sight">
+  <rect width="32" height="32" rx="2" fill="#FBF7F0"/>
+  <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="1.5" fill="none" stroke="#1A2438" stroke-width="1.5"/>
+  <g fill="#E81B39">
+    <g transform="translate(3,5) scale(0.34)"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></g>
+    <g transform="translate(12,5) scale(0.34)"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></g>
+    <g transform="translate(21,5) scale(0.34)"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></g>
+    <rect x="4" y="20" width="24" height="3"/>
+    <rect x="4" y="25" width="24" height="3"/>
+  </g>
+</svg>

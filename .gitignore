@@ -1,0 +1,17 @@
+# build output
+dist/
+# astro generated types & cache
+.astro/
+# dependencies
+node_modules/
+# env & secrets (never commit AWS keys)
+.env
+.env.*
+# os / editor
+.DS_Store
+
+# internal / infra / personal — keep local, never publish
+AWS_SETUP.md
+DEPLOY_RUNBOOK.md
+HANDOFF_*.md
+MCKL-redaction-license-email.md
