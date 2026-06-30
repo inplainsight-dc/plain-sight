@@ -1,0 +1,10 @@
+---
+import { site } from '../config/site';
+const year = new Date().getFullYear();
+---
+<footer class="ps-footer">
+  <div class="ps-container ps-footer__inner">
+    <p class="ps-footer__mantra">{site.mantra}</p>
+    <p class="ps-footer__meta">© {year} {site.name} · {site.location} · Built in the open</p>
+  </div>
+</footer>

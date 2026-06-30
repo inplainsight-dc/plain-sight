@@ -1,0 +1,252 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '../config/site';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming soon' };
+---
+<Base>
+  <Header slot="header" />
+
+  <!-- Star sprite (drawn flag star) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; {site.location}</p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">The fine print of DC government, <span class="ps-highlight">in plain sight</span>.</h1>
+          <p class="ips-lead__blurb">{site.blurb}</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="ps-record">A public record of<br/>the District</p>
+          <p class="ips-byline">By {site.author}</p>
+          {(site.links.github || site.links.linkedin || site.links.email) && (
+          <div class="ps-links">
+            {site.links.github && <a class="ps-link" href={site.links.github} target="_blank" rel="me noopener"><Icon name="github" /> GitHub</a>}
+            {site.links.linkedin && <a class="ps-link" href={site.links.linkedin} target="_blank" rel="me noopener"><Icon name="linkedin" /> LinkedIn</a>}
+            {site.links.email && <a class="ps-link" href={`mailto:${site.links.email}`}><Icon name="email" /> Email</a>}
+          </div>
+          )}
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="ips-sec" id="about">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">About</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        {site.about.map((p) => <p>{p}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- stars divider -->
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars">
+      <svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg>
+    </span>
+  </div>
+
+  <!-- PROJECTS (the index / docket) -->
+  <section class="ips-sec" id="projects">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">The Index</h2>
+        <span class="ips-sec-rule"></span>
+        <span class="ps-record">{projects.length} entries</span>
+      </div>
+
+      <ol class="ips-index">
+        {projects.map((p) => {
+          const isLink = p.data.status === 'live' && !!p.data.url;
+          const Row = isLink ? 'a' : 'div';
+          return (
+            <li class:list={['ips-entry', p.data.status === 'planned' && 'is-planned']}>
+              <Row class="ips-entry__row" {...isLink ? { href: p.data.url } : {}}>
+                <span class="ips-entry__no ps-record">{String(p.data.order).padStart(2, '0')}</span>
+                <div class="ips-entry__body">
+                  <div class="ips-entry__top">
+                    <h3 class="ips-entry__title">{p.data.title}</h3>
+                    <span class:list={['ps-badge', `ps-badge--${p.data.status}`]}>{badgeLabel[p.data.status]}</span>
+                  </div>
+                  <p class="ips-entry__desc">{p.data.description}</p>
+                  {p.data.tags.length > 0 && (
+                    <div class="ps-tags">{p.data.tags.map((t) => <span class="ps-tag">{t}</span>)}</div>
+                  )}
+                </div>
+                {isLink && <span class="ips-entry__cue">Open <Icon name="arrow" /></span>}
+              </Row>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </section>
+
+  <!-- stars divider -->
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars">
+      <svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg>
+    </span>
+  </div>
+
+  <!-- FOUNDATIONS (the open work this builds on) -->
+  <section class="ips-sec" id="foundations">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Foundations</h2>
+        <span class="ips-sec-rule"></span>
+        <span class="ps-record">2 sources</span>
+      </div>
+
+      <div class="ips-about ips-found__intro">
+        <p>I didn&rsquo;t build In Plain Sight in a vacuum. It&rsquo;s made to sit alongside the civic tools
+        people are already building for DC. <a href="https://districtjosh.com" target="_blank" rel="noopener">Josh&nbsp;Jacobson</a>&rsquo;s
+        open explorers for the District&rsquo;s budget and regulations are part of the foundation I built
+        this on and around. Where his tools already make a corner of DC legible, I link out to them
+        <span class="ps-highlight">instead of rebuilding what already works</span>.</p>
+      </div>
+
+      <ol class="ips-index ips-found">
+        <li class="ips-entry">
+          <a class="ips-entry__row" href="https://dcbudget.com" target="_blank" rel="noopener">
+            <span class="ips-entry__no ps-record" aria-hidden="true">&#8599;</span>
+            <div class="ips-entry__body">
+              <div class="ips-entry__top">
+                <h3 class="ips-entry__title">DC Budget Explorer</h3>
+                <span class="ps-record ips-found__by">Built by Josh&nbsp;Jacobson</span>
+              </div>
+              <p class="ips-entry__desc">An interactive walk through the District&rsquo;s proposed budget. Agencies, Council committees, federal grants, procurement, and line items, with the whole dataset downloadable in one file.</p>
+              <div class="ps-tags"><span class="ps-tag">Budget</span><span class="ps-tag">Open data</span></div>
+            </div>
+            <span class="ips-entry__cue">Visit <Icon name="arrow" /></span>
+          </a>
+        </li>
+        <li class="ips-entry">
+          <a class="ips-entry__row" href="https://dcmr.districtjosh.com" target="_blank" rel="noopener">
+            <span class="ips-entry__no ps-record" aria-hidden="true">&#8599;</span>
+            <div class="ips-entry__body">
+              <div class="ips-entry__top">
+                <h3 class="ips-entry__title">DCMR Explorer</h3>
+                <span class="ps-record ips-found__by">Built by Josh&nbsp;Jacobson</span>
+              </div>
+              <p class="ips-entry__desc">A searchable, browsable copy of the complete DC Municipal Regulations, every title, chapter, and section. It turns a sprawling legal code into something you can actually find your way around.</p>
+              <div class="ps-tags"><span class="ps-tag">Regulations</span><span class="ps-tag">Legal record</span></div>
+            </div>
+            <span class="ips-entry__cue">Visit <Icon name="arrow" /></span>
+          </a>
+        </li>
+      </ol>
+
+      <p class="ips-found__more ps-record">
+        More of Josh&rsquo;s DC tools, from zoning to elections to the city&rsquo;s pools, at
+        <a href="https://districtjosh.com" target="_blank" rel="noopener">districtjosh.com &#8599;</a>
+      </p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  /* ---- LEAD (asymmetric front-page) ---- */
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-dateline { display: block; margin-bottom: 1.2rem; }
+  .ips-lead__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: clamp(1.4rem, 4vw, 3rem);
+    border-top: 1px solid var(--ps-line);
+    padding-top: 1.6rem;
+  }
+  .ips-lead__h {
+    font-family: var(--ps-font-display);
+    font-weight: 700;
+    font-size: clamp(2.3rem, 6.5vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    margin-bottom: 1rem;
+  }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+  .ips-byline { font-family: var(--ps-font-display); font-style: italic; font-size: 1.05rem; margin: 0.5rem 0 1rem; }
+  .ips-lead__rail .ps-links { flex-direction: column; align-items: flex-start; }
+
+  /* ---- SECTIONS ---- */
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+
+  /* ---- STARS DIVIDER ---- */
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* ---- INDEX / DOCKET ---- */
+  .ips-index { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); }
+  .ips-entry { border-bottom: 1px solid var(--ps-line); }
+  .ips-entry__row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.2rem;
+    align-items: start;
+    padding: 1.3rem 0.2rem;
+    text-decoration: none;
+    color: var(--ps-ink);
+    transition: background-color 0.15s ease, padding-left 0.15s ease;
+  }
+  a.ips-entry__row:hover { background: var(--ps-surface-2); padding-left: 0.8rem; }
+  .ips-entry__no { padding-top: 0.35rem; font-size: 0.85rem; }
+  .ips-entry__top { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+  .ips-entry__title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.4rem; line-height: 1.12; }
+  .ips-entry__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.35rem 0 0; max-width: 60ch; }
+  .ips-entry__cue { align-self: center; font-family: var(--ps-font-record); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-accent-2); white-space: nowrap; }
+  a.ips-entry__row:hover .ips-entry__cue { color: var(--ps-ink); }
+  .ips-entry.is-planned .ips-entry__title { color: var(--ps-ink-soft); }
+  .ips-entry .ps-tags { margin-top: 0.6rem; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
+    .ips-entry__row { grid-template-columns: auto 1fr; }
+    .ips-entry__cue { grid-column: 2; margin-top: 0.4rem; }
+  }
+
+  /* ---- FOUNDATIONS (credited external work) ---- */
+  .ips-found__intro { max-width: 64ch; margin-bottom: 1.4rem; }
+  .ips-found__intro p { font-size: 1.12rem; }
+  .ips-found .ips-entry__no { color: var(--ps-accent-2); font-size: 1rem; }
+  .ips-found__by {
+    flex-shrink: 0;
+    color: var(--ps-ink-soft);
+    align-self: center;
+  }
+  .ips-found__more { margin-top: 1.3rem; }
+</style>

@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  tags?: string[];
+  url?: string;
+  status: 'live' | 'building' | 'planned';
+}
+const { title, description, tags = [], url, status } = Astro.props;
+
+const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming soon' }[status];
+const isLink = status === 'live' && !!url;
+const Tag = isLink ? 'a' : 'div';
+---
+<Tag
+  class:list={['ps-card', status === 'planned' && 'ps-card--planned']}
+  {...isLink ? { href: url } : {}}
+>
+  <div class="ps-card__top">
+    <h3 class="ps-card__title">{title}</h3>
+    <span class:list={['ps-badge', `ps-badge--${status}`]}>{badgeLabel}</span>
+  </div>
+  <p class="ps-card__desc">{description}</p>
+  {tags.length > 0 && (
+    <div class="ps-tags">
+      {tags.map((t) => <span class="ps-tag">{t}</span>)}
+    </div>
+  )}
+  {isLink && (
+    <span class="ps-card__cue">Open the tool <Icon name="arrow" /></span>
+  )}
+</Tag>
