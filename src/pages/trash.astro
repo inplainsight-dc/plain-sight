@@ -1,0 +1,437 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+---
+<Base title="DC Trash In Plain Sight" description="Check your DC trash and recycling pickup day, see live DPW delays, and report a missed collection. Piloting in ANC 1E03.">
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; ANC 1E03 PILOT</p>
+      <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Trash <span class="ps-highlight">Tracker</span>.</h1>
+          <p class="ips-lead__blurb">Your pickup day, live DPW delays, and a real way to report a miss. When trash gets skipped, the record shouldn&rsquo;t.</p>
+          <p class="tt-lang ps-record">&iquest;No recogieron la basura? Rep&oacute;rtelo aqu&iacute; abajo.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <div id="alert-rail" aria-live="polite">
+            <p class="tt-rail__h ps-record">Service status</p>
+            <p class="tt-rail__loading ps-record">Checking current alerts&hellip;</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOOKUP -->
+  <section class="ips-sec" id="lookup">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">When&rsquo;s my pickup?</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="tt-hint">Type a DC street address. This checks the same official route data DPW uses, straight from DC&rsquo;s open map services. Nothing you type here is stored.</p>
+      <form id="lookup-form" class="tt-lookup" autocomplete="street-address">
+        <label class="ps-record tt-label" for="addr">Street address</label>
+        <div class="tt-lookup__row">
+          <input id="addr" name="addr" type="text" inputmode="text" placeholder="e.g. 3114 Sherman Ave NW" required />
+          <button type="submit" class="tt-btn">Look it up</button>
+        </div>
+      </form>
+      <div id="lookup-result" class="tt-result" hidden></div>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- REPORT -->
+  <section class="ips-sec" id="report">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">Report a missed pickup</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="tt-hint">Fill this out and hit send. It opens an email to the tracker with everything filled in, so you can add a photo and send it from your own mail app in one tap. Your report goes on the record for your route.</p>
+      <form id="report-form" class="tt-report">
+        <div class="tt-field">
+          <label class="ps-record tt-label" for="r-addr">Address or block</label>
+          <input id="r-addr" type="text" placeholder="e.g. 3100 block of Sherman Ave NW, alley side" required />
+          <button type="button" id="use-loc" class="tt-minibtn">&#10166; Use my location to double-check</button>
+          <p id="loc-status" class="tt-locstatus ps-record" hidden></p>
+        </div>
+        <fieldset class="tt-field tt-fieldset">
+          <legend class="ps-record tt-label">What was missed</legend>
+          <label><input type="checkbox" name="what" value="Trash" checked /> Trash</label>
+          <label><input type="checkbox" name="what" value="Recycling" /> Recycling</label>
+          <label><input type="checkbox" name="what" value="Food waste" /> Food waste</label>
+          <label><input type="checkbox" name="what" value="Yard waste" /> Yard waste</label>
+        </fieldset>
+        <div class="tt-field">
+          <label class="ps-record tt-label" for="r-date">Scheduled pickup date that was missed</label>
+          <input id="r-date" type="date" required />
+        </div>
+        <div class="tt-field">
+          <label class="ps-record tt-label" for="r-bldg">Your building</label>
+          <select id="r-bldg">
+            <option value="House">House or rowhouse</option>
+            <option value="2-3 units">Building with 2&ndash;3 units</option>
+            <option value="4+ units (private hauler)">Building with 4+ units (private hauler)</option>
+            <option value="Not sure">Not sure</option>
+          </select>
+        </div>
+        <div class="tt-field">
+          <label class="ps-record tt-label" for="r-notes">Anything else (optional)</label>
+          <textarea id="r-notes" rows="3" maxlength="600" placeholder="e.g. whole alley skipped, third week in a row, only some bins emptied. Frustrated? Say so. The record is what gets this fixed. Already filed a 311 request? Put the number here so the records link up."></textarea>
+        </div>
+        <div class="tt-field">
+          <label class="tt-check"><input type="checkbox" id="r-reply" /> I would like a response about this report</label>
+        </div>
+        <button type="submit" class="tt-btn">Open my email to send the report</button>
+        <p class="tt-formnote ps-record">Photos help. Attach one in the email that opens. Reports go only to your commissioner (SMD 1E03); the public record shows blocks and routes, never names, addresses, or contact info. Location sharing is optional.</p>
+        <div id="mail-fallback" class="tt-fallback" hidden>
+          <p class="tt-fallback__h ps-record">Email didn&rsquo;t open? No email on this device?</p>
+          <p>Copy the report below and send it to <strong>trash@inplainsight-dc.org</strong> from any app, any time.</p>
+          <textarea id="fb-text" rows="7" readonly></textarea>
+          <button type="button" id="fb-copy" class="tt-minibtn">Copy report text</button>
+        </div>
+      </form>
+
+      <div class="tt-callout">
+        <p class="tt-callout__h ps-record">What happens next</p>
+        <p>You report here once, and that&rsquo;s it. Your ANC commissioner batches these reports with DPW&rsquo;s own delay notices, raises them directly with DPW community relations, and files or references 311 requests where they actually help. You don&rsquo;t have to wrangle the 311 app for your report to count here.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- WHY -->
+  <section class="ips-sec" id="why">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Why this exists</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p>DPW tells ANC commissioners about delayed routes by email and asks us to &ldquo;share with constituents.&rdquo; No commissioner has every neighbor&rsquo;s email, and the official channels for residents have not kept up. So this page puts the delay notices, the route data, and your reports in one public place.</p>
+        <p>Every report becomes part of a running record per route: what was missed, when, how often, and how long it took to fix. That record is what your ANC brings to DPW when we ask for better service, in resolutions and in writing, without making every neighbor fight the 311 app themselves.</p>
+        <p><strong>Privacy:</strong> the public record shows blocks and routes, never names, exact addresses, or contact details. Reports go only to your commissioner (SMD 1E03).</p>
+      </div>
+      <p class="rk-found ps-record">
+        Route data: DC GIS open map services, digitized by DPW. Route mapping groundwork by <a href="https://anc1e06.com/resources/dpw-routes/" target="_blank" rel="noopener">Josh Jacobson (ANC 1E06) &#8599;</a>. One node in the wider commons of DC civic tools.
+      </p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<script is:inline>
+(() => {
+  const GIS = 'https://maps2.dcgis.dc.gov/dcgis/rest/services';
+  const MAR = GIS + '/DCGIS_APPS/DCGIS_MAR/GeocodeServer/findAddressCandidates';
+  const PICKUP = GIS + '/DCGIS_APPS/TrashRecyclePickup/MapServer/identify';
+  const ROUTE = GIS + '/DCGIS_DATA/Public_Service_WebMercator/MapServer/28/query';
+  const DAY_RX = /Monday|Tuesday|Wednesday|Thursday|Friday/;
+
+  let userDay = null;       // pickup day(s) from lookup, used to cross-check alerts
+  let alertsData = null;
+  let reportsData = null;   // neighbor reports, cross-referenced by route
+  let deviceLoc = null;     // {lat, lon} if user opts in
+
+  // ---------- helpers ----------
+  const el = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const mercator = (lat, lon) => ({
+    x: lon * 20037508.34 / 180,
+    y: Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180) * 20037508.34 / 180,
+  });
+
+  async function geocode(q) {
+    // normalize the ways real people type addresses: "3100 block of X", unit numbers
+    q = q.replace(/\b(\d+)\s*(?:block|blk)(?:\s+of)?\s*/i, '$1 ')
+         .replace(/\s+(?:apt|apartment|unit|ste|#)\s*\S*/i, ' ')
+         .replace(/\s{2,}/g, ' ').trim();
+    const u = MAR + '?f=json&maxLocations=1&outSR=102100&SingleLine=' + encodeURIComponent(q);
+    const r = await (await fetch(u)).json();
+    const c = r.candidates && r.candidates[0];
+    if (!c || c.score < 70) return null;
+    return { x: c.location.x, y: c.location.y, label: c.address };
+  }
+
+  async function pickupInfo(x, y) {
+    const ext = [x - 60, y - 60, x + 60, y + 60].join(',');
+    const u = PICKUP + '?f=json&geometryType=esriGeometryPoint&sr=102100&layers=all:0,1,2&tolerance=0&returnGeometry=false' +
+      '&geometry=' + x + ',' + y + '&mapExtent=' + ext + '&imageDisplay=100,100,96';
+    const r = await (await fetch(u)).json();
+    const out = { supercan: null, convTrash: null, recycling: null };
+    for (const res of r.results || []) {
+      const dayVal = Object.values(res.attributes || {}).find((v) => DAY_RX.test(String(v)));
+      if (!dayVal) continue;
+      if (/Supercan/i.test(res.layerName)) out.supercan = dayVal;
+      else if (/ConvTrash/i.test(res.layerName)) out.convTrash = dayVal;
+      else if (/Recy/i.test(res.layerName)) out.recycling = dayVal;
+    }
+    return out;
+  }
+
+  async function routeId(x, y) {
+    const u = ROUTE + '?f=json&geometryType=esriGeometryPoint&inSR=102100&returnGeometry=false&outFields=ROUTE_ID,DAY_' +
+      '&geometry=' + x + ',' + y;
+    const r = await (await fetch(u)).json();
+    const f = r.features && r.features[0];
+    return f ? f.attributes : null;
+  }
+
+  function alertsForDay(day) {
+    if (!alertsData || !day) return [];
+    return alertsData.alerts.filter((a) =>
+      (a.affectsDays || []).some((d) => String(day).includes(d) || d.includes(String(day))));
+  }
+
+  function recentRouteReports(route, days = 10) {
+    if (!reportsData || !route) return [];
+    const cutoff = Date.now() - days * 864e5;
+    return reportsData.reports
+      .filter((r) => r.route === route && r.status !== 'resolved' && new Date(r.date + 'T12:00:00') >= cutoff)
+      .sort((a, b) => (a.date < b.date ? 1 : -1));
+  }
+
+  // load neighbor reports (best-effort; page works without them)
+  (async () => {
+    try { reportsData = await (await fetch('/trash-data/reports.json')).json(); } catch { /* none yet */ }
+  })();
+
+  // ---------- alerts rail ----------
+  (async () => {
+    const rail = el('alert-rail');
+    try {
+      alertsData = await (await fetch('/trash-data/alerts.json')).json();
+      const items = alertsData.alerts.map((a) =>
+        '<div class="tt-alert tt-alert--' + esc(a.severity) + '">' +
+        '<p class="tt-alert__t">' + esc(a.title) + '</p>' +
+        '<p class="tt-alert__d">' + esc(a.detail) + '</p></div>').join('');
+      rail.innerHTML =
+        '<p class="tt-rail__h ps-record">Service status</p>' +
+        (items || '<div class="tt-alert tt-alert--ok"><p class="tt-alert__t">No active delays on record.</p></div>') +
+        '<p class="tt-rail__meta ps-record">Updated ' + esc(alertsData.updated) + ' &middot; ' + esc(alertsData.source) + '</p>';
+    } catch {
+      rail.innerHTML = '<p class="tt-rail__h ps-record">Service status</p><p class="tt-rail__loading ps-record">Status unavailable right now. DPW alerts are posted here as they arrive.</p>';
+    }
+  })();
+
+  // ---------- lookup ----------
+  el('lookup-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const box = el('lookup-result');
+    box.hidden = false;
+    box.innerHTML = '<p class="ps-record">Checking the route maps&hellip;</p>';
+    try {
+      const g = await geocode(el('addr').value.trim());
+      if (!g) { box.innerHTML = '<p class="tt-err">No match found. This tool covers Washington, DC addresses. Check the spelling, add the quadrant (NW, NE, SE, SW), or try a cross street, like &ldquo;Sherman Ave NW and Kenyon St NW&rdquo;.</p>'; return; }
+      const [p, rt] = await Promise.all([pickupInfo(g.x, g.y), routeId(g.x, g.y)]);
+      const trashDay = p.supercan || p.convTrash || (rt && rt.DAY_) || null;
+      userDay = trashDay;
+      const rows = [];
+      if (trashDay) rows.push(['Trash', trashDay + (p.supercan ? ' (once weekly, supercan)' : p.convTrash ? ' (twice weekly)' : '')]);
+      if (p.recycling) rows.push(['Recycling', p.recycling]);
+      if (rt) rows.push(['DPW route', rt.ROUTE_ID]);
+      if (!rows.length) { box.innerHTML = '<p class="tt-err">That address matched, but no DPW collection route covers it. If it&rsquo;s a large building, collection may be private.</p>'; return; }
+      const hits = alertsForDay(trashDay);
+      const rr = rt ? recentRouteReports(rt.ROUTE_ID) : [];
+      const rrHtml = rr.length
+        ? '<div class="tt-alert tt-alert--high tt-alert--inline"><p class="tt-alert__t">Your route may have been missed</p>' +
+          '<p class="tt-alert__d">' + rr.length + ' neighbor report' + (rr.length > 1 ? 's' : '') +
+          ' of a missed pickup on route ' + esc(rt.ROUTE_ID) + ' in the last 10 days, most recently ' +
+          esc(rr[0].date) + ' near the ' + esc(rr[0].block) + '. If yours was missed too, add your report below so the record shows the whole route.</p></div>'
+        : '';
+      box.innerHTML =
+        '<p class="tt-result__addr ps-record">' + esc(g.label) + '</p>' +
+        '<dl class="tt-result__grid">' + rows.map(([k, v]) =>
+          '<div><dt class="ps-record">' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join('') + '</dl>' +
+        (hits.length
+          ? hits.map((a) => '<div class="tt-alert tt-alert--high tt-alert--inline"><p class="tt-alert__t">Heads up: ' + esc(a.title) + '</p><p class="tt-alert__d">' + esc(a.detail) + '</p></div>').join('')
+          : '') +
+        rrHtml +
+        (!hits.length && !rr.length
+          ? '<p class="tt-result__ok ps-record">No active alert affects this route&rsquo;s day, and no neighbor reports on this route in the last 10 days.</p>'
+          : '') +
+        '<p class="tt-smallprint ps-record">Applies to houses and buildings with 3 or fewer units. In a bigger building? Your trash is collected by a private hauler on its own schedule, but you can still report problems below and they are tracked separately.</p>';
+      const rAddr = el('r-addr');
+      if (!rAddr.value) rAddr.value = g.label;
+    } catch {
+      box.innerHTML = '<p class="tt-err">The DC map service did not respond. Give it a minute and try again.</p>';
+    }
+  });
+
+  // ---------- geolocation validator ----------
+  el('use-loc').addEventListener('click', () => {
+    const status = el('loc-status');
+    status.hidden = false;
+    status.textContent = 'Getting your location…';
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      deviceLoc = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      status.textContent = 'Location captured. It will be included to help verify the report.';
+      const addr = el('r-addr').value.trim();
+      if (!addr) return;
+      try {
+        const g = await geocode(addr);
+        if (!g) return;
+        const m = mercator(deviceLoc.lat, deviceLoc.lon);
+        const scale = Math.cos(deviceLoc.lat * Math.PI / 180);
+        const dist = Math.hypot(m.x - g.x, m.y - g.y) * scale;
+        if (dist > 250) {
+          status.textContent = 'Note: your device is about ' + Math.round(dist) + ' m from that address. That is fine if you are reporting from elsewhere, but double-check the address.';
+        } else {
+          status.textContent = 'Location matches the address (within ' + Math.round(dist) + ' m). Included to help verify the report.';
+        }
+      } catch { /* validation is best-effort */ }
+    }, () => { status.textContent = 'Could not get your location. The report works fine without it.'; });
+  });
+
+  // ---------- report -> structured email ----------
+  el('r-date').valueAsDate = new Date();
+  el('report-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const what = [...document.querySelectorAll('input[name="what"]:checked')].map((c) => c.value);
+    const addr = el('r-addr').value.trim();
+    const date = el('r-date').value;
+    const bldg = el('r-bldg').value;
+    const notes = el('r-notes').value.trim();
+    const wantsReply = el('r-reply').checked;
+    const privateHauler = /4\+/.test(bldg);
+    const lines = [
+      'TRASH TRACKER REPORT (v1)',
+      'Address/block: ' + addr,
+      'Missed: ' + (what.join(', ') || 'Trash'),
+      'Scheduled date: ' + date,
+      'Building: ' + bldg,
+      'Response requested: ' + (wantsReply ? 'YES' : 'no'),
+      'Notes: ' + (notes || 'none'),
+      'Device location: ' + (deviceLoc ? deviceLoc.lat.toFixed(5) + ', ' + deviceLoc.lon.toFixed(5) : 'not shared'),
+      'Route day at lookup: ' + (userDay || 'not looked up'),
+      '',
+      'Add a photo below if you have one, then hit send. Thank you!',
+    ];
+    const subject = '[TRASH REPORT]' + (privateHauler ? ' [PRIVATE HAULER]' : '') + ' ' + (what.join('/') || 'Trash') + ' missed - ' + addr;
+    // fallback for devices with no mail app: show the report to copy
+    el('fb-text').value = 'To: trash@inplainsight-dc.org\nSubject: ' + subject + '\n\n' + lines.join('\n');
+    el('mail-fallback').hidden = false;
+    location.href = 'mailto:trash@inplainsight-dc.org?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+  });
+
+  el('fb-copy').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(el('fb-text').value);
+      el('fb-copy').textContent = 'Copied';
+    } catch { el('fb-text').select(); document.execCommand('copy'); el('fb-copy').textContent = 'Copied'; }
+  });
+})();
+</script>
+
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+
+  .tt-rail__h { display: block; color: var(--ps-accent-2); margin-bottom: 0.6rem; }
+  .tt-rail__loading { color: var(--ps-ink-soft); }
+  .tt-rail__meta { display: block; margin-top: 0.6rem; color: var(--ps-ink-soft); line-height: 1.45; }
+  .tt-alert { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 0.7rem 0.85rem; margin-bottom: 0.6rem; background: var(--ps-surface-2); }
+  .tt-alert--high { border-left-color: var(--ps-accent-2); }
+  .tt-alert--ok { border-left-color: var(--ps-line); }
+  .tt-alert--inline { margin-top: 1rem; max-width: 60ch; }
+  .tt-alert__t { font-family: var(--ps-font-record); font-weight: 600; font-size: 0.92rem; margin: 0 0 0.25rem; }
+  .tt-alert__d { font-size: 0.95rem; color: var(--ps-ink-soft); margin: 0; }
+
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+  .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 64ch; line-height: 1.5; }
+
+  .tt-hint { color: var(--ps-ink-soft); max-width: 62ch; margin-bottom: 1.2rem; font-size: 1.06rem; }
+  .tt-label { display: block; margin-bottom: 0.35rem; color: var(--ps-ink-soft); }
+  .tt-lookup { max-width: 40rem; }
+  .tt-lookup__row { display: flex; gap: 0.6rem; }
+  .tt-lookup__row input { flex: 1; }
+  input[type="text"], input[type="date"], textarea, select {
+    width: 100%; font: inherit; color: var(--ps-ink); background: var(--ps-surface-2);
+    border: 1px solid var(--ps-line); border-radius: 6px; padding: 0.7rem 0.85rem;
+  }
+  .tt-lang { margin-top: 0.7rem; color: var(--ps-ink-soft); }
+  .tt-smallprint { display: block; margin-top: 1rem; color: var(--ps-ink-soft); line-height: 1.5; max-width: 60ch; }
+  .tt-fallback { margin-top: 1.1rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1rem 1.1rem; background: var(--ps-surface-2); }
+  .tt-fallback__h { display: block; margin-bottom: 0.4rem; color: var(--ps-ink); }
+  .tt-fallback p { font-size: 0.98rem; color: var(--ps-ink-soft); margin-bottom: 0.6rem; }
+  .tt-fallback textarea { font-family: var(--ps-font-record); font-size: 0.85rem; margin-bottom: 0.5rem; }
+  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--ps-accent-2); outline-offset: 1px; }
+  .tt-btn {
+    font-family: var(--ps-font-record); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.02em;
+    background: var(--ps-ink); color: var(--ps-paper); border: 0; border-radius: 6px;
+    padding: 0.7rem 1.1rem; cursor: pointer; transition: background-color 0.15s ease;
+  }
+  .tt-btn:hover { background: var(--ps-accent-2); }
+  .tt-minibtn {
+    margin-top: 0.5rem; font-family: var(--ps-font-record); font-size: 0.85rem;
+    background: transparent; color: var(--ps-ink-soft); border: 1px solid var(--ps-line);
+    border-radius: 999px; padding: 0.35rem 0.8rem; cursor: pointer;
+  }
+  .tt-minibtn:hover { color: var(--ps-ink); border-color: var(--ps-ink); }
+  .tt-locstatus { margin-top: 0.45rem; color: var(--ps-ink-soft); line-height: 1.45; }
+
+  .tt-result { margin-top: 1.4rem; border-top: 1.5px solid var(--ps-ink); padding-top: 1.1rem; max-width: 40rem; }
+  .tt-result__addr { color: var(--ps-accent-2); margin-bottom: 0.7rem; }
+  .tt-result__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.9rem; margin: 0; }
+  .tt-result__grid dt { font-size: 0.78rem; color: var(--ps-ink-soft); margin-bottom: 0.15rem; }
+  .tt-result__grid dd { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.25rem; margin: 0; }
+  .tt-result__ok { margin-top: 1rem; color: var(--ps-ink-soft); }
+  .tt-err { color: var(--ps-accent-2); font-size: 1.02rem; }
+
+  .tt-report { max-width: 40rem; }
+  .tt-field { margin-bottom: 1.1rem; }
+  .tt-fieldset { border: 1px solid var(--ps-line); border-radius: 6px; padding: 0.8rem 1rem; }
+  .tt-fieldset legend { padding: 0 0.4rem; }
+  .tt-fieldset label { margin-right: 1.2rem; font-size: 1.02rem; }
+  .tt-check { font-size: 1.02rem; }
+  .tt-formnote { display: block; margin-top: 0.7rem; color: var(--ps-ink-soft); line-height: 1.5; }
+
+  .tt-callout { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.1rem 1.3rem; margin-top: 1.8rem; background: var(--ps-surface-2); max-width: 40rem; }
+  .tt-callout__h { display: block; margin-bottom: 0.5rem; color: var(--ps-accent-2); }
+  .tt-callout p:last-child { margin: 0; font-size: 1.02rem; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+    .tt-lookup__row { flex-direction: column; }
+  }
+</style>

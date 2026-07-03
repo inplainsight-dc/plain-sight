@@ -1,0 +1,249 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+
+const pluginFile = '/downloads/plain-sight-rentals-0.1.0.plugin';
+const version = '0.1.0';
+
+const skills = [
+  ['renter-setup', 'A short interview that learns your budget, areas, must-haves, pets, and commute, then builds your search folder and a rights briefing for your jurisdiction.'],
+  ['daily-sweep', 'Pulls fresh listings in your areas, drops the ones you have seen, scores the rest on your priorities, and hands you a yes / maybe / no board.'],
+  ['build-packet', 'Assembles an application-ready packet so you can apply on the spot: income proof (redacted), references, pet and assistance-animal profiles, and a cover summary in your voice.'],
+  ['rights-primer', 'Knows your rights in DC, Maryland, or Virginia, spots the common tricks landlords use, and gives you calm, sourced lines to respond with.'],
+  ['outreach', 'Drafts messages to owners and agents in your own voice, only ever offering times you can actually keep.'],
+  ['tracker', 'Keeps one living tracker: schedule, side-by-side compare, notes, and commute, all in a single file.'],
+  ['review-deck', 'A plain-language deck so the people you live with can weigh in without driving the search themselves.'],
+  ['tune-preferences', 'Checks what you said you wanted against what you actually pick, and proposes small adjustments for your approval.'],
+  ['lease-review', 'Reads a proposed lease in plain language and flags clauses that are illegal, unenforceable, or worth negotiating, with the exact ask for each.'],
+  ['move-in', 'Walks you through a deposit-protecting move-in: a dated condition inventory, how your deposit must be handled, utilities, and a first-week checklist.'],
+  ['negotiation-helper', 'Helps you negotiate rent, deposit, and fees from real comps and your jurisdiction’s rules, then hands the asks to outreach to send.'],
+];
+---
+<Base title="DC Rentals In Plain Sight" description="A renter's operating system for the DC, Maryland, and Virginia market. Personalized listing sweeps, an application packet, jurisdiction-aware tenant-rights coaching, and outreach in your voice.">
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; A TOOL IN THE INDEX</p>
+      <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">DC Rentals <span class="ps-highlight">in plain sight</span>.</h1>
+          <p class="ips-lead__blurb">A renter&rsquo;s operating system for the DC, Maryland, and Virginia market. The rental process is built to favor property owners. This evens it up.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <a class="rk-download" href={pluginFile} download>
+            <span class="rk-download__label">Download the plugin</span>
+            <span class="rk-download__meta ps-record">v{version} &middot; ~100 KB &middot; .plugin</span>
+          </a>
+          <p class="rk-note ps-record">Runs in Claude Cowork on a paid Claude plan. New to this? The step-by-step is below.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IT IS -->
+  <section class="ips-sec" id="what">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">What it is</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p>You open it in Claude, run the setup once, and you get a personalized rental hunt: a daily listing feed scored on <em>your</em> priorities, an application packet built before you tour, plain-language tenant-rights coaching keyed to your jurisdiction, outreach drafted in your voice, one living tracker, and shareable decks so the people you live with can weigh in.</p>
+        <p>It came out of a real DC-area search. The whole point is to give a renter the kind of organized, rights-aware help that landlords already have on their side of the table.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- THE KIT -->
+  <section class="ips-sec" id="kit">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">The kit</h2>
+        <span class="ips-sec-rule"></span>
+        <span class="ps-record">{skills.length} skills</span>
+      </div>
+      <ol class="ips-index">
+        {skills.map(([name, desc], i) => (
+          <li class="ips-entry">
+            <div class="ips-entry__row rk-static">
+              <span class="ips-entry__no ps-record">{String(i + 1).padStart(2, '0')}</span>
+              <div class="ips-entry__body">
+                <div class="ips-entry__top">
+                  <h3 class="ips-entry__title">{name}</h3>
+                </div>
+                <p class="ips-entry__desc">{desc}</p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="rk-aside ps-record">All eleven read from one shared, sourced tenant-law reference (DC, MD, VA), so the rights coaching stays in one place and every figure carries a &ldquo;current as of&rdquo; date.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- INSTALL -->
+  <section class="ips-sec" id="install">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">How to install it</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <div class="rk-prereq">
+        <p class="rk-prereq__h ps-record">Before you start, you need</p>
+        <ul>
+          <li>A <strong>Claude account on a paid plan</strong> (Pro, Max, Team, or Enterprise). Plugins are not available on the free plan. If you are on the free plan, skip to <a href="#no-plan">the note below</a>.</li>
+          <li><strong>Claude Desktop or Claude Cowork.</strong> A plugin is an add-on you install once; after that it just works.</li>
+        </ul>
+        <p class="rk-prereq__note">This plugin is made of <strong>skills only</strong>. It does not run any program on your computer and nothing you enter is uploaded. Your files stay on your machine.</p>
+      </div>
+
+      <ol class="rk-steps">
+        <li>
+          <h3>Download the file</h3>
+          <p>Click <a href={pluginFile} download>Download the plugin</a> (at the top of this page, or here). Your browser saves a file named <code>plain-sight-rentals-{version}.plugin</code>, usually to your Downloads folder. You do not need to open it yourself.</p>
+        </li>
+        <li>
+          <h3>Open Customize in Claude</h3>
+          <p>Open Claude. In the left sidebar, click <strong>Customize</strong>. (If you are in Cowork, open the <strong>Cowork</strong> tab first, then <strong>Customize</strong>.) Customize is where your plugins, skills, and connectors live in one place.</p>
+        </li>
+        <li>
+          <h3>Go to the Plugins tab</h3>
+          <p>In the Customize menu, click the <strong>Plugins</strong> tab.</p>
+        </li>
+        <li>
+          <h3>Add the file you downloaded</h3>
+          <p>In the <strong>Personal plugins</strong> section, click the <strong>+</strong> button and choose the option to <strong>upload a custom plugin file</strong>. Select the <code>plain-sight-rentals-{version}.plugin</code> file from your Downloads. It saves locally to your computer.</p>
+        </li>
+        <li>
+          <h3>Start with the setup</h3>
+          <p>The plugin is now active. To begin, type <strong>/</strong> (or click the <strong>+</strong> button), choose <strong>renter-setup</strong>, and answer its questions. That builds your search folder. After that, run <strong>daily-sweep</strong> for fresh listings, <strong>rights-primer</strong> whenever a landlord asks for something that feels off, and the others as you need them.</p>
+        </li>
+      </ol>
+
+      <p class="rk-help ps-record">Exact button labels can shift as Claude updates. The current official walkthrough is <a href="https://support.claude.com/en/articles/13837440-use-plugins-in-claude" target="_blank" rel="noopener">Use plugins in Claude &#8599;</a>. And once it is installed, you can simply ask Claude to help you get started.</p>
+
+      <div class="rk-callout" id="no-plan">
+        <p class="rk-callout__h ps-record">No paid plan? You are exactly who the next version is for.</p>
+        <p>A plugin needs a paid Claude account, which not everyone has or wants, and trusting an AI tool with housing details is a reasonable thing to be careful about. A no-account, no-AI version of the same rights and checklists is being built so the help reaches people the plugin cannot. If that is you, check back here.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- DATA + FINE PRINT -->
+  <section class="ips-sec" id="fineprint">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">The fine print</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p><strong>Your data stays yours.</strong> The kit handles income, credit, and identity documents, and it is local-first by design: your files stay on your machine and nothing personal is uploaded. For a domestic-violence survivor it holds an even higher bar and stores no new address or identifying detail.</p>
+        <p><strong>Not legal advice.</strong> The rights coaching summarizes public law and points you to the real authorities. For an actual dispute, talk to a tenant attorney or your local housing office: in DC, the <a href="https://ota.dc.gov/" target="_blank" rel="noopener">Office of the Tenant Advocate</a>, <a href="https://www.legalaiddc.org/" target="_blank" rel="noopener">Legal Aid DC</a>, or the <a href="https://ohr.dc.gov/" target="_blank" rel="noopener">DC Office of Human Rights</a>, or the Maryland and Virginia equivalents.</p>
+        <p><strong>Laws change.</strong> Every legal figure carries a &ldquo;current as of&rdquo; date. Verify before you rely on it.</p>
+      </div>
+      <p class="rk-found ps-record">
+        The negotiation features lean on <a href="https://districtjosh.com/rent-registry/" target="_blank" rel="noopener">Josh&nbsp;Jacobson&rsquo;s DC Rent Registry &#8599;</a>, so you can anchor on real ward-level comps. Plain Sight Rentals is one node in a wider commons of DC civic tools.
+      </p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+
+  /* Download button */
+  .rk-download { display: block; background: var(--ps-ink); color: var(--ps-paper); text-decoration: none; padding: 0.95rem 1.1rem; border-radius: 6px; transition: background-color 0.15s ease, transform 0.1s ease; }
+  .rk-download:hover { background: var(--ps-accent-2); transform: translateY(-1px); }
+  .rk-download__label { display: block; font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; }
+  .rk-download__meta { display: block; margin-top: 0.25rem; opacity: 0.85; }
+  .rk-note { display: block; margin-top: 0.8rem; color: var(--ps-ink-soft); line-height: 1.4; }
+
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* Skills docket (non-link rows) */
+  .ips-index { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); }
+  .ips-entry { border-bottom: 1px solid var(--ps-line); }
+  .ips-entry__row { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; align-items: start; padding: 1.1rem 0.2rem; color: var(--ps-ink); }
+  .ips-entry__no { padding-top: 0.35rem; font-size: 0.85rem; color: var(--ps-accent-2); }
+  .ips-entry__top { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+  .ips-entry__title { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.15rem; line-height: 1.12; }
+  .ips-entry__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.3rem 0 0; max-width: 64ch; }
+  .rk-aside { margin-top: 1.3rem; color: var(--ps-ink-soft); max-width: 64ch; line-height: 1.5; }
+
+  /* Prerequisites callout */
+  .rk-prereq { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.1rem 1.3rem; margin-bottom: 1.8rem; background: var(--ps-surface-2); max-width: 70ch; }
+  .rk-prereq__h { display: block; margin-bottom: 0.6rem; color: var(--ps-accent-2); }
+  .rk-prereq ul { margin: 0 0 0.6rem; padding-left: 1.1rem; }
+  .rk-prereq li { margin-bottom: 0.5rem; font-size: 1.04rem; }
+  .rk-prereq__note { font-size: 0.98rem; color: var(--ps-ink-soft); margin: 0; }
+
+  /* Numbered install steps */
+  .rk-steps { counter-reset: rk; list-style: none; margin: 0; padding: 0; max-width: 70ch; }
+  .rk-steps > li { counter-increment: rk; position: relative; padding: 0 0 1.4rem 3rem; }
+  .rk-steps > li::before { content: counter(rk); position: absolute; left: 0; top: 0; width: 2rem; height: 2rem; display: grid; place-items: center; background: var(--ps-ink); color: var(--ps-paper); border-radius: 50%; font-family: var(--ps-font-record); font-weight: 600; font-size: 0.95rem; }
+  .rk-steps h3 { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.2rem; margin: 0.15rem 0 0.35rem; }
+  .rk-steps p { font-size: 1.06rem; color: var(--ps-ink-soft); margin: 0; }
+  .rk-steps code { font-family: var(--ps-font-record); font-size: 0.9em; background: var(--ps-surface-2); padding: 0.1em 0.35em; border-radius: 3px; }
+
+  .rk-help { margin: 0.4rem 0 1.8rem; color: var(--ps-ink-soft); max-width: 70ch; line-height: 1.5; }
+
+  /* No-plan callout */
+  .rk-callout { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1.1rem 1.3rem; max-width: 70ch; }
+  .rk-callout__h { display: block; margin-bottom: 0.5rem; color: var(--ps-ink); }
+  .rk-callout p:last-child { margin: 0; color: var(--ps-ink-soft); font-size: 1.04rem; }
+
+  .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 64ch; line-height: 1.5; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+  }
+</style>
