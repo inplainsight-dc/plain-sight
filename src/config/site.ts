@@ -16,7 +16,7 @@ export const site = {
   instanceName: 'In Plain Sight DC',
   tagline: 'Bringing the fine print into plain sight.',
   blurb:
-    "Civic tools that make the fine print of DC government easier to read, search, and trust. The laws, but also the budgets, contracts, programs, and open data.",
+    "Civic tools that make the fine print of DC government easier to read, search, trust, and work for you. Laws, budgets, contracts, programs, services, open data, with more always on the way.",
   mantra: "Reading the fine print so you don't have to.",
 
   // --- Person behind it --------------------------------------------------
