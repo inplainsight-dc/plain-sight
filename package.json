@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "description": "Plain Sight — civic tools that bring the fine print into plain sight.",
+  "description": "Plain Sight \u2014 civic tools that bring the fine print into plain sight.",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/sync-core-data.mjs && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "sync-core": "node scripts/sync-core-data.mjs"
   },
   "dependencies": {
     "astro": "^5.13.0"
