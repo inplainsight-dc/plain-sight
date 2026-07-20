@@ -67,7 +67,7 @@ const today = new Date().toLocaleDateString('en-US', {
         <h2 class="ips-sec-title">Report a missed pickup</h2>
         <span class="ips-sec-rule"></span>
       </div>
-      <p class="tt-hint">Fill this out and hit send. It opens an email to the tracker with everything filled in, so you can add a photo and send it from your own mail app in one tap. Your report goes on the record for your route.</p>
+      <p class="tt-hint">Fill this out and hit send. You&rsquo;ll get a confirmation right here, and your report goes on the record for your route.</p>
       <form id="report-form" class="tt-report">
         <div class="tt-field">
           <label class="ps-record tt-label" for="r-addr">Address or block</label>
@@ -101,9 +101,15 @@ const today = new Date().toLocaleDateString('en-US', {
         </div>
         <div class="tt-field">
           <label class="tt-check"><input type="checkbox" id="r-reply" /> I would like a response about this report</label>
+          <div id="reply-email" class="tt-replyemail" hidden>
+            <label class="ps-record tt-label" for="r-email">Your email (only used to respond, never published)</label>
+            <input id="r-email" type="email" inputmode="email" placeholder="you@example.com" />
+          </div>
         </div>
-        <button type="submit" class="tt-btn">Open my email to send the report</button>
-        <p class="tt-formnote ps-record">Photos help. Attach one in the email that opens. Reports go only to your commissioner (SMD 1E03); the public record shows blocks and routes, never names, addresses, or contact info. Location sharing is optional.</p>
+        <input type="text" id="r-website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px" />
+        <button type="submit" class="tt-btn" id="submit-btn">Send report</button>
+        <p class="tt-formnote ps-record">Reports go only to your commissioner (SMD 1E03); the public record shows blocks and routes, never names, addresses, or contact info. Location sharing is optional.</p>
+        <div id="submit-ok" class="tt-ok" hidden aria-live="polite"></div>
         <div id="mail-fallback" class="tt-fallback" hidden>
           <p class="tt-fallback__h ps-record">Email didn&rsquo;t open? No email on this device?</p>
           <p>Copy the report below and send it to <strong>trash@inplainsight-dc.org</strong> from any app, any time.</p>
@@ -147,6 +153,11 @@ const today = new Date().toLocaleDateString('en-US', {
 
 <script is:inline>
 (() => {
+  // Report backend (API Gateway HTTP API fronting the Lambda). Empty string =
+  // no backend yet: the form falls back to opening an email. The Lambda function
+  // URL returned 403 for public callers, so infra/trash-fix-url.sh provisioned a
+  // public-by-design API Gateway HTTP API (2026-07-20).
+  const ENDPOINT = 'https://vmfmntet52.execute-api.us-east-1.amazonaws.com/';
   const GIS = 'https://maps2.dcgis.dc.gov/dcgis/rest/services';
   const MAR = GIS + '/DCGIS_APPS/DCGIS_MAR/GeocodeServer/findAddressCandidates';
   const PICKUP = GIS + '/DCGIS_APPS/TrashRecyclePickup/MapServer/identify';
@@ -216,16 +227,21 @@ const today = new Date().toLocaleDateString('en-US', {
       .sort((a, b) => (a.date < b.date ? 1 : -1));
   }
 
-  // load neighbor reports (best-effort; page works without them)
+  // load neighbor reports (best-effort; page works without them).
+  // live endpoint first, static file as fallback.
   (async () => {
-    try { reportsData = await (await fetch('/trash-data/reports.json')).json(); } catch { /* none yet */ }
+    if (ENDPOINT) {
+      try { reportsData = await (await fetch(ENDPOINT, { cache: 'no-store' })).json(); return; } catch { /* fall through */ }
+    }
+    try { reportsData = await (await fetch('/trash-data/reports.json', { cache: 'no-store' })).json(); } catch { /* none yet */ }
   })();
 
   // ---------- alerts rail ----------
   (async () => {
     const rail = el('alert-rail');
     try {
-      alertsData = await (await fetch('/trash-data/alerts.json')).json();
+      // no-store so DPW alert updates are always live, never a stale cached copy
+      alertsData = await (await fetch('/trash-data/alerts.json', { cache: 'no-store' })).json();
       const items = alertsData.alerts.map((a) =>
         '<div class="tt-alert tt-alert--' + esc(a.severity) + '">' +
         '<p class="tt-alert__t">' + esc(a.title) + '</p>' +
@@ -310,33 +326,73 @@ const today = new Date().toLocaleDateString('en-US', {
 
   // ---------- report -> structured email ----------
   el('r-date').valueAsDate = new Date();
-  el('report-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const what = [...document.querySelectorAll('input[name="what"]:checked')].map((c) => c.value);
-    const addr = el('r-addr').value.trim();
-    const date = el('r-date').value;
-    const bldg = el('r-bldg').value;
-    const notes = el('r-notes').value.trim();
-    const wantsReply = el('r-reply').checked;
-    const privateHauler = /4\+/.test(bldg);
+  el('r-reply').addEventListener('change', (e) => {
+    el('reply-email').hidden = !e.target.checked;
+  });
+
+  function reportPayload() {
+    return {
+      address: el('r-addr').value.trim(),
+      what: [...document.querySelectorAll('input[name="what"]:checked')].map((c) => c.value),
+      date: el('r-date').value,
+      building: el('r-bldg').value,
+      notes: el('r-notes').value.trim(),
+      wantsReply: el('r-reply').checked,
+      email: el('r-email').value.trim(),
+      deviceLoc: deviceLoc,
+      routeDay: userDay,
+      website: el('r-website').value, // honeypot, stays empty for humans
+    };
+  }
+
+  function emailFallback(p) {
+    const privateHauler = /4\+/.test(p.building);
     const lines = [
       'TRASH TRACKER REPORT (v1)',
-      'Address/block: ' + addr,
-      'Missed: ' + (what.join(', ') || 'Trash'),
-      'Scheduled date: ' + date,
-      'Building: ' + bldg,
-      'Response requested: ' + (wantsReply ? 'YES' : 'no'),
-      'Notes: ' + (notes || 'none'),
-      'Device location: ' + (deviceLoc ? deviceLoc.lat.toFixed(5) + ', ' + deviceLoc.lon.toFixed(5) : 'not shared'),
-      'Route day at lookup: ' + (userDay || 'not looked up'),
+      'Address/block: ' + p.address,
+      'Missed: ' + (p.what.join(', ') || 'Trash'),
+      'Scheduled date: ' + p.date,
+      'Building: ' + p.building,
+      'Response requested: ' + (p.wantsReply ? 'YES' : 'no'),
+      'Notes: ' + (p.notes || 'none'),
+      'Device location: ' + (p.deviceLoc ? p.deviceLoc.lat.toFixed(5) + ', ' + p.deviceLoc.lon.toFixed(5) : 'not shared'),
+      'Route day at lookup: ' + (p.routeDay || 'not looked up'),
       '',
       'Add a photo below if you have one, then hit send. Thank you!',
     ];
-    const subject = '[TRASH REPORT]' + (privateHauler ? ' [PRIVATE HAULER]' : '') + ' ' + (what.join('/') || 'Trash') + ' missed - ' + addr;
-    // fallback for devices with no mail app: show the report to copy
+    const subject = '[TRASH REPORT]' + (privateHauler ? ' [PRIVATE HAULER]' : '') + ' ' + (p.what.join('/') || 'Trash') + ' missed - ' + p.address;
     el('fb-text').value = 'To: trash@inplainsight-dc.org\nSubject: ' + subject + '\n\n' + lines.join('\n');
     el('mail-fallback').hidden = false;
     location.href = 'mailto:trash@inplainsight-dc.org?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+  }
+
+  el('report-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const p = reportPayload();
+    if (p.wantsReply && !p.email) { el('r-email').focus(); el('r-email').required = true; el('report-form').reportValidity(); return; }
+    if (!ENDPOINT) { emailFallback(p); return; }
+    const btn = el('submit-btn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const r = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) });
+      const d = await r.json();
+      if (!r.ok || !d.ok) throw new Error('rejected');
+      el('report-form').querySelectorAll('input, select, textarea, button').forEach((n) => { n.disabled = true; });
+      const ok = el('submit-ok');
+      ok.hidden = false;
+      ok.innerHTML =
+        '<p class="tt-ok__t">Your report was received.</p>' +
+        '<p class="tt-ok__d">Report ID <strong>' + esc(d.id || '') + '</strong>' +
+        (d.route ? ', logged against route <strong>' + esc(d.route) + '</strong>' : '') +
+        '. It joins the public record for your block (no names or exact addresses) and your commissioner&rsquo;s next batch to DPW.' +
+        (p.wantsReply ? ' You asked for a response, so you&rsquo;ll hear back at the email you gave.' : '') +
+        ' Have a photo? Email it to trash@inplainsight-dc.org with your report ID.</p>';
+      ok.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch {
+      btn.disabled = false; btn.textContent = 'Send report';
+      // backend unreachable: degrade to the email path so no report is lost
+      emailFallback(p);
+    }
   });
 
   el('fb-copy').addEventListener('click', async () => {
@@ -394,6 +450,10 @@ const today = new Date().toLocaleDateString('en-US', {
   .tt-fallback__h { display: block; margin-bottom: 0.4rem; color: var(--ps-ink); }
   .tt-fallback p { font-size: 0.98rem; color: var(--ps-ink-soft); margin-bottom: 0.6rem; }
   .tt-fallback textarea { font-family: var(--ps-font-record); font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .tt-replyemail { margin-top: 0.6rem; }
+  .tt-ok { margin-top: 1.1rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1rem 1.1rem; background: var(--ps-surface-2); max-width: 60ch; }
+  .tt-ok__t { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; margin: 0 0 0.35rem; }
+  .tt-ok__d { font-size: 1rem; color: var(--ps-ink-soft); margin: 0; line-height: 1.55; }
   input:focus-visible, textarea:focus-visible { outline: 2px solid var(--ps-accent-2); outline-offset: 1px; }
   .tt-btn {
     font-family: var(--ps-font-record); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.02em;
