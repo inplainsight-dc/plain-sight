@@ -1,0 +1,619 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Build-time import — the register data is baked into the page at build. No
+// runtime fetch; the deployed page is fully static (same file://-safe property
+// as the standalone). Data is synced from the canonical core by
+// scripts/sync-core-data.mjs (runs on `npm run build`).
+import SCHEDULES from '../data/dc-records-retention/schedules.json';
+import REGISTER from '../data/dc-records-retention/register.json';
+
+const entryCount = REGISTER.length;
+const scheduleCount = Object.keys(SCHEDULES).length;
+
+// Help text for the ⓘ popovers (Rider requirement) — injected into the client
+// script via define:vars so the ported render logic runs unchanged.
+const FIELD_INFO = {
+  series: 'The record series — a group of records kept and disposed of as a unit, as named in the DC General Records Schedule.',
+  fn: 'Business function: the broad area of agency activity that generates the records. Here grouped as Administrative Management, Human Resources, or Financial Management.',
+  personal: 'Whether the series ordinarily contains information about identifiable individuals (names, employment history, evaluations, etc.).',
+  sensitive: 'Whether the series contains especially sensitive categories — medical, substance-abuse, disciplinary, or discrimination-complaint information — that warrant extra care.',
+  requirement: 'Legal = a specific statute sets the retention period. Business = the period is set administratively by the records-disposition schedule for operational need.',
+  retention: "How long the record must be kept, expressed as a duration plus the event that starts the clock (e.g. 'after separation', 'after close of fiscal year').",
+  disposition: 'What happens at the end of the retention period: Destroy; retain Permanently / offer to the Archives; submit for Archives review; or Transfer to the Records Center.',
+  citation: 'The authorizing instrument: the General Records Schedule and item number, under the Public Records Management Act (DC Official Code § 2-1701 et seq.).',
+  status: 'Lifecycle state of this register entry: draft, published, or final. In v1 all entries are published.',
+};
+---
+
+<Base
+  title="DC Records"
+  description="How long DC government must keep each kind of record — and when it can be destroyed or sent to the Archives. Browsable, filterable, free to download, no login."
+>
+  <Header slot="header" />
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">DC Records Retention Register &nbsp;|&nbsp; DC Inform+</p>
+      <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">DC <span class="ps-highlight">Records</span>.</h1>
+          <p class="ips-lead__blurb">How long DC government must keep each kind of record — and when it can be destroyed or sent to the Archives. Browsable, filterable, free to download, no login.</p>
+          <div class="rr-chips">
+            <span class="rr-chip"><b id="chip-count">{entryCount}</b> record series</span>
+            <span class="rr-chip"><b>{scheduleCount}</b> General Records Schedules</span>
+            <span class="rr-chip"><b>Source:</b>&nbsp;DC Office of Public Records</span>
+            <span class="rr-chip">Free · no login</span>
+          </div>
+          <p class="rr-independence">Independent — not a DC government service. Cites the District's official schedules; claims no endorsement.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="ps-record">What this is</p>
+          <p class="rr-rail__body">An independent, plain-language view of the District's <b>General Records Schedules</b> — the disposition standards for records common to DC agencies, issued by the <b>Office of Public Records</b> under the Public Records Management Act (DC Official Code § 2-1701 <i>et seq.</i>). Modelled on the UK's LG Inform Plus <i>Records Retention</i> register, rebuilt on DC's own public schedules.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- § 01 — THE REGISTER -->
+  <section class="ips-sec rr" id="register-sec">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">§ 01</span>
+        <h2 class="ips-sec-title">The register</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="rr-intro">Filter the schedules, then take the result away as data or a document. One filter set, three destinations: <b>CSV</b> for a spreadsheet, <b>JSON</b> for a machine, <b>RTF</b> for pasting into a memo. Filter and view state live in the page URL, so any view you build is a link you can share. Every entry carries a stable identifier and a link back to the official schedule PDF.</p>
+
+      <div class="rr-currency" role="note">
+        <strong>These are historical general schedules — verify currency before you rely on them.</strong> The schedules carried here were issued between 1965 and 1988 (GRS 7 · 1965, GRS 1 · 1987, GRS 16 · 1988). They remain the District's <em>general</em> disposition standards, but a newer agency-specific schedule may supersede parts of them for a particular agency. Treat this register as a plain-language reference: for a live disposition decision, confirm the current schedule with the <a href="https://opr.dc.gov/recordsmanagement/schedules" target="_blank" rel="noopener">DC Office of Public Records</a>, which controls.
+      </div>
+
+      <div class="rr-controls" id="controls">
+        <div class="rr-searchrow">
+          <div class="rr-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            <input type="text" id="q" placeholder="Search series titles and descriptions…" autocomplete="off" aria-label="Search the register" />
+          </div>
+          <button class="rr-btn" id="reset">Reset filters</button>
+        </div>
+        <div class="rr-filters">
+          <div class="rr-fgroup">
+            <label for="f-schedule">Schedule</label>
+            <select id="f-schedule"><option value="">All schedules</option></select>
+          </div>
+          <div class="rr-fgroup">
+            <label for="f-function">Business function</label>
+            <select id="f-function"><option value="">All functions</option></select>
+          </div>
+          <div class="rr-fgroup">
+            <label for="f-disposition">Disposition</label>
+            <select id="f-disposition">
+              <option value="">Any disposition</option>
+              <option value="destroy">Destroy</option>
+              <option value="permanent">Permanent / archival</option>
+              <option value="archives-review">Archives review</option>
+              <option value="transfer">Transfer to Records Center</option>
+            </select>
+          </div>
+          <div class="rr-fgroup">
+            <label for="f-personal">Personal data</label>
+            <select id="f-personal"><option value="">Any</option><option value="yes">Contains personal</option><option value="no">No personal</option></select>
+          </div>
+          <div class="rr-fgroup">
+            <label for="f-sensitive">Sensitive data</label>
+            <select id="f-sensitive"><option value="">Any</option><option value="yes">Contains sensitive</option><option value="no">No sensitive</option></select>
+          </div>
+          <div class="rr-fgroup">
+            <label for="f-requirement">Requirement</label>
+            <select id="f-requirement"><option value="">Any basis</option><option value="legal">Legal (statute)</option><option value="business">Business (administrative)</option></select>
+          </div>
+          <div class="rr-fgroup">
+            <label for="f-updated">Updated since</label>
+            <input type="date" id="f-updated" aria-label="Show entries updated on or after this date" />
+          </div>
+        </div>
+        <div class="rr-exportrow">
+          <span class="rr-lbl">Download the current view</span>
+          <button class="rr-btn" id="dl-csv" title="Comma-separated values — the data shape (opens in a spreadsheet)">⬇ CSV</button>
+          <button class="rr-btn" id="dl-json" title="JSON — the machine shape">⬇ JSON</button>
+          <button class="rr-btn" id="dl-rtf" title="Rich Text Format — the publish shape (pasteable into a report)">⬇ RTF / doc</button>
+          <span class="rr-count" id="count" aria-live="polite">…</span>
+        </div>
+      </div>
+
+      <div id="register" role="region" aria-label="Records retention register results"></div>
+    </div>
+  </section>
+
+  <!-- § 02 — PROVENANCE, ACCESS & ATTRIBUTION -->
+  <section class="ips-sec" id="provenance">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">§ 02</span>
+        <h2 class="ips-sec-title">Where this comes from</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="rr-cards2">
+        <div class="rr-card rr-card--accent">
+          <h3>Source of record</h3>
+          <dl class="rr-cardlist">
+            <dt>Authority</dt><dd>DC General Records Schedules, issued by the <b>Office of Public Records</b> (Office of the Secretary) and approved by the Records Disposition Committee.</dd>
+            <dt>Governing law</dt><dd>Public Records Management Act of 1985 — <a href="https://code.dccouncil.gov/us/dc/council/code/titles/2/chapters/17" target="_blank" rel="noopener">DC Official Code § 2-1701 <i>et seq.</i></a>; general schedules under <a href="http://dcrules.elaws.us/dcmr/1-1509" target="_blank" rel="noopener">DCMR 1-1509</a>.</dd>
+            <dt>Schedules used</dt><dd>GRS 16 (Administrative Management), GRS 1 (Personnel), GRS 7 (Expenditure Accounting) — original PDFs linked on each entry.</dd>
+            <dt>Maintained by</dt><dd><b>In Plain Sight</b>, an independent civic steward. This register cites the District's official records schedules; it does <b>not</b> claim the endorsement of the Office of Public Records, the DC Archives, or any DC agency.</dd>
+          </dl>
+        </div>
+        <div class="rr-card">
+          <h3>Access — the bright line</h3>
+          <ul class="rr-ul">
+            <li><b>Always free, no login, forever.</b> Reading and downloading every entry, in every format (CSV / JSON / RTF), needs no account. Gating oversight data would defeat the point.</li>
+            <li><b>Not legal advice.</b> This is a plain-language reference to published schedules. For a disposition decision, agencies must follow the official schedule and consult the Office of Public Records; where a specific statute governs a record, that statute controls.</li>
+            <li><b>Coverage.</b> GRS 16 and GRS 7 are carried in full; GRS 1 (Personnel) is a representative selection. Every entry was verified line-by-line against the official published PDF (2026-07-20).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="rr-attrib" role="note">
+        <p class="ps-record ps-record--red">Attribution &amp; licence</p>
+        <p>This register is <b>modelled on the approach</b> of the <a href="https://www.local.gov.uk/our-support/research-and-data/lg-inform-data-benchmarking/lg-inform-plus" target="_blank" rel="noopener">LG Inform Plus <i>Records Retention</i> register</a>, a programme of the UK <b>Local Government Association</b> (developed with Invicta Law). It is a design homage to that idea — the DC data here is rebuilt entirely from the District's own public General Records Schedules, and no LG Inform Plus content is reused.</p>
+        <p>In Plain Sight publishes its own compilation — the plain-language descriptions, the adapted schema, and this presentation — under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0</a> licence. Reuse it freely, including commercially; please credit In Plain Sight. The underlying DC records schedules are public records of the District of Columbia.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<!-- Render + filter + URL-state + export. Data injected at build via define:vars;
+     logic ported verbatim from the DC Inform+ standalone register (p5-t1). -->
+<script define:vars={{ SCHEDULES, REGISTER, FIELD_INFO }} is:inline>
+  (function () {
+    'use strict';
+
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function yn(b) { return b ? 'Yes' : 'No'; }
+    function titlecase(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    var DISPO = {
+      'destroy': { label: 'Destroy', cls: 't-destroy' },
+      'permanent': { label: 'Permanent', cls: 't-permanent' },
+      'archives-review': { label: 'Archives review', cls: 't-archives' },
+      'transfer': { label: 'Transfer', cls: 't-transfer' }
+    };
+
+    var reg = document.getElementById('register');
+    var countEl = document.getElementById('count');
+    var chipCount = document.getElementById('chip-count');
+
+    // Guard: data must be present (show-explain failure).
+    if (typeof REGISTER === 'undefined' || !Array.isArray(REGISTER) || REGISTER.length === 0) {
+      reg.innerHTML = '<div class="failbox">The register data did not load. '
+        + 'View the source schedules directly at '
+        + '<a href="https://opr.dc.gov/recordsmanagement/schedules">opr.dc.gov</a>.</div>';
+      if (countEl) countEl.textContent = '';
+      if (chipCount) chipCount.textContent = '0';
+      return;
+    }
+    if (chipCount) chipCount.textContent = String(REGISTER.length);
+
+    // ---- controls ----
+    var els = {
+      q: document.getElementById('q'),
+      schedule: document.getElementById('f-schedule'),
+      fn: document.getElementById('f-function'),
+      disposition: document.getElementById('f-disposition'),
+      personal: document.getElementById('f-personal'),
+      sensitive: document.getElementById('f-sensitive'),
+      requirement: document.getElementById('f-requirement'),
+      updated: document.getElementById('f-updated'),
+      reset: document.getElementById('reset')
+    };
+
+    // populate schedule + function selects from data
+    Object.keys(SCHEDULES).forEach(function (k) {
+      var s = SCHEDULES[k];
+      var o = document.createElement('option');
+      o.value = k; o.textContent = 'GRS ' + s.num + ' · ' + s.title;
+      els.schedule.appendChild(o);
+    });
+    var fns = [];
+    REGISTER.forEach(function (r) { if (fns.indexOf(r.fn) === -1) fns.push(r.fn); });
+    fns.sort().forEach(function (f) {
+      var o = document.createElement('option'); o.value = f; o.textContent = f; els.fn.appendChild(o);
+    });
+
+    // ---- URL state (R7) ----
+    function readURL() {
+      var p = new URLSearchParams(location.search);
+      els.q.value = p.get('q') || '';
+      els.schedule.value = p.get('schedule') || '';
+      els.fn.value = p.get('function') || '';
+      els.disposition.value = p.get('disposition') || '';
+      els.personal.value = p.get('personal') || '';
+      els.sensitive.value = p.get('sensitive') || '';
+      els.requirement.value = p.get('requirement') || '';
+      els.updated.value = p.get('since') || '';
+      return p.get('id') || '';
+    }
+    function writeURL(openId) {
+      var p = new URLSearchParams();
+      if (els.q.value.trim()) p.set('q', els.q.value.trim());
+      if (els.schedule.value) p.set('schedule', els.schedule.value);
+      if (els.fn.value) p.set('function', els.fn.value);
+      if (els.disposition.value) p.set('disposition', els.disposition.value);
+      if (els.personal.value) p.set('personal', els.personal.value);
+      if (els.sensitive.value) p.set('sensitive', els.sensitive.value);
+      if (els.requirement.value) p.set('requirement', els.requirement.value);
+      if (els.updated.value) p.set('since', els.updated.value);
+      if (openId) p.set('id', openId);
+      var qs = p.toString();
+      history.replaceState(null, '', qs ? ('?' + qs) : location.pathname);
+    }
+
+    // ---- filtering ----
+    function matches(r) {
+      var q = els.q.value.trim().toLowerCase();
+      if (q) {
+        var hay = (r.series + ' ' + r.desc + ' ' + r.notes + ' ' + r.id + ' ' + r.citation).toLowerCase();
+        var terms = q.split(/\s+/);
+        for (var i = 0; i < terms.length; i++) { if (hay.indexOf(terms[i]) === -1) return false; }
+      }
+      if (els.schedule.value && r.schedule !== els.schedule.value) return false;
+      if (els.fn.value && r.fn !== els.fn.value) return false;
+      if (els.disposition.value && r.disposition !== els.disposition.value) return false;
+      if (els.personal.value === 'yes' && !r.personal) return false;
+      if (els.personal.value === 'no' && r.personal) return false;
+      if (els.sensitive.value === 'yes' && !r.sensitive) return false;
+      if (els.sensitive.value === 'no' && r.sensitive) return false;
+      if (els.requirement.value && r.requirement !== els.requirement.value) return false;
+      if (els.updated.value) { if (String(r.updated) < els.updated.value) return false; }
+      return true;
+    }
+    function filtered() { return REGISTER.filter(matches); }
+
+    // ---- render one entry ----
+    function infoDot(key) {
+      var t = FIELD_INFO[key]; if (!t) return '';
+      return '<span class="info" tabindex="0" role="button" aria-label="What this means" data-info>ⓘ<span class="pop">' + esc(t) + '</span></span>';
+    }
+    function entryHTML(r) {
+      var s = SCHEDULES[r.schedule];
+      var d = DISPO[r.disposition] || { label: r.disposition, cls: 't-destroy' };
+      var flags = '';
+      flags += '<span class="tag ' + d.cls + '">' + esc(d.label) + '</span>';
+      if (r.personal) flags += '<span class="tag t-personal">Personal</span>';
+      if (r.sensitive) flags += '<span class="tag t-sensitive">Sensitive</span>';
+      if (r.requirement === 'legal') flags += '<span class="tag t-legal">Legal</span>';
+
+      var dl = '';
+      dl += '<dt>Series ' + infoDot('series') + '</dt><dd>' + esc(r.series) + '</dd>';
+      dl += '<dt>Schedule</dt><dd>GRS ' + s.num + ' — ' + esc(s.title) + ', Item ' + esc(r.item) + '</dd>';
+      dl += '<dt>Business function ' + infoDot('fn') + '</dt><dd>' + esc(r.fn) + '</dd>';
+      dl += '<dt>Description</dt><dd>' + esc(r.desc) + '</dd>';
+      dl += '<dt>Retention ' + infoDot('retention') + '</dt><dd>' + esc(r.retention) + '</dd>';
+      dl += '<dt>Disposition ' + infoDot('disposition') + '</dt><dd>' + esc(d.label) + (r.permanent ? ' (permanent / archival)' : '') + '</dd>';
+      dl += '<dt>Personal data ' + infoDot('personal') + '</dt><dd>' + yn(r.personal) + '</dd>';
+      dl += '<dt>Sensitive data ' + infoDot('sensitive') + '</dt><dd>' + yn(r.sensitive) + '</dd>';
+      dl += '<dt>Requirement ' + infoDot('requirement') + '</dt><dd>' + titlecase(r.requirement) + (r.requirement === 'legal' ? ' — statute-driven' : ' — set by schedule') + '</dd>';
+      if (r.statute) dl += '<dt>Statute</dt><dd>' + esc(r.statute) + '</dd>';
+      dl += '<dt>Authority ' + infoDot('citation') + '</dt><dd>' + esc(r.citation) + ' · under DC Official Code § 2-1701 <i>et seq.</i></dd>';
+      if (r.notes) dl += '<dt>Notes</dt><dd>' + esc(r.notes) + '</dd>';
+      dl += '<dt>Status ' + infoDot('status') + '</dt><dd>' + esc(titlecase(r.status)) + '</dd>';
+      dl += '<dt>Added / updated</dt><dd>' + esc(r.added) + ' / ' + esc(r.updated) + ' &nbsp;·&nbsp; schedule effective ' + esc(s.effective) + '</dd>';
+
+      var prov = '<div class="prov">Source: <a href="' + esc(s.url) + '" target="_blank" rel="noopener">DC General Records Schedule ' + s.num + ' — ' + esc(s.title) + ' (official PDF)</a>. '
+        + 'Maintained by In Plain Sight as an independent civic steward; no government endorsement claimed.</div>';
+
+      return '<details class="rrow" id="' + esc(r.id) + '" data-id="' + esc(r.id) + '">'
+        + '<summary>'
+        + '<span class="rid">' + esc(r.id) + '</span>'
+        + '<span class="rtitle">' + esc(r.series) + '<span class="rdesc">' + esc(r.desc) + '</span></span>'
+        + '<span class="rflags">' + flags + '</span>'
+        + '</summary>'
+        + '<div class="rbody"><dl>' + dl + '</dl>'
+        + prov
+        + '<button class="permalink" data-permalink="' + esc(r.id) + '">🔗 Copy link to this entry</button>'
+        + '</div></details>';
+    }
+
+    // ---- render the whole list, grouped by schedule ----
+    function render(openId) {
+      var rows = filtered();
+      countEl.innerHTML = '<b>' + rows.length + '</b> of ' + REGISTER.length + ' record series';
+
+      if (rows.length === 0) {
+        reg.innerHTML = '<div class="emptybox">No record series match these filters. '
+          + 'That may be a real gap (this starter set does not carry every schedule yet) or the filters may be too narrow. '
+          + '<br><button class="rr-btn" id="empty-reset">Reset filters</button></div>';
+        var er = document.getElementById('empty-reset');
+        if (er) er.addEventListener('click', resetAll);
+        return;
+      }
+
+      var html = '';
+      Object.keys(SCHEDULES).forEach(function (k) {
+        var srows = rows.filter(function (r) { return r.schedule === k; });
+        if (!srows.length) return;
+        var s = SCHEDULES[k];
+        var comp = s.completeness === 'complete'
+          ? '<span class="comp full">complete</span>'
+          : '<span class="comp sel">representative selection</span>';
+        html += '<div class="schedule-h">GRS ' + s.num + ' · ' + esc(s.title) + ' ' + comp
+          + '<small>' + srows.length + ' shown · effective ' + esc(s.effective) + ' · ' + esc(s.scope) + '</small></div>';
+        srows.forEach(function (r) { html += entryHTML(r); });
+      });
+      reg.innerHTML = html;
+
+      // wire INFO popovers
+      reg.querySelectorAll('.info[data-info]').forEach(function (dot) {
+        dot.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); toggleInfo(dot); });
+        dot.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleInfo(dot); } });
+      });
+      // wire permalinks
+      reg.querySelectorAll('[data-permalink]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault(); e.stopPropagation();
+          var id = btn.getAttribute('data-permalink');
+          writeURL(id);
+          var url = location.href;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function () { flash(btn, '✓ Link copied'); }, function () { flash(btn, url); });
+          } else { flash(btn, 'Link is in the address bar'); }
+        });
+      });
+      // track open/close in URL
+      reg.querySelectorAll('details.rrow').forEach(function (det) {
+        det.addEventListener('toggle', function () {
+          if (det.open) {
+            reg.querySelectorAll('details.rrow[open]').forEach(function (o) { if (o !== det) o.open = false; });
+            writeURL(det.getAttribute('data-id'));
+          } else {
+            var anyOpen = reg.querySelector('details.rrow[open]');
+            if (!anyOpen) writeURL('');
+          }
+        });
+      });
+
+      // open + scroll to requested entry
+      if (openId) {
+        var target = document.getElementById(openId);
+        if (target && target.classList.contains('rrow')) {
+          target.open = true;
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+
+    function toggleInfo(dot) {
+      var wasOpen = dot.classList.contains('open');
+      document.querySelectorAll('.info.open').forEach(function (o) { o.classList.remove('open'); });
+      if (!wasOpen) dot.classList.add('open');
+    }
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest || !e.target.closest('.info')) {
+        document.querySelectorAll('.info.open').forEach(function (o) { o.classList.remove('open'); });
+      }
+    });
+
+    function flash(btn, msg) {
+      var old = btn.textContent; btn.textContent = msg;
+      setTimeout(function () { btn.textContent = old; }, 1600);
+    }
+
+    // ---- exports ----
+    var COLS = ['id', 'schedule', 'item', 'series', 'fn', 'desc', 'personal', 'sensitive', 'requirement', 'retention', 'disposition', 'permanent', 'citation', 'statute', 'status', 'added', 'updated'];
+    var COLHDR = { id: 'ID', schedule: 'Schedule', item: 'Item', series: 'Series', fn: 'Business function', desc: 'Description', personal: 'Contains personal', sensitive: 'Contains sensitive', requirement: 'Requirement', retention: 'Retention period', disposition: 'Disposition', permanent: 'Permanent', citation: 'Authority', statute: 'Statute', status: 'Status', added: 'Added', updated: 'Updated' };
+
+    function rowVal(r, c) {
+      if (c === 'schedule') return 'GRS ' + SCHEDULES[r.schedule].num;
+      if (c === 'personal' || c === 'sensitive' || c === 'permanent') return r[c] ? 'Yes' : 'No';
+      return r[c] == null ? '' : String(r[c]);
+    }
+    function download(filename, text, mime) {
+      var blob = new Blob([text], { type: mime });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+    function csvCell(v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+    function exportCSV() {
+      var rows = filtered();
+      var lines = [COLS.map(function (c) { return csvCell(COLHDR[c]); }).join(',')];
+      rows.forEach(function (r) { lines.push(COLS.map(function (c) { return csvCell(rowVal(r, c)); }).join(',')); });
+      download('dc-retention-register.csv', lines.join('\r\n'), 'text/csv;charset=utf-8');
+    }
+    function exportJSON() {
+      var rows = filtered();
+      var payload = {
+        register: 'DC Records Retention Register',
+        version: '1.0', generated: '2026-07-20',
+        maintainer: 'In Plain Sight (independent civic steward; no government endorsement)',
+        source: 'DC General Records Schedules — DC Office of Public Records; Public Records Management Act, DC Official Code § 2-1701 et seq.',
+        count: rows.length,
+        schedules: SCHEDULES,
+        rows: rows
+      };
+      download('dc-retention-register.json', JSON.stringify(payload, null, 2), 'application/json');
+    }
+    function rtfEsc(s) { return String(s == null ? '' : s).replace(/[\\{}]/g, '\\$&').replace(/\n/g, ' ').replace(/[^\x00-\x7F]/g, function (ch) { return '\\u' + ch.charCodeAt(0) + '?'; }); }
+    function exportRTF() {
+      var rows = filtered();
+      var out = '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Helvetica;}}\\fs28\\b DC Records Retention Register\\b0\\par\\fs18 ';
+      out += 'Filtered view — ' + rows.length + ' record series. Generated 2026-07-20. Source: DC General Records Schedules (DC Office of Public Records), Public Records Management Act, DC Official Code 2-1701 et seq. Maintained by In Plain Sight, independent civic steward; no government endorsement.\\par\\par ';
+      rows.forEach(function (r) {
+        var s = SCHEDULES[r.schedule];
+        out += '\\fs22\\b ' + rtfEsc(r.series) + '\\b0\\fs18  (' + rtfEsc(r.id) + ')\\par ';
+        out += '\\b Schedule:\\b0  GRS ' + s.num + ' ' + rtfEsc(s.title) + ', Item ' + rtfEsc(r.item) + '\\par ';
+        out += '\\b Function:\\b0  ' + rtfEsc(r.fn) + '\\par ';
+        out += '\\b Description:\\b0  ' + rtfEsc(r.desc) + '\\par ';
+        out += '\\b Retention:\\b0  ' + rtfEsc(r.retention) + '\\par ';
+        out += '\\b Disposition:\\b0  ' + rtfEsc((DISPO[r.disposition] || { label: r.disposition }).label) + (r.permanent ? ' (permanent/archival)' : '') + '\\par ';
+        out += '\\b Personal / sensitive:\\b0  ' + (r.personal ? 'Yes' : 'No') + ' / ' + (r.sensitive ? 'Yes' : 'No') + '\\par ';
+        out += '\\b Requirement:\\b0  ' + rtfEsc(r.requirement) + (r.statute ? ('  (' + rtfEsc(r.statute) + ')') : '') + '\\par ';
+        out += '\\b Authority:\\b0  ' + rtfEsc(r.citation) + '\\par ';
+        if (r.notes) out += '\\b Notes:\\b0  ' + rtfEsc(r.notes) + '\\par ';
+        out += '\\par ';
+      });
+      out += '}';
+      download('dc-retention-register.rtf', out, 'application/rtf');
+    }
+
+    // ---- events ----
+    function onChange() { writeURL(currentOpen()); render(''); }
+    function currentOpen() { var o = reg.querySelector('details.rrow[open]'); return o ? o.getAttribute('data-id') : ''; }
+    function resetAll() {
+      els.q.value = ''; els.schedule.value = ''; els.fn.value = ''; els.disposition.value = '';
+      els.personal.value = ''; els.sensitive.value = ''; els.requirement.value = ''; els.updated.value = '';
+      writeURL(''); render('');
+    }
+
+    els.q.addEventListener('input', debounce(onChange, 180));
+    ['schedule', 'fn', 'disposition', 'personal', 'sensitive', 'requirement', 'updated'].forEach(function (k) {
+      els[k].addEventListener('change', onChange);
+    });
+    els.reset.addEventListener('click', resetAll);
+    document.getElementById('dl-csv').addEventListener('click', exportCSV);
+    document.getElementById('dl-json').addEventListener('click', exportJSON);
+    document.getElementById('dl-rtf').addEventListener('click', exportRTF);
+
+    function debounce(fn, ms) { var t; return function () { clearTimeout(t); t = setTimeout(fn, ms); }; }
+
+    // ---- init ----
+    var openId = readURL();
+    render(openId);
+  })();
+</script>
+
+<!-- Static / layout styles (scoped): lead + section chrome -->
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-dateline { margin-bottom: 0.4rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; margin-bottom: 1.3rem; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+  .rr-rail__body { font-size: 0.96rem; color: var(--ps-ink-soft); margin-top: 0.5rem; }
+
+  .rr-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .rr-chip { font-family: var(--ps-font-record); font-size: 0.74rem; letter-spacing: 0.03em; background: var(--ps-surface); border: 1px solid var(--ps-line); border-radius: 999px; padding: 0.34rem 0.7rem; color: var(--ps-ink-soft); }
+  .rr-chip b { color: var(--ps-ink); }
+  .rr-independence { margin-top: 0.9rem; font-family: var(--ps-font-record); font-size: 0.74rem; letter-spacing: 0.03em; color: var(--ps-ink-soft); max-width: 56ch; }
+
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .rr-intro { color: var(--ps-ink-soft); max-width: 74ch; margin-bottom: 1.3rem; }
+
+  .rr-cards2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+  .rr-card { background: var(--ps-surface); border: 1px solid var(--ps-line); border-radius: var(--ps-radius); padding: 1.3rem 1.4rem; }
+  .rr-card--accent { border-top: 3px solid var(--ps-accent); }
+  .rr-card h3 { font-size: 1.15rem; margin-bottom: 0.7rem; }
+  .rr-cardlist { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.55rem 1rem; font-size: 0.92rem; }
+  .rr-cardlist dt { font-weight: 700; color: var(--ps-ink); white-space: nowrap; }
+  .rr-cardlist dd { margin: 0; color: var(--ps-ink-soft); }
+  .rr-ul { margin: 0; padding-left: 1.1em; color: var(--ps-ink-soft); font-size: 0.94rem; }
+  .rr-ul li { margin: 0.4em 0; }
+  .rr-ul b, .rr-cardlist b { color: var(--ps-ink); }
+  .rr-attrib { margin-top: 1.1rem; background: var(--ps-surface-2); border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent); border-radius: var(--ps-radius); padding: 1rem 1.2rem; }
+  .rr-attrib p { margin: 0; font-size: 0.92rem; color: var(--ps-ink-soft); }
+  .rr-attrib p:first-child { margin-bottom: 0.35rem; }
+  .rr-attrib b { color: var(--ps-ink); }
+
+  @media (max-width: 720px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+    .rr-cards2 { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- Register styles (global): the list is injected by client JS, so these must
+     not be scoped. Namespaced under .rr to avoid collisions. -->
+<style is:global>
+  .rr .rr-intro b { color: var(--ps-ink); }
+
+  /* currency caveat */
+  .rr .rr-currency { background: var(--ps-surface); border: 1px solid var(--ps-line); border-left: 4px solid var(--ps-accent); border-radius: var(--ps-radius); padding: 0.9rem 1.1rem; margin-bottom: 1.2rem; font-size: 0.9rem; color: var(--ps-ink-soft); }
+  .rr .rr-currency strong { color: var(--ps-ink); }
+
+  /* controls / filter bar */
+  .rr .rr-controls { background: var(--ps-surface); border: 1px solid var(--ps-line); border-radius: var(--ps-radius); padding: 1rem 1.1rem; position: sticky; top: 64px; z-index: 15; }
+  .rr .rr-searchrow { display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center; }
+  .rr .rr-search { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 0.5rem; background: var(--ps-paper); border: 1px solid var(--ps-line); border-radius: var(--ps-radius-sm); padding: 0.55rem 0.75rem; }
+  .rr .rr-search input { border: 0; background: transparent; font-family: var(--ps-font-body); font-size: 0.95rem; color: var(--ps-ink); width: 100%; outline: none; }
+  .rr .rr-search svg { flex: 0 0 auto; color: var(--ps-ink-soft); }
+  .rr .rr-btn { font-family: var(--ps-font-body); font-weight: 600; font-size: 0.85rem; border: 1px solid var(--ps-line); background: var(--ps-surface); color: var(--ps-ink); border-radius: var(--ps-radius-sm); padding: 0.55rem 0.8rem; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem; transition: border-color 0.15s ease, color 0.15s ease; }
+  .rr .rr-btn:hover { border-color: var(--ps-accent); color: var(--ps-accent-2); }
+  .rr .rr-filters { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 0.9rem; }
+  .rr .rr-fgroup { display: flex; flex-direction: column; gap: 0.25rem; }
+  .rr .rr-fgroup label { font-family: var(--ps-font-record); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); }
+  .rr .rr-fgroup select, .rr .rr-fgroup input[type=date] { font-family: var(--ps-font-body); font-size: 0.85rem; color: var(--ps-ink); background: var(--ps-paper); border: 1px solid var(--ps-line); border-radius: var(--ps-radius-sm); padding: 0.45rem 0.55rem; min-width: 130px; }
+  .rr .rr-exportrow { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; align-items: center; border-top: 1px solid var(--ps-line); padding-top: 0.9rem; }
+  .rr .rr-lbl { font-family: var(--ps-font-record); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); margin-right: 0.15rem; }
+  .rr .rr-count { margin-left: auto; font-size: 0.85rem; color: var(--ps-ink-soft); font-weight: 600; }
+  .rr .rr-count b { color: var(--ps-accent-2); }
+
+  /* schedule group header */
+  .rr #register { margin-top: 1.4rem; }
+  .rr .schedule-h { font-family: var(--ps-font-display); font-size: 1.15rem; font-weight: 600; margin: 1.6rem 0 0.5rem; color: var(--ps-ink); display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+  .rr .schedule-h small { font-family: var(--ps-font-record); font-weight: 500; color: var(--ps-ink-soft); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .rr .comp { font-family: var(--ps-font-record); font-weight: 600; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.12rem 0.5rem; border-radius: 999px; }
+  .rr .comp.full { background: var(--ps-mark); color: var(--ps-accent-2); }
+  .rr .comp.sel { background: var(--ps-surface-2); color: var(--ps-ink-soft); border: 1px solid var(--ps-line); }
+
+  /* register rows */
+  .rr details.rrow { background: var(--ps-surface); border: 1px solid var(--ps-line); border-radius: var(--ps-radius); margin: 0.5rem 0; overflow: hidden; scroll-margin-top: 150px; }
+  .rr details.rrow[open] { border-color: var(--ps-accent); }
+  .rr details.rrow summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 5.2rem 1fr auto; gap: 0.4rem 1rem; align-items: center; padding: 0.8rem 1rem; }
+  .rr details.rrow summary::-webkit-details-marker { display: none; }
+  .rr details.rrow summary:hover { background: var(--ps-surface-2); }
+  .rr .rid { font-family: var(--ps-font-record); font-size: 0.72rem; color: var(--ps-ink-soft); }
+  .rr .rtitle { font-weight: 600; color: var(--ps-ink); font-size: 0.96rem; }
+  .rr .rtitle .rdesc { display: block; font-weight: 400; color: var(--ps-ink-soft); font-size: 0.82rem; margin-top: 0.1rem; }
+  .rr .rflags { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+  .rr .tag { font-family: var(--ps-font-record); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 0.14rem 0.5rem; border-radius: 999px; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.25rem; }
+  .rr .t-destroy { background: var(--ps-surface-2); color: var(--ps-ink-soft); }
+  .rr .t-permanent { background: transparent; border: 1px solid var(--ps-ink); color: var(--ps-ink); }
+  .rr .t-archives { background: transparent; border: 1px solid var(--ps-accent); color: var(--ps-accent-2); }
+  .rr .t-transfer { background: transparent; border: 1px solid var(--ps-line); color: var(--ps-ink-soft); }
+  .rr .t-personal { background: var(--ps-mark); color: var(--ps-accent-2); }
+  .rr .t-sensitive { background: var(--ps-accent); color: #fff; }
+  .rr .t-legal { background: var(--ps-ink); color: var(--ps-paper); }
+  .rr .rbody { padding: 0.2rem 1rem 1.1rem; border-top: 1px solid var(--ps-line); }
+  .rr .rbody dl { margin: 0.75rem 0 0; display: grid; grid-template-columns: auto 1fr; gap: 0.55rem 1.1rem; font-size: 0.9rem; }
+  .rr .rbody dt { font-weight: 700; color: var(--ps-ink); white-space: nowrap; display: flex; align-items: center; gap: 0.35rem; }
+  .rr .rbody dd { margin: 0; color: var(--ps-ink-soft); }
+  .rr .prov { margin-top: 0.9rem; padding-top: 0.75rem; border-top: 1px dashed var(--ps-line); font-size: 0.82rem; color: var(--ps-ink-soft); }
+  .rr .prov a { font-weight: 600; }
+  .rr .permalink { font-family: var(--ps-font-record); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; color: var(--ps-accent-2); cursor: pointer; background: none; border: 0; padding: 0; margin-top: 0.7rem; display: inline-flex; align-items: center; gap: 0.3rem; }
+  .rr .permalink:hover { color: var(--ps-ink); }
+
+  /* INFO popover */
+  .rr .info { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--ps-mark); color: var(--ps-accent-2); font-size: 0.62rem; font-weight: 800; cursor: help; font-family: var(--ps-font-body); position: relative; flex: 0 0 auto; }
+  .rr .info:hover, .rr .info:focus { background: var(--ps-accent); color: #fff; outline: none; }
+  .rr .info .pop { display: none; position: absolute; left: 50%; top: 22px; transform: translateX(-50%); width: 250px; background: var(--ps-ink); color: var(--ps-paper); font-weight: 400; font-size: 0.78rem; line-height: 1.5; letter-spacing: 0; text-transform: none; padding: 0.7rem 0.8rem; border-radius: var(--ps-radius); z-index: 30; }
+  .rr .info.open .pop { display: block; }
+  .rr .info .pop::after { content: ''; position: absolute; left: 50%; top: -6px; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background: var(--ps-ink); }
+
+  /* fail / empty */
+  .rr .failbox { background: var(--ps-mark); border: 1px solid var(--ps-accent); border-radius: var(--ps-radius); padding: 1rem 1.1rem; color: var(--ps-accent-2); font-weight: 600; }
+  .rr .emptybox { background: var(--ps-surface-2); border: 1px solid var(--ps-line); border-radius: var(--ps-radius); padding: 1rem 1.1rem; color: var(--ps-ink); font-weight: 600; }
+  .rr .emptybox .rr-btn { margin-top: 0.6rem; }
+
+  @media (max-width: 560px) {
+    .rr details.rrow summary { grid-template-columns: 1fr; gap: 0.3rem; }
+    .rr .rflags { justify-content: flex-start; }
+    .rr .rr-controls { position: static; }
+  }
+</style>

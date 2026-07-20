@@ -1,0 +1,36 @@
+{
+  "GRS16": {
+    "num": 16,
+    "title": "Administrative Management Records",
+    "fn": "Administrative Management",
+    "authority": "D.C. Records Disposition Committee",
+    "effective": "1988-04-20",
+    "scope": "All D.C. agencies",
+    "replaces": "D.C. Schedule 40, Section 7",
+    "completeness": "complete",
+    "url": "https://os.dc.gov/sites/default/files/dc/sites/os/publication/attachments/OS_General_Records_16_Administrative_Management_Records.pdf"
+  },
+  "GRS1": {
+    "num": 1,
+    "title": "Personnel Records",
+    "fn": "Human Resources",
+    "authority": "D.C. Records Disposition (replaces D.C. Schedule 40, Section 1)",
+    "effective": "1987-06-17",
+    "scope": "D.C. agencies",
+    "replaces": "D.C. Schedule 40, Section 1",
+    "completeness": "representative",
+    "note": "Records created before January 1, 1921 must be offered to the D.C. Archives before disposition.",
+    "url": "https://os.dc.gov/sites/default/files/dc/sites/os/publication/attachments/OS_General_Records_01_Personnel.pdf"
+  },
+  "GRS7": {
+    "num": 7,
+    "title": "Expenditure Accounting Records",
+    "fn": "Financial Management",
+    "authority": "Board of Commissioners (approved January 26, 1965)",
+    "effective": "1965-01-26",
+    "scope": "All D.C. agencies",
+    "completeness": "complete",
+    "note": "Records created before January 1, 1921 must be offered to the D.C. Archives first; accounts with unsettled claims need D.C. Controller written approval before disposal.",
+    "url": "https://os.dc.gov/sites/default/files/dc/sites/os/publication/attachments/OS_General_Records_07_Expenditure_Accounting_Records.pdf"
+  }
+}
