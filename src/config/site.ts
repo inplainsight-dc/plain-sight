@@ -37,7 +37,7 @@ export const site = {
   //   linkedin: 'https://www.linkedin.com/in/<handle>'
   //   email:    'hello@inplainsight-dc.org'  (set up forwarding first)
   links: {
-    github: 'https://github.com/pmkoversight/plain-sight',
+    github: 'https://github.com/inplainsight-dc/plain-sight',
     linkedin: '',
     email: 'hello@inplainsight-dc.org',
   },

@@ -15,3 +15,14 @@ AWS_SETUP.md
 DEPLOY_RUNBOOK.md
 HANDOFF_*.md
 MCKL-redaction-license-email.md
+
+# internal docs — never publish (added 2026-07-20)
+TRASH-TRACKER-PLAN.md
+PERSONAS-STRESS-TEST.md
+
+# keep internal / infra out of the public repo (added 2026-07-20)
+infra/
+.owner
+.project-id.json
+_OWNED-BY-PERSONAL.md
+_to_delete/

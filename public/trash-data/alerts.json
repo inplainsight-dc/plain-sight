@@ -1,26 +1,5 @@
 {
-  "updated": "2026-07-02",
-  "source": "DPW Service Level email, July 2, 2026",
-  "alerts": [
-    {
-      "id": "2026-07-04-holiday-slide",
-      "type": "slide",
-      "severity": "high",
-      "title": "July 4th holiday slide: Friday pickups move to Saturday",
-      "detail": "Trash, recycling, and food waste collection is on a slide schedule for Independence Day. Households normally collected on Friday, July 3rd will be serviced on Saturday, July 4th.",
-      "affectsDays": ["Friday", "Tuesday/Friday"],
-      "starts": "2026-07-03",
-      "ends": "2026-07-04"
-    },
-    {
-      "id": "2026-07-03-fort-totten-closure",
-      "type": "closure",
-      "severity": "low",
-      "title": "Fort Totten Transfer Station closed Friday, July 3rd",
-      "detail": "The Fort Totten Transfer Station is closed Friday, July 3rd and reopens Saturday, July 4th.",
-      "affectsDays": [],
-      "starts": "2026-07-03",
-      "ends": "2026-07-03"
-    }
-  ]
+  "updated": "2026-07-17",
+  "source": "DPW Service Level email, July 17, 2026",
+  "alerts": []
 }
