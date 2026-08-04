@@ -148,7 +148,11 @@ const skills = [
 
       <div class="rk-callout" id="no-plan">
         <p class="rk-callout__h ps-record">No paid plan? You are exactly who this next part is for.</p>
-        <p>A plugin needs a paid Claude account, which not everyone has or wants, and trusting an AI tool with housing details is a reasonable thing to be careful about. So there is now a no-account, no-AI version of the same rights: <a href="/rentals/rights"><strong>Know your rights: renting in DC &rarr;</strong></a> &mdash; the deposit cap, what a landlord can legally ask for, and calm, sourced lines to respond with. Nothing you type there leaves your browser. Maryland and Virginia are next.</p>
+        <p>A plugin needs a paid Claude account, which not everyone has or wants, and trusting an AI tool with housing details is a reasonable thing to be careful about. So there are now no-account, no-AI versions of the same help &mdash; nothing you type on them leaves your browser:</p>
+        <ul class="rk-callout__links">
+          <li><a href="/rentals/rights"><strong>Know your rights: renting in DC, MD &amp; VA &rarr;</strong></a> &mdash; the deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with.</li>
+          <li><a href="/rentals/scam-check"><strong>Is this rental a scam? &rarr;</strong></a> &mdash; a 60-second check before you send money: the tells, the safe way to pay, and how to verify a landlord without touring.</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -238,7 +242,10 @@ const skills = [
   /* No-plan callout */
   .rk-callout { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1.1rem 1.3rem; max-width: 70ch; }
   .rk-callout__h { display: block; margin-bottom: 0.5rem; color: var(--ps-ink); }
-  .rk-callout p:last-child { margin: 0; color: var(--ps-ink-soft); font-size: 1.04rem; }
+  .rk-callout p { margin: 0 0 0.7rem; color: var(--ps-ink-soft); font-size: 1.04rem; }
+  .rk-callout__links { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+  .rk-callout__links li { color: var(--ps-ink-soft); font-size: 1.04rem; line-height: 1.5; padding-left: 1rem; border-left: 2px solid var(--ps-line); }
+  .rk-callout__links a { color: var(--ps-ink); }
 
   .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 64ch; line-height: 1.5; }
 

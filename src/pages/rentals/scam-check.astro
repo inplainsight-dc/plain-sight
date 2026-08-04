@@ -1,0 +1,371 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+// -----------------------------------------------------------------------------
+// SOURCE OF TRUTH.  The content on this page is transcribed faithfully from the
+// shared DMV tenant-law brain:
+//   new rental/plain-sight-rentals/skills/renter-setup/references/law/*.md
+// (mainly scams.md, landlord-tactics.md, sources.md).
+// That brain remains the single source of truth. When guidance changes, update
+// the topic file there first, then mirror it here. (Follow-up: a sync step like
+// scripts/sync-core-data.mjs so this can't drift.)
+// -----------------------------------------------------------------------------
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+const asOf = 'June 2026';
+
+// Two tiers of signal, straight from scams.md.
+//   'stop'  — an irreversible / pre-verification move. Any ONE means: don't pay yet.
+//   'warn'  — a warning sign. They stack; several together is a strong signal.
+const stopFlags = [
+  { id: 's1', text: 'They want the money by wire transfer, Zelle, Cash App, Venmo, gift cards, or crypto',
+    why: 'These are irreversible — once it’s sent it’s gone. Real landlords take ACH, credit, or debit, which leave a record.' },
+  { id: 's2', text: 'They’re asking for a deposit or any money before you’ve signed a lease and confirmed who they are',
+    why: 'The safe order is the exact reverse: verify the landlord and sign first, then pay. “Pay now, keys later” is the scam sequence.' },
+  { id: 's3', text: 'They can’t show it — “the keys are overseas,” “I’m out of state,” photos only',
+    why: 'The one move that defeats most scams is seeing the unit (in person or a live video walkthrough). A reason you can never do that is the tell.' },
+  { id: 's4', text: 'They asked for your Social Security number by text or email to “hold” the unit',
+    why: 'Real screening collects an SSN through a bonded service at the application stage — never in a message thread.' },
+];
+
+const warnFlags = [
+  { id: 'w1', text: 'The price is noticeably below similar places nearby',
+    why: 'A below-market price is the single most consistent scam sign — it’s the bait in the clone-listing pattern.' },
+  { id: 'w2', text: 'You’re being pushed to decide today — “others are interested”',
+    why: 'Urgency exists to stop you from verifying. A real landlord can wait for you to check.' },
+  { id: 'w3', text: 'You found the same photos posted elsewhere with a different address or contact',
+    why: 'Scammers copy photos, the description, and the address from a real listing and repost with their own contact info.' },
+  { id: 'w4', text: 'They refuse a live video walkthrough with a person actually inside the unit',
+    why: 'A genuine landlord or agent can walk the unit on video. A flat refusal, when you can’t visit, is a warning.' },
+  { id: 'w5', text: 'They’ll only talk through the number in the listing and won’t be verified independently',
+    why: 'You should be able to confirm the owner or agent using contact info you find yourself — county records, an independent listing, a license lookup.' },
+  { id: 'w6', text: 'The story keeps shifting, or the messages read oddly for a professional',
+    why: 'Changing details and off explanations are common in scripted scam threads. Trust the pattern, not one message.' },
+];
+
+// The safe sequence — stated as a rule (scams.md).
+const safeSteps = [
+  ['Verify first', 'Confirm the landlord or agent independently — county property records, an independent listing site, an agent-license lookup — using contact info you find yourself, not the number in the suspicious listing.'],
+  ['See it', 'In person, or a live video walkthrough with someone actually inside the unit. Can’t travel? Hire a local agent or pay someone to view it.'],
+  ['Sign a real lease', 'A signed lease with a verified landlord comes before any money changes hands.'],
+  ['Then pay — traceably', 'ACH, credit, or debit, which leave a record. Prefer the platform’s protected payment. Never a deposit before keys or before a verified lease.'],
+];
+
+// Verify-without-touring toolkit (scams.md).
+const toolkit = [
+  ['Reverse-image-search the photos', 'If the same images show up elsewhere with a different address or contact, that’s a red flag.'],
+  ['Cross-check the address', 'Confirm the unit exists and who owns it against county property records and independent listing sites.'],
+  ['Confirm the person independently', 'Verify the owner or agent — and an agent’s license — using contact info you find yourself, not what’s in the listing.'],
+  ['Insist on a live walkthrough', 'A real person, inside the unit, on video. Or send a local proxy to view it in person.'],
+];
+
+// Already-paid recovery (scams.md).
+const recovery = [
+  ['Call your bank immediately', 'A wire can sometimes be recalled, but the window is narrow — call now, not tomorrow.'],
+  ['File a police report', 'It creates a record and can support a recall or a claim.'],
+  ['Report it', 'FTC at reportfraud.ftc.gov and the FBI at ic3.gov.'],
+];
+
+const sources = [
+  ['Rental listing scams — how to recognize and avoid (FTC)', 'https://consumer.ftc.gov/articles/rental-listing-scams'],
+  ['How to spot rental scams (Zillow renter guidance)', 'https://www.zillow.com/learn/how-to-spot-rental-scams/'],
+  ['Report fraud (FTC)', 'https://reportfraud.ftc.gov/'],
+  ['Report internet crime (FBI IC3)', 'https://www.ic3.gov/'],
+  ['DC deposit & advance-rent caps (Office of the Tenant Advocate)', 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit'],
+];
+---
+<Base title="Is this rental a scam? A 60-second check before you send money" description="A quick, private check for common rental-listing scams across DC, Maryland, and Virginia — the tells, the safe way to pay, how to verify a landlord without touring, and what to do if you’ve already paid. No account, no AI, nothing you type leaves your browser.">
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; BEFORE YOU SEND MONEY</p>
+      <p class="ips-back"><a href="/rentals">&larr; Back to DC Rentals</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Is this a <span class="ps-highlight">scam</span>?</h1>
+          <p class="ips-lead__blurb">A 60-second check before you pay a deposit or send an SSN. Tick what’s true about your listing — you’ll get a plain read and the safe way to proceed.</p>
+          <p class="ips-lead__note ps-record">Most exposed: renting <strong>sight-unseen</strong> or on a relocation deadline &middot; not legal advice.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="rk-privacy ps-record">No account. No AI. Nothing you tick on this page leaves your browser — the read runs on your own device.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- §01 THE CHECK -->
+  <section class="ips-sec" id="check">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">Tick what’s true</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <p class="sc-grouph ps-record">Stop signs — one of these alone is a reason to pause</p>
+      <ul class="sc-list">
+        {stopFlags.map((f) => (
+          <li class="sc-item sc-item--stop">
+            <label class="sc-check">
+              <input type="checkbox" class="sc-box" data-tier="stop" data-id={f.id} />
+              <span class="sc-check__text">{f.text}</span>
+            </label>
+            <p class="sc-why ps-record">{f.why}</p>
+          </li>
+        ))}
+      </ul>
+
+      <p class="sc-grouph ps-record">Warning signs — these stack up</p>
+      <ul class="sc-list">
+        {warnFlags.map((f) => (
+          <li class="sc-item sc-item--warn">
+            <label class="sc-check">
+              <input type="checkbox" class="sc-box" data-tier="warn" data-id={f.id} />
+              <span class="sc-check__text">{f.text}</span>
+            </label>
+            <p class="sc-why ps-record">{f.why}</p>
+          </li>
+        ))}
+      </ul>
+
+      <div class="sc-read" id="scRead" role="status" aria-live="polite">
+        <p class="sc-read__verdict" id="scVerdict">Tick anything above and your read appears here.</p>
+        <p class="sc-read__detail ps-record" id="scDetail"></p>
+      </div>
+
+      <p class="rk-aside ps-record"><strong>Legal-steep is not the same as a scam.</strong> In Virginia the big up-front stack — first + last + up to a two-month deposit — is legal and uncapped, so a steep VA demand can be genuine. That’s exactly why the defense is <em>verify the landlord and pay traceably</em>, not “assume every large ask is fraud.” DC and Maryland cap the deposit at one month — see the <a href="/rentals/rights">up-front money check</a>.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §02 THE SAFE SEQUENCE -->
+  <section class="ips-sec" id="safe">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">The safe order to do this in</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">The scam sequence is “pay first, keys later.” Do it in the opposite order and most scams fall apart.</p>
+      <ol class="sc-steps">
+        {safeSteps.map(([h, d]) => (
+          <li class="sc-step">
+            <h3 class="sc-step__h">{h}</h3>
+            <p class="sc-step__d">{d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §03 VERIFY WITHOUT TOURING -->
+  <section class="ips-sec" id="verify">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">How to check without touring</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">If you can’t stand in the unit, you can still verify it exists and who owns it.</p>
+      <ul class="dc-help">
+        {toolkit.map(([name, desc]) => (
+          <li class="dc-help__item">
+            <p class="dc-help__name">{name}</p>
+            <p class="dc-help__desc">{desc}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §04 ALREADY PAID -->
+  <section class="ips-sec" id="paid">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">If you’ve already paid</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">Act fast — some of this only works in a narrow window.</p>
+      <ul class="dc-help">
+        {recovery.map(([name, desc]) => (
+          <li class="dc-help__item">
+            <p class="dc-help__name">{name}</p>
+            <p class="dc-help__desc">{desc}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="rk-aside ps-record">This isn’t legal advice. For a live dispute, the <a href="https://ota.dc.gov/" target="_blank" rel="noopener">DC Office of the Tenant Advocate</a> and <a href="https://www.legalaiddc.org/" target="_blank" rel="noopener">Legal Aid DC</a> (or the Maryland / Virginia equivalents) are free and real.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §05 FINE PRINT + SOURCES -->
+  <section class="ips-sec" id="fineprint">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 05</span>
+        <h2 class="ips-sec-title">Sources &amp; fine print</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p><strong>Not legal advice.</strong> This is a plain-language checklist to help you recognize a scam pattern and protect yourself. It can’t tell you for certain whether a specific listing is fraudulent — it can only surface the signals.</p>
+        <p><strong>A clean read is not a guarantee.</strong> No boxes ticked doesn’t prove a listing is safe. Verify the landlord and pay traceably regardless — that’s the defense that always holds.</p>
+        <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The read is computed on your own device from the boxes you tick.</p>
+      </div>
+      <ul class="dc-sources">
+        {sources.map(([name, href]) => (
+          <li><a href={href} target="_blank" rel="noopener">{name} &#8599;</a></li>
+        ))}
+      </ul>
+      <p class="rk-found ps-record">Another no-plugin front door for <a href="/rentals">DC Rentals</a> — pairs with the <a href="/rentals/rights">know-your-rights</a> page. The same care the full kit gives, reachable with no account and no AI. One node in a wider commons of DC civic tools.</p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<script>
+  const boxes = Array.from(document.querySelectorAll('.sc-box'));
+  const verdict = document.getElementById('scVerdict');
+  const detail = document.getElementById('scDetail');
+  const read = document.getElementById('scRead');
+
+  function update() {
+    const stop = boxes.filter((b) => b.checked && b.dataset.tier === 'stop').length;
+    const warn = boxes.filter((b) => b.checked && b.dataset.tier === 'warn').length;
+    read.classList.remove('sc-read--stop', 'sc-read--warn', 'sc-read--care', 'sc-read--clear');
+
+    if (stop === 0 && warn === 0) {
+      verdict.textContent = 'Tick anything above and your read appears here.';
+      detail.textContent = '';
+      return;
+    }
+
+    if (stop >= 1) {
+      read.classList.add('sc-read--stop');
+      verdict.textContent = 'Stop — don’t send money or an SSN yet.';
+      detail.textContent = 'You ticked ' + stop + (stop === 1 ? ' stop sign' : ' stop signs')
+        + (warn ? ' and ' + warn + (warn === 1 ? ' warning sign' : ' warning signs') : '')
+        + '. Any one stop sign is enough to pause. Don’t pay until you’ve verified the landlord independently, seen the unit (in person or live video), and signed a real lease — then pay traceably. Walk through the safe order below.';
+      return;
+    }
+
+    if (warn >= 3) {
+      read.classList.add('sc-read--warn');
+      verdict.textContent = 'High risk — treat this as a likely scam until proven otherwise.';
+      detail.textContent = 'You ticked ' + warn + ' warning signs. Several together is a strong signal. Don’t pay anything until you’ve verified the landlord and the unit independently. Use the verify-without-touring steps below.';
+      return;
+    }
+
+    read.classList.add('sc-read--care');
+    verdict.textContent = 'Be careful — verify before you pay.';
+    detail.textContent = 'You ticked ' + warn + (warn === 1 ? ' warning sign' : ' warning signs')
+      + '. Not proof of a scam, but reason to slow down: confirm the landlord and the unit independently, and never pay before a signed, verified lease. The safe order is below.';
+  }
+
+  boxes.forEach((b) => b.addEventListener('change', update));
+</script>
+
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(1.4rem, 4vw, 2.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
+  .ips-lead__note strong { color: var(--ps-accent-2); }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+  .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
+
+  .ips-sec { padding-block: clamp(2rem, 5vw, 3.2rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-lede { max-width: 64ch; font-size: 1.12rem; color: var(--ps-ink-soft); margin-bottom: 1.6rem; }
+  .ips-lede strong { color: var(--ps-ink); }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+  .rk-aside { margin-top: 1.3rem; color: var(--ps-ink-soft); max-width: 68ch; line-height: 1.5; }
+  .rk-aside strong { color: var(--ps-ink); }
+
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* Checklist */
+  .sc-grouph { display: block; margin: 0.4rem 0 0.7rem; color: var(--ps-accent-2); }
+  .sc-list + .sc-grouph { margin-top: 1.8rem; }
+  .sc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+  .sc-item { border: 1px solid var(--ps-line); border-radius: 6px; padding: 0.9rem 1.1rem; background: var(--ps-surface-2); border-left: 3px solid var(--ps-line); transition: border-color 0.12s ease, background-color 0.12s ease; }
+  .sc-item--stop { border-left-color: var(--ps-accent-2); }
+  .sc-item--warn { border-left-color: #b8860b; }
+  .sc-item:has(.sc-box:checked) { background: var(--ps-paper); border-color: var(--ps-ink); }
+  .sc-check { display: flex; gap: 0.7rem; align-items: flex-start; cursor: pointer; }
+  .sc-box { flex: none; width: 1.25rem; height: 1.25rem; margin-top: 0.15rem; accent-color: var(--ps-accent-2); cursor: pointer; }
+  .sc-item--warn .sc-box { accent-color: #b8860b; }
+  .sc-check__text { font-family: var(--ps-font-display); font-weight: 600; font-size: 1.08rem; line-height: 1.3; color: var(--ps-ink); }
+  .sc-why { margin: 0.5rem 0 0 1.95rem; color: var(--ps-ink-soft); line-height: 1.5; }
+
+  /* Live read */
+  .sc-read { margin-top: 1.6rem; border: 1px solid var(--ps-line); border-radius: 6px; padding: 1.1rem 1.3rem; background: var(--ps-surface-2); border-top: 4px solid var(--ps-line); max-width: 74ch; }
+  .sc-read__verdict { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.25; color: var(--ps-ink); }
+  .sc-read__detail { margin-top: 0.6rem; color: var(--ps-ink-soft); line-height: 1.55; }
+  .sc-read--stop { border-top-color: var(--ps-accent-2); }
+  .sc-read--stop .sc-read__verdict { color: var(--ps-accent-2); }
+  .sc-read--warn { border-top-color: var(--ps-accent-2); }
+  .sc-read--warn .sc-read__verdict { color: var(--ps-accent-2); }
+  .sc-read--care { border-top-color: #b8860b; }
+  .sc-read--care .sc-read__verdict { color: #b8860b; }
+
+  /* Safe-sequence steps */
+  .sc-steps { counter-reset: sc; list-style: none; margin: 0; padding: 0; display: grid; gap: 0.8rem; max-width: 72ch; }
+  .sc-step { counter-increment: sc; position: relative; border: 1px solid var(--ps-line); border-radius: 6px; padding: 1rem 1.2rem 1rem 3.4rem; background: var(--ps-surface-2); }
+  .sc-step::before { content: counter(sc); position: absolute; left: 1rem; top: 1rem; width: 1.8rem; height: 1.8rem; display: grid; place-items: center; background: var(--ps-ink); color: var(--ps-paper); border-radius: 50%; font-family: var(--ps-font-record); font-weight: 600; font-size: 0.9rem; }
+  .sc-step__h { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; margin: 0 0 0.25rem; }
+  .sc-step__d { color: var(--ps-ink-soft); font-size: 1.04rem; margin: 0; line-height: 1.5; }
+
+  /* Reused help/sources lists (match rights page) */
+  .dc-help { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
+  .dc-help__item { border-bottom: 1px solid var(--ps-line); padding: 0.9rem 0.2rem; }
+  .dc-help__name { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.12rem; color: var(--ps-ink); margin: 0; }
+  .dc-help__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.25rem 0 0; line-height: 1.5; }
+
+  .dc-sources { list-style: none; margin: 1.4rem 0 0; padding: 0; max-width: 68ch; }
+  .dc-sources li { padding: 0.35rem 0; border-bottom: 1px dotted var(--ps-line); font-family: var(--ps-font-record); font-size: 0.9rem; }
+  .dc-sources a { color: var(--ps-ink-soft); text-decoration: none; }
+  .dc-sources a:hover { color: var(--ps-ink); }
+  .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 64ch; line-height: 1.5; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+  }
+</style>
