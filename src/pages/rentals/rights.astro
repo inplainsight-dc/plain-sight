@@ -32,7 +32,7 @@ const jur = {
   MD: {
     name: 'Maryland',
     cap: 1, lastOnTop: false,
-    depositLine: 'In Maryland the security deposit is capped at <strong>one month’s rent</strong> (leases on or after Oct 1, 2024), and last month’s rent paid in advance counts as a deposit.',
+    depositLine: 'In Maryland the security deposit is capped at <strong>one month’s rent</strong> for leases on or after Oct 1, 2024 (older leases may still carry up to two months), and last month’s rent paid in advance counts as a deposit.',
   },
   VA: {
     name: 'Virginia',
@@ -83,12 +83,12 @@ const cards = {
       src: 'D.C. Code § 42-3505.10', href: 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10' },
     shared.inspections, shared.selfhelp,
     { ask: 'No pets — and breed or size restrictions on any animal',
-      verdict: 'ask', label: 'Changing Oct 1, 2026',
-      say: 'As of October 1, 2026, DC’s Pets in Housing law (Roscoe’s Law) bars breed and size restrictions. Assistance animals are also not “pets.” Please confirm your policy against the current law.',
+      verdict: 'ask', label: 'Takes effect Oct 1, 2026',
+      say: 'DC’s Pets in Housing law (Roscoe’s Law) takes effect October 1, 2026 and will bar breed and size restrictions; and assistance animals already aren’t counted as “pets.” Could you confirm your policy against the current rules?',
       src: 'D.C. Law 25-308 (Roscoe’s Law), eff. Oct 1 2026', href: 'https://code.dccouncil.gov/us/dc/council/laws/25-308' },
     { ask: 'We don’t accept vouchers — and you must earn 3× the full rent',
       verdict: 'no', label: 'Source-of-income discrimination',
-      say: 'In DC, refusing a voucher or subsidy is source-of-income discrimination, and any income test applies to my share of the rent, not the full rent.',
+      say: 'In DC, refusing a voucher or subsidy is source-of-income discrimination, and an income test generally applies to my share of the rent, not the full rent.',
       src: 'DC Office of Human Rights — fair housing', href: 'https://ohr.dc.gov/fairhousing' },
     { ask: 'Your application was auto-rejected for an eviction filing or an old record',
       verdict: 'ask', label: 'Ask for a human',
@@ -184,6 +184,7 @@ const sources = [
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">Your rights, <span class="ps-highlight">in plain sight</span>.</h1>
           <p class="ips-lead__blurb">The rules a renter needs — keyed to where you live. The deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with.</p>
+          <p class="ips-lead__note ps-record">A plain-language summary of public law &middot; current as of {asOf} &middot; <strong>not legal advice</strong>.</p>
         </div>
         <aside class="ips-lead__rail">
           <p class="rk-privacy ps-record">No account. No AI. Nothing you type on this page leaves your browser — the deposit check runs on your own device.</p>
@@ -226,11 +227,11 @@ const sources = [
           <div class="dc-calc__row"><span>First month’s rent</span><b id="firstOut">—</b></div>
           <div class="dc-calc__row" id="lastRow" hidden><span>Last month’s rent (VA — allowed on top)</span><b id="lastOut">—</b></div>
           <div class="dc-calc__row"><span id="depLabel">Security deposit — legal max</span><b id="depOut">—</b></div>
-          <div class="dc-calc__row dc-calc__row--total"><span>Most you should owe up front</span><b id="totalOut">—</b></div>
+          <div class="dc-calc__row dc-calc__row--total"><span>Most you’d normally owe up front</span><b id="totalOut">—</b></div>
           <p class="dc-calc__flag ps-record" id="flagOut"></p>
         </div>
       </div>
-      <p class="rk-aside ps-record">Every figure is <em>current as of {asOf}</em>. Not legal advice — a plain-language summary to help you ask the right questions.</p>
+      <p class="rk-aside ps-record">This covers the deposit and rent up front; a legal application fee can be on top, and some counties add their own rules. Every figure is <em>current as of {asOf}</em>. Not legal advice — a plain-language summary to help you ask the right questions.</p>
     </div>
   </section>
 
@@ -371,6 +372,8 @@ const sources = [
   .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
   .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
+  .ips-lead__note strong { color: var(--ps-accent-2); }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
 
