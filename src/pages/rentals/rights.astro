@@ -5,12 +5,13 @@ import Footer from '../../components/Footer.astro';
 
 // -----------------------------------------------------------------------------
 // SOURCE OF TRUTH.  The legal content on this page is transcribed faithfully
-// from the shared DMV tenant-law brain (DC slice):
+// from the shared DMV tenant-law brain:
 //   new rental/plain-sight-rentals/skills/renter-setup/references/law/*.md
+// (mainly jurisdiction-deposits.md, landlord-tactics.md, sources.md).
 // That brain remains the single source of truth. When a law figure changes,
 // update the topic file there first, then mirror it here. (Follow-up: a
-// sync step like scripts/sync-core-data.mjs so this can't drift — see the
-// Rentals roadmap.)  Every figure carries its "current as of" date.
+// sync step like scripts/sync-core-data.mjs so this can't drift.)
+// Every figure carries its "current as of" date.
 // -----------------------------------------------------------------------------
 
 const today = new Date().toLocaleDateString('en-US', {
@@ -18,103 +19,156 @@ const today = new Date().toLocaleDateString('en-US', {
 });
 const asOf = 'June 2026';
 
-// The "when a landlord asks for X" cards — DC only.
-// verdict: 'no' (not allowed / unsafe) · 'ask' (conditional, know the limit) · 'yes'
-const cards = [
-  {
-    ask: 'Pay first month + last month + a separate security deposit, all up front',
-    verdict: 'no',
-    label: 'Over the DC cap',
-    say: 'In DC the security deposit is capped at one month’s rent, and money held as “last month’s rent” still counts toward that cap. Could you send the full up-front total, itemized, in writing?',
-    src: 'DC Office of the Tenant Advocate; deposit cap',
-    href: 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit',
+// Deposit / up-front-cost parameters per jurisdiction.
+// cap = security-deposit cap in months. lastOnTop = landlord may require last
+// month's rent ON TOP of the deposit (VA); in DC/MD money held as last month's
+// rent counts toward the cap, so it's not extra.
+const jur = {
+  DC: {
+    name: 'Washington DC',
+    cap: 1, lastOnTop: false,
+    depositLine: 'In DC the security deposit is capped at <strong>one month’s rent</strong>, and money held as “last month’s rent” still counts toward that cap.',
   },
-  {
+  MD: {
+    name: 'Maryland',
+    cap: 1, lastOnTop: false,
+    depositLine: 'In Maryland the security deposit is capped at <strong>one month’s rent</strong> (leases on or after Oct 1, 2024), and last month’s rent paid in advance counts as a deposit.',
+  },
+  VA: {
+    name: 'Virginia',
+    cap: 2, lastOnTop: true,
+    depositLine: 'In Virginia the deposit can be <strong>up to two months’ rent</strong>, and a landlord may also require last month’s rent on top — this is the one place the big move-in stack is legal, so it’s used as a wealth screen.',
+  },
+};
+
+// "When a landlord asks for X" — one set per jurisdiction.
+// verdict: 'no' (not allowed / unsafe) · 'ask' (conditional — know the limit)
+const shared = {
+  ssn: {
     ask: 'Text or email your Social Security number to “hold” the unit',
-    verdict: 'no',
-    label: 'Don’t send it',
+    verdict: 'no', label: 'Don’t send it',
     say: 'I’m glad to complete screening through your application service, which handles that securely. I don’t send a Social Security number in a message thread.',
-    src: 'Landlord-tactics reference',
-    href: null,
+    src: 'Landlord-tactics reference', href: null,
   },
-  {
+  overcollect: {
     ask: 'Provide your last 3 tax returns and 3 months of bank statements',
-    verdict: 'ask',
-    label: 'More than needed',
+    verdict: 'ask', label: 'More than needed',
     say: 'I can provide standard proof of income — a recent redacted paystub or an employer letter. Is that sufficient for your screening?',
-    src: 'Landlord-tactics reference',
-    href: null,
+    src: 'Landlord-tactics reference', href: null,
   },
-  {
-    ask: 'The application fee is non-refundable even if you’re never screened',
-    verdict: 'no',
-    label: 'Must be refunded',
-    say: 'DC requires an unused or never-run application fee to be refunded within 14 days. Could you confirm that in writing?',
-    src: 'D.C. Code § 42-3505.10',
-    href: 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10',
-  },
-  {
+  inspections: {
     ask: 'We inspect the unit on a routine schedule (e.g. every 45 days)',
-    verdict: 'no',
-    label: 'Not as a routine',
+    verdict: 'no', label: 'Not as a routine',
     say: 'Entry needs reasonable notice and a real reason; routine sweeps run against my right to quiet enjoyment. Can we put the entry policy in the lease?',
-    src: 'Landlord-tactics reference',
-    href: null,
+    src: 'Landlord-tactics reference', href: null,
   },
-  {
+  selfhelp: {
     ask: 'The lease ends immediately if the landlord decides something’s wrong (self-help)',
-    verdict: 'no',
-    label: 'Unenforceable',
-    say: 'DC requires the legal eviction process. A clause allowing immediate self-help termination isn’t enforceable — I’d like it removed.',
-    src: 'Landlord-tactics reference',
-    href: null,
+    verdict: 'no', label: 'Unenforceable',
+    say: 'The law requires the legal eviction process. A clause allowing immediate self-help termination isn’t enforceable — I’d like it removed.',
+    src: 'Landlord-tactics reference', href: null,
   },
-  {
-    ask: 'No pets — and breed or size restrictions on any animal',
-    verdict: 'ask',
-    label: 'Changing Oct 1, 2026',
-    say: 'As of October 1, 2026, DC’s Pets in Housing law (Roscoe’s Law) bars breed and size restrictions. Assistance animals are also not “pets.” Please confirm your policy against the current law.',
-    src: 'D.C. Law 25-308 (Roscoe’s Law), eff. Oct 1 2026',
-    href: 'https://code.dccouncil.gov/us/dc/council/laws/25-308',
-  },
-  {
-    ask: 'We don’t accept vouchers — and you must earn 3× the full rent',
-    verdict: 'no',
-    label: 'Source-of-income discrimination',
-    say: 'In DC, refusing a voucher or subsidy is source-of-income discrimination, and any income test applies to my share of the rent, not the full rent.',
-    src: 'DC Office of Human Rights — fair housing',
-    href: 'https://ohr.dc.gov/fairhousing',
-  },
-  {
-    ask: 'Your application was auto-rejected for an eviction filing or an old record',
-    verdict: 'ask',
-    label: 'Ask for a human',
-    say: 'Could I get individualized consideration by a person? An eviction filing without a judgment, or a sealed or dismissed case, isn’t a lawful basis for denial in DC.',
-    src: 'D.C. Law 24-115 (record sealing); D.C. Law 21-259 (fair criminal-record screening)',
-    href: 'https://ohr.dc.gov/page/returningcitizens/housing',
-  },
-];
+};
 
-const verdictText = { no: 'Not allowed', ask: 'Know the limit', yes: 'Allowed' };
+const cards = {
+  DC: [
+    { ask: 'Pay first month + last month + a separate security deposit, all up front',
+      verdict: 'no', label: 'Over the DC cap',
+      say: 'In DC the security deposit is capped at one month’s rent, and money held as “last month’s rent” still counts toward that cap. Could you send the full up-front total, itemized, in writing?',
+      src: 'DC Office of the Tenant Advocate', href: 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit' },
+    shared.ssn, shared.overcollect,
+    { ask: 'The application fee is non-refundable even if you’re never screened',
+      verdict: 'no', label: 'Must be refunded',
+      say: 'DC requires an unused or never-run application fee to be refunded within 14 days. Could you confirm that in writing?',
+      src: 'D.C. Code § 42-3505.10', href: 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10' },
+    shared.inspections, shared.selfhelp,
+    { ask: 'No pets — and breed or size restrictions on any animal',
+      verdict: 'ask', label: 'Changing Oct 1, 2026',
+      say: 'As of October 1, 2026, DC’s Pets in Housing law (Roscoe’s Law) bars breed and size restrictions. Assistance animals are also not “pets.” Please confirm your policy against the current law.',
+      src: 'D.C. Law 25-308 (Roscoe’s Law), eff. Oct 1 2026', href: 'https://code.dccouncil.gov/us/dc/council/laws/25-308' },
+    { ask: 'We don’t accept vouchers — and you must earn 3× the full rent',
+      verdict: 'no', label: 'Source-of-income discrimination',
+      say: 'In DC, refusing a voucher or subsidy is source-of-income discrimination, and any income test applies to my share of the rent, not the full rent.',
+      src: 'DC Office of Human Rights — fair housing', href: 'https://ohr.dc.gov/fairhousing' },
+    { ask: 'Your application was auto-rejected for an eviction filing or an old record',
+      verdict: 'ask', label: 'Ask for a human',
+      say: 'Could I get individualized consideration by a person? An eviction filing without a judgment, or a sealed or dismissed case, isn’t a lawful basis for denial in DC.',
+      src: 'D.C. Law 24-115 (record sealing); D.C. Law 21-259', href: 'https://ohr.dc.gov/page/returningcitizens/housing' },
+  ],
+  MD: [
+    { ask: 'Pay first month + last month + a separate security deposit, all up front',
+      verdict: 'no', label: 'Over the MD cap',
+      say: 'In Maryland the security deposit is capped at one month’s rent (leases on/after Oct 1, 2024), and last month’s rent paid in advance counts as a deposit. Could you itemize the full up-front total in writing?',
+      src: 'Maryland People’s Law Library', href: 'https://www.peoples-law.org/security-deposits' },
+    shared.ssn, shared.overcollect,
+    { ask: 'A non-refundable screening fee, no cap',
+      verdict: 'ask', label: 'MD fee limits',
+      say: 'For a landlord with five or more units, Maryland caps the screening fee at $25, and it must be waived if I provide a recent screening report. Could you confirm the fee?',
+      src: 'Maryland People’s Law Library', href: 'https://www.peoples-law.org/security-deposits' },
+    shared.inspections, shared.selfhelp,
+    { ask: 'We don’t accept vouchers — and you must earn 3× the full rent',
+      verdict: 'no', label: 'Source-of-income discrimination',
+      say: 'Maryland’s HOME Act bars refusing my voucher or subsidy, and a 2025 ruling (Hare v. David S. Brown) limits rigid income-ratio screens. The income test should apply to my share of the rent.',
+      src: 'MD HOME Act + Hare (2025)', href: 'https://nlihc.org/resource/maryland-general-assembly-passes-bill-prohibit-source-income-discrimination' },
+    { ask: 'The rent goes up whatever amount we decide at renewal',
+      verdict: 'ask', label: 'County rent caps',
+      say: 'In Montgomery and Prince George’s County, annual rent increases are capped. If this unit is in either county, could you point me to the current allowable increase?',
+      src: 'Montgomery County rent stabilization', href: 'https://www.montgomerycountymd.gov/department-housing-community-affairs/rent-stabilization/rent-stabilization-increases-limitations' },
+    { ask: 'Your application was auto-rejected for a record',
+      verdict: 'ask', label: 'Ask for a human',
+      say: 'Montgomery County limits criminal- and credit-history screening, so a filing or an old record isn’t an automatic bar. Could I get individualized consideration?',
+      src: 'Montgomery County Bill 49-20', href: 'https://codelibrary.amlegal.com/codes/montgomerycounty/latest/montgomeryco_md/0-0-0-135644' },
+  ],
+  VA: [
+    { ask: 'First month + last month + up to two months’ deposit, all up front',
+      verdict: 'ask', label: 'Legal in VA — negotiate',
+      say: 'In Virginia this stack is legal — first, last, and up to two months’ deposit — which is the main reason move-in costs here run high. I’d like to negotiate the deposit down or spread it over the first months.',
+      src: 'Virginia VRLTA (fees & deposits)', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
+    shared.ssn, shared.overcollect,
+    { ask: 'A large application fee',
+      verdict: 'ask', label: 'VA caps it at $50',
+      say: 'Virginia caps the application fee at $50. Could you confirm the fee before I apply?',
+      src: 'Virginia VRLTA (fees & deposits)', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
+    { ask: 'Several months of rent prepaid up front',
+      verdict: 'ask', label: 'Must go to escrow',
+      say: 'Virginia doesn’t cap prepaid rent, but it must be placed in escrow within five days. Where will it be held?',
+      src: 'Virginia VRLTA', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
+    shared.inspections, shared.selfhelp,
+    { ask: 'We don’t accept vouchers',
+      verdict: 'no', label: 'Source-of-income discrimination',
+      say: 'Virginia has prohibited source-of-income discrimination since 2020, so refusing my voucher or subsidy isn’t allowed.',
+      src: 'Virginia Fair Housing Law (eff. 2020)', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-fair-housing-law/' },
+    { ask: 'Your application was auto-rejected for a dismissed eviction case',
+      verdict: 'ask', label: 'Dismissed cases expunge',
+      say: 'Virginia automatically expunges dismissed eviction cases (HB 73), so a dismissed filing isn’t a lawful basis for denial. Could you reconsider with that in mind?',
+      src: 'Virginia HB 73 / VRLTA', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
+  ],
+};
 
-// DC help — real authorities, free.
+const verdictText = { no: 'Not allowed', ask: 'Know the limit' };
+const order = ['DC', 'MD', 'VA'];
+
+// Help — DC-first (the hub's home jurisdiction), plus MD/VA anchors.
 const help = [
-  ['Office of the Tenant Advocate', 'Free DC agency for renters — advice, and help with deposits and disputes.', 'https://ota.dc.gov/'],
-  ['Legal Aid DC', 'Free legal help, including housing and renting with a record.', 'https://www.legalaiddc.org/'],
-  ['DC Office of Human Rights', 'File a free fair-housing complaint (source of income, disability, family status, and more).', 'https://ohr.dc.gov/fairhousing'],
+  ['DC — Office of the Tenant Advocate', 'Free DC agency for renters — advice, deposits, disputes.', 'https://ota.dc.gov/'],
+  ['DC — Legal Aid DC', 'Free legal help, including housing and renting with a record.', 'https://www.legalaiddc.org/'],
+  ['DC — Office of Human Rights', 'File a free fair-housing complaint (source of income, disability, family status).', 'https://ohr.dc.gov/fairhousing'],
+  ['MD — People’s Law Library', 'Plain-language Maryland tenant law: deposits, protections, options.', 'https://www.peoples-law.org/security-deposits'],
+  ['VA — Virginia Fair Housing Office', 'Fair-housing complaints and the VRLTA, statewide.', 'https://law.lis.virginia.gov/vacodepopularnames/virginia-fair-housing-law/'],
 ];
 
-// DC-slice sources (each current as of June 2026).
 const sources = [
-  ['Security deposit & advance rent — DC Office of the Tenant Advocate', 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit'],
-  ['Tenant screening & application fees — D.C. Code § 42-3505.10', 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10'],
-  ['Pets in Housing / Roscoe’s Law — D.C. Law 25-308', 'https://code.dccouncil.gov/us/dc/council/laws/25-308'],
-  ['Eviction record sealing — D.C. Law 24-115', 'https://code.dccouncil.gov/us/dc/council/laws/24-115'],
-  ['Fair Criminal Record Screening for Housing — D.C. Law 21-259', 'https://ohr.dc.gov/page/returningcitizens/housing'],
-  ['Fair housing complaints — DC Office of Human Rights', 'https://ohr.dc.gov/fairhousing'],
+  ['Jurisdiction deposit & fee caps — DC Office of the Tenant Advocate', 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit'],
+  ['DC tenant screening & application fees — D.C. Code § 42-3505.10', 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10'],
+  ['DC Pets in Housing / Roscoe’s Law — D.C. Law 25-308', 'https://code.dccouncil.gov/us/dc/council/laws/25-308'],
+  ['Maryland security deposits & last month’s rent — People’s Law Library', 'https://www.peoples-law.org/security-deposits'],
+  ['Maryland HOME Act + Hare v. David S. Brown (2025)', 'https://nlihc.org/resource/maryland-general-assembly-passes-bill-prohibit-source-income-discrimination'],
+  ['Montgomery County rent stabilization', 'https://www.montgomerycountymd.gov/department-housing-community-affairs/rent-stabilization/rent-stabilization-increases-limitations'],
+  ['Virginia VRLTA — fees, deposits, prepaid rent, expungement', 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/'],
+  ['Virginia Fair Housing Law (source of income, eff. 2020)', 'https://law.lis.virginia.gov/vacodepopularnames/virginia-fair-housing-law/'],
 ];
 ---
-<Base title="Know your rights: renting in DC" description="Your DC renter rights in plain language — the deposit cap, what a landlord can legally ask for, and calm, sourced lines to respond with. No account, no AI, nothing you type leaves your browser.">
+<Base title="Know your rights: renting in DC, Maryland & Virginia" description="Your renter rights across DC, Maryland, and Virginia in plain language — the deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with. No account, no AI, nothing you type leaves your browser.">
   <Header slot="header" />
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -124,12 +178,12 @@ const sources = [
   <!-- LEAD -->
   <section class="ips-lead">
     <div class="ps-container">
-      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; RENTING IN THE DISTRICT</p>
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; RENTING IN THE DMV</p>
       <p class="ips-back"><a href="/rentals">&larr; Back to DC Rentals</a></p>
       <div class="ips-lead__grid">
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">Your rights, <span class="ps-highlight">in plain sight</span>.</h1>
-          <p class="ips-lead__blurb">The DC rules a renter needs, in plain language: the deposit cap, what a landlord can legally ask for, and calm, sourced lines to respond with.</p>
+          <p class="ips-lead__blurb">The rules a renter needs — keyed to where you live. The deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with.</p>
         </div>
         <aside class="ips-lead__rail">
           <p class="rk-privacy ps-record">No account. No AI. Nothing you type on this page leaves your browser — the deposit check runs on your own device.</p>
@@ -137,6 +191,19 @@ const sources = [
       </div>
     </div>
   </section>
+
+  <!-- JURISDICTION SWITCH -->
+  <div class="dc-switchwrap">
+    <div class="ps-container">
+      <div class="dc-switch" role="tablist" aria-label="Choose your jurisdiction">
+        {order.map((code, i) => (
+          <button class:list={["dc-switch__btn", { 'is-active': i === 0 }]} role="tab" data-jur={code} aria-selected={i === 0 ? 'true' : 'false'}>
+            {code === 'DC' ? 'DC' : jur[code].name}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
 
   <!-- §01 DEPOSIT CHECK -->
   <section class="ips-sec" id="deposit">
@@ -146,7 +213,9 @@ const sources = [
         <h2 class="ips-sec-title">The up-front money check</h2>
         <span class="ips-sec-rule"></span>
       </div>
-      <p class="ips-lede">In DC the security deposit is <strong>capped at one month’s rent</strong>, and money held as “last month’s rent” still counts toward that cap. So the most a landlord can normally require to move in is your <strong>first month’s rent plus a deposit of at most one month</strong>. Enter a monthly rent to see the line.</p>
+      {order.map((code, i) => (
+        <p class="ips-lede dc-jur" data-jur={code} hidden={i !== 0} set:html={jur[code].depositLine + ' Enter a monthly rent to see the line for ' + jur[code].name + '.'} />
+      ))}
 
       <div class="dc-calc">
         <label class="dc-calc__field">
@@ -155,12 +224,13 @@ const sources = [
         </label>
         <div class="dc-calc__out" id="calcOut" hidden>
           <div class="dc-calc__row"><span>First month’s rent</span><b id="firstOut">—</b></div>
-          <div class="dc-calc__row"><span>Security deposit — legal max (1 month)</span><b id="depOut">—</b></div>
+          <div class="dc-calc__row" id="lastRow" hidden><span>Last month’s rent (VA — allowed on top)</span><b id="lastOut">—</b></div>
+          <div class="dc-calc__row"><span id="depLabel">Security deposit — legal max</span><b id="depOut">—</b></div>
           <div class="dc-calc__row dc-calc__row--total"><span>Most you should owe up front</span><b id="totalOut">—</b></div>
           <p class="dc-calc__flag ps-record" id="flagOut"></p>
         </div>
       </div>
-      <p class="rk-aside ps-record">A DC landlord asking for first + last + a separate month’s deposit is stacking past the cap. Ask for the up-front total itemized in writing, and see the deposit card below. <em>Current as of {asOf}. Not legal advice.</em></p>
+      <p class="rk-aside ps-record">Every figure is <em>current as of {asOf}</em>. Not legal advice — a plain-language summary to help you ask the right questions.</p>
     </div>
   </section>
 
@@ -175,19 +245,20 @@ const sources = [
         <span class="ps-record ps-record--red">&sect; 02</span>
         <h2 class="ips-sec-title">When a landlord asks for&hellip;</h2>
         <span class="ips-sec-rule"></span>
-        <span class="ps-record">{cards.length} in DC</span>
       </div>
-      <p class="ips-lede">Whether it’s allowed — and a calm, sourced line you can actually say or send.</p>
-      <ul class="dc-cards">
-        {cards.map((c) => (
-          <li class={`dc-card dc-card--${c.verdict}`}>
-            <p class="dc-card__ask">{c.ask}</p>
-            <p class={`dc-card__verdict dc-card__verdict--${c.verdict}`}><span class="dc-card__dot" aria-hidden="true"></span>{verdictText[c.verdict]} &middot; {c.label}</p>
-            <p class="dc-card__say"><span class="dc-card__saylabel ps-record">You can say</span>“{c.say}”</p>
-            <p class="dc-card__src ps-record">{c.href ? <a href={c.href} target="_blank" rel="noopener">{c.src} &#8599;</a> : c.src}</p>
-          </li>
-        ))}
-      </ul>
+      <p class="ips-lede">Whether it’s allowed <em>where you live</em> — and a calm, sourced line you can actually say or send.</p>
+      {order.map((code, i) => (
+        <ul class="dc-cards dc-jur" data-jur={code} hidden={i !== 0}>
+          {cards[code].map((c) => (
+            <li class={`dc-card dc-card--${c.verdict}`}>
+              <p class="dc-card__ask">{c.ask}</p>
+              <p class={`dc-card__verdict dc-card__verdict--${c.verdict}`}><span class="dc-card__dot" aria-hidden="true"></span>{verdictText[c.verdict]} &middot; {c.label}</p>
+              <p class="dc-card__say"><span class="dc-card__saylabel ps-record">You can say</span>“{c.say}”</p>
+              <p class="dc-card__src ps-record">{c.href ? <a href={c.href} target="_blank" rel="noopener">{c.src} &#8599;</a> : c.src}</p>
+            </li>
+          ))}
+        </ul>
+      ))}
     </div>
   </section>
 
@@ -200,7 +271,7 @@ const sources = [
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 03</span>
-        <h2 class="ips-sec-title">Where to go for real help (DC)</h2>
+        <h2 class="ips-sec-title">Where to go for real help</h2>
         <span class="ips-sec-rule"></span>
       </div>
       <p class="ips-lede">For an actual dispute, these are free and real. This page helps you ask the right questions; they can act on your case.</p>
@@ -212,7 +283,7 @@ const sources = [
           </li>
         ))}
       </ul>
-      <p class="rk-aside ps-record">Survivor of domestic violence? DC’s <a href="https://ovsjg.dc.gov/acp" target="_blank" rel="noopener">Address Confidentiality Program &#8599;</a> and an early lease-termination right (D.C. Code § 42-3505.07) exist for you; Legal Aid DC can walk you through them.</p>
+      <p class="rk-aside ps-record">Survivor of domestic violence? Each jurisdiction has an early lease-termination right and an address-confidentiality program. Legal Aid DC (or the MD/VA equivalent) can walk you through them.</p>
     </div>
   </section>
 
@@ -229,8 +300,8 @@ const sources = [
         <span class="ips-sec-rule"></span>
       </div>
       <div class="ips-about">
-        <p><strong>Not legal advice.</strong> This is a plain-language summary of public DC law to help you ask the right questions and recognize a demand that’s out of bounds. For a real dispute, talk to a tenant attorney or one of the offices above.</p>
-        <p><strong>Laws change — every figure here is current as of {asOf}.</strong> Verify against the sources before you rely on it; this region’s housing law changes often.</p>
+        <p><strong>Not legal advice.</strong> This is a plain-language summary of public law to help you ask the right questions and recognize a demand that’s out of bounds. For a real dispute, talk to a tenant attorney or one of the offices above.</p>
+        <p><strong>Laws change — every figure here is current as of {asOf}.</strong> Verify against the sources before you rely on it; this region’s housing law changes often, and rules can differ by county and by lease date.</p>
         <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The deposit check is arithmetic that runs on your own device.</p>
       </div>
       <ul class="dc-sources">
@@ -238,34 +309,61 @@ const sources = [
           <li><a href={href} target="_blank" rel="noopener">{name} &#8599;</a></li>
         ))}
       </ul>
-      <p class="rk-found ps-record">This is the no-plugin front door for <a href="/rentals">DC Rentals</a> — the same rights the full kit coaches, reachable with no account and no AI. Maryland and Virginia are next. One node in a wider commons of DC civic tools.</p>
+      <p class="rk-found ps-record">This is the no-plugin front door for <a href="/rentals">DC Rentals</a> — the same rights the full kit coaches, reachable with no account and no AI. One node in a wider commons of DC civic tools.</p>
     </div>
   </section>
 
   <Footer slot="footer" />
 </Base>
 
-<script>
+<script define:vars={{ jur }}>
+  let active = 'DC';
   const rent = document.getElementById('rent');
   const out = document.getElementById('calcOut');
   const fmt = (n) => '$' + Math.round(n).toLocaleString('en-US');
-  function update() {
+
+  function recalc() {
     const v = parseFloat(rent.value);
     if (!v || v <= 0) { out.hidden = true; return; }
+    const j = jur[active];
     out.hidden = false;
+    const lastRow = document.getElementById('lastRow');
+    const last = j.lastOnTop ? v : 0;
+    const deposit = v * j.cap;
+    const total = v + last + deposit;
     document.getElementById('firstOut').textContent = fmt(v);
-    document.getElementById('depOut').textContent = fmt(v);
-    document.getElementById('totalOut').textContent = fmt(v * 2);
-    document.getElementById('flagOut').textContent =
-      'If a DC landlord asks for more than ' + fmt(v * 2) +
-      ' up front — for example first + last + a separate deposit (' + fmt(v * 3) +
-      ') — that stacks past the one-month deposit cap. Ask for it itemized in writing.';
+    lastRow.hidden = !j.lastOnTop;
+    if (j.lastOnTop) document.getElementById('lastOut').textContent = fmt(last);
+    document.getElementById('depLabel').textContent = 'Security deposit — legal max (' + j.cap + ' month' + (j.cap > 1 ? 's' : '') + ')';
+    document.getElementById('depOut').textContent = fmt(deposit);
+    document.getElementById('totalOut').textContent = fmt(total);
+    const flag = document.getElementById('flagOut');
+    if (j.lastOnTop) {
+      flag.textContent = 'This is legal in ' + j.name + ' — it’s the jurisdiction where move-in costs are most used as a wealth screen. ' + fmt(total) + ' up front on a ' + fmt(v) + ' unit is a lot; negotiate the deposit down, ask to spread it, or weight the listing accordingly.';
+    } else {
+      flag.textContent = 'If a landlord asks for more than ' + fmt(total) + ' up front — for example first + last + a separate deposit (' + fmt(v * 3) + ') — that stacks past the one-month deposit cap. Ask for it itemized in writing.';
+    }
   }
-  rent.addEventListener('input', update);
+
+  function setJur(code) {
+    active = code;
+    document.querySelectorAll('.dc-switch__btn').forEach((b) => {
+      const on = b.dataset.jur === code;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('.dc-jur').forEach((el) => { el.hidden = el.dataset.jur !== code; });
+    recalc();
+  }
+
+  document.querySelectorAll('.dc-switch__btn').forEach((b) => {
+    b.addEventListener('click', () => setJur(b.dataset.jur));
+  });
+  rent.addEventListener('input', recalc);
 </script>
 
 <style>
-  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(1.4rem, 4vw, 2.4rem); }
   .ips-dateline { display: block; margin-bottom: 0.5rem; }
   .ips-back { margin-bottom: 1.2rem; }
   .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
@@ -276,7 +374,15 @@ const sources = [
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
 
-  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  /* Jurisdiction switch */
+  .dc-switchwrap { position: sticky; top: 0; z-index: 5; background: var(--ps-paper); border-bottom: 1px solid var(--ps-line); padding-block: 0.7rem; }
+  .dc-switch { display: inline-flex; max-width: 100%; gap: 0.3rem; border: 1px solid var(--ps-line); border-radius: 8px; padding: 0.25rem; background: var(--ps-surface-2); }
+  .dc-switch__btn { white-space: nowrap; }
+  .dc-switch__btn { font-family: var(--ps-font-record); font-size: 0.9rem; letter-spacing: 0.02em; padding: 0.45rem 0.95rem; border: 0; border-radius: 6px; background: transparent; color: var(--ps-ink-soft); cursor: pointer; transition: background-color 0.12s ease, color 0.12s ease; }
+  .dc-switch__btn:hover { color: var(--ps-ink); }
+  .dc-switch__btn.is-active { background: var(--ps-ink); color: var(--ps-paper); }
+
+  .ips-sec { padding-block: clamp(2rem, 5vw, 3.2rem); }
   .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem; }
   .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
   .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
@@ -291,7 +397,7 @@ const sources = [
   .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
 
   /* Deposit calculator */
-  .dc-calc { display: grid; grid-template-columns: minmax(180px, 260px) 1fr; gap: clamp(1rem, 3vw, 2rem); align-items: start; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.2rem 1.3rem; background: var(--ps-surface-2); max-width: 70ch; }
+  .dc-calc { display: grid; grid-template-columns: minmax(180px, 260px) 1fr; gap: clamp(1rem, 3vw, 2rem); align-items: start; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.2rem 1.3rem; background: var(--ps-surface-2); max-width: 74ch; }
   .dc-calc__field { display: block; }
   .dc-calc__field > .ps-record { display: block; margin-bottom: 0.4rem; color: var(--ps-accent-2); }
   .dc-calc__input { display: flex; align-items: center; gap: 0.3rem; background: var(--ps-paper); border: 1px solid var(--ps-line); border-radius: 5px; padding: 0.5rem 0.7rem; font-family: var(--ps-font-display); font-size: 1.3rem; }
