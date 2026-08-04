@@ -1,0 +1,340 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+// -----------------------------------------------------------------------------
+// SOURCE OF TRUTH.  The legal content on this page is transcribed faithfully
+// from the shared DMV tenant-law brain (DC slice):
+//   new rental/plain-sight-rentals/skills/renter-setup/references/law/*.md
+// That brain remains the single source of truth. When a law figure changes,
+// update the topic file there first, then mirror it here. (Follow-up: a
+// sync step like scripts/sync-core-data.mjs so this can't drift — see the
+// Rentals roadmap.)  Every figure carries its "current as of" date.
+// -----------------------------------------------------------------------------
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+const asOf = 'June 2026';
+
+// The "when a landlord asks for X" cards — DC only.
+// verdict: 'no' (not allowed / unsafe) · 'ask' (conditional, know the limit) · 'yes'
+const cards = [
+  {
+    ask: 'Pay first month + last month + a separate security deposit, all up front',
+    verdict: 'no',
+    label: 'Over the DC cap',
+    say: 'In DC the security deposit is capped at one month’s rent, and money held as “last month’s rent” still counts toward that cap. Could you send the full up-front total, itemized, in writing?',
+    src: 'DC Office of the Tenant Advocate; deposit cap',
+    href: 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit',
+  },
+  {
+    ask: 'Text or email your Social Security number to “hold” the unit',
+    verdict: 'no',
+    label: 'Don’t send it',
+    say: 'I’m glad to complete screening through your application service, which handles that securely. I don’t send a Social Security number in a message thread.',
+    src: 'Landlord-tactics reference',
+    href: null,
+  },
+  {
+    ask: 'Provide your last 3 tax returns and 3 months of bank statements',
+    verdict: 'ask',
+    label: 'More than needed',
+    say: 'I can provide standard proof of income — a recent redacted paystub or an employer letter. Is that sufficient for your screening?',
+    src: 'Landlord-tactics reference',
+    href: null,
+  },
+  {
+    ask: 'The application fee is non-refundable even if you’re never screened',
+    verdict: 'no',
+    label: 'Must be refunded',
+    say: 'DC requires an unused or never-run application fee to be refunded within 14 days. Could you confirm that in writing?',
+    src: 'D.C. Code § 42-3505.10',
+    href: 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10',
+  },
+  {
+    ask: 'We inspect the unit on a routine schedule (e.g. every 45 days)',
+    verdict: 'no',
+    label: 'Not as a routine',
+    say: 'Entry needs reasonable notice and a real reason; routine sweeps run against my right to quiet enjoyment. Can we put the entry policy in the lease?',
+    src: 'Landlord-tactics reference',
+    href: null,
+  },
+  {
+    ask: 'The lease ends immediately if the landlord decides something’s wrong (self-help)',
+    verdict: 'no',
+    label: 'Unenforceable',
+    say: 'DC requires the legal eviction process. A clause allowing immediate self-help termination isn’t enforceable — I’d like it removed.',
+    src: 'Landlord-tactics reference',
+    href: null,
+  },
+  {
+    ask: 'No pets — and breed or size restrictions on any animal',
+    verdict: 'ask',
+    label: 'Changing Oct 1, 2026',
+    say: 'As of October 1, 2026, DC’s Pets in Housing law (Roscoe’s Law) bars breed and size restrictions. Assistance animals are also not “pets.” Please confirm your policy against the current law.',
+    src: 'D.C. Law 25-308 (Roscoe’s Law), eff. Oct 1 2026',
+    href: 'https://code.dccouncil.gov/us/dc/council/laws/25-308',
+  },
+  {
+    ask: 'We don’t accept vouchers — and you must earn 3× the full rent',
+    verdict: 'no',
+    label: 'Source-of-income discrimination',
+    say: 'In DC, refusing a voucher or subsidy is source-of-income discrimination, and any income test applies to my share of the rent, not the full rent.',
+    src: 'DC Office of Human Rights — fair housing',
+    href: 'https://ohr.dc.gov/fairhousing',
+  },
+  {
+    ask: 'Your application was auto-rejected for an eviction filing or an old record',
+    verdict: 'ask',
+    label: 'Ask for a human',
+    say: 'Could I get individualized consideration by a person? An eviction filing without a judgment, or a sealed or dismissed case, isn’t a lawful basis for denial in DC.',
+    src: 'D.C. Law 24-115 (record sealing); D.C. Law 21-259 (fair criminal-record screening)',
+    href: 'https://ohr.dc.gov/page/returningcitizens/housing',
+  },
+];
+
+const verdictText = { no: 'Not allowed', ask: 'Know the limit', yes: 'Allowed' };
+
+// DC help — real authorities, free.
+const help = [
+  ['Office of the Tenant Advocate', 'Free DC agency for renters — advice, and help with deposits and disputes.', 'https://ota.dc.gov/'],
+  ['Legal Aid DC', 'Free legal help, including housing and renting with a record.', 'https://www.legalaiddc.org/'],
+  ['DC Office of Human Rights', 'File a free fair-housing complaint (source of income, disability, family status, and more).', 'https://ohr.dc.gov/fairhousing'],
+];
+
+// DC-slice sources (each current as of June 2026).
+const sources = [
+  ['Security deposit & advance rent — DC Office of the Tenant Advocate', 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit'],
+  ['Tenant screening & application fees — D.C. Code § 42-3505.10', 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10'],
+  ['Pets in Housing / Roscoe’s Law — D.C. Law 25-308', 'https://code.dccouncil.gov/us/dc/council/laws/25-308'],
+  ['Eviction record sealing — D.C. Law 24-115', 'https://code.dccouncil.gov/us/dc/council/laws/24-115'],
+  ['Fair Criminal Record Screening for Housing — D.C. Law 21-259', 'https://ohr.dc.gov/page/returningcitizens/housing'],
+  ['Fair housing complaints — DC Office of Human Rights', 'https://ohr.dc.gov/fairhousing'],
+];
+---
+<Base title="Know your rights: renting in DC" description="Your DC renter rights in plain language — the deposit cap, what a landlord can legally ask for, and calm, sourced lines to respond with. No account, no AI, nothing you type leaves your browser.">
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; RENTING IN THE DISTRICT</p>
+      <p class="ips-back"><a href="/rentals">&larr; Back to DC Rentals</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Your rights, <span class="ps-highlight">in plain sight</span>.</h1>
+          <p class="ips-lead__blurb">The DC rules a renter needs, in plain language: the deposit cap, what a landlord can legally ask for, and calm, sourced lines to respond with.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="rk-privacy ps-record">No account. No AI. Nothing you type on this page leaves your browser — the deposit check runs on your own device.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- §01 DEPOSIT CHECK -->
+  <section class="ips-sec" id="deposit">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">The up-front money check</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">In DC the security deposit is <strong>capped at one month’s rent</strong>, and money held as “last month’s rent” still counts toward that cap. So the most a landlord can normally require to move in is your <strong>first month’s rent plus a deposit of at most one month</strong>. Enter a monthly rent to see the line.</p>
+
+      <div class="dc-calc">
+        <label class="dc-calc__field">
+          <span class="ps-record">Monthly rent</span>
+          <span class="dc-calc__input"><span aria-hidden="true">$</span><input id="rent" type="number" inputmode="numeric" min="0" step="50" placeholder="2000" aria-label="Monthly rent in dollars" /></span>
+        </label>
+        <div class="dc-calc__out" id="calcOut" hidden>
+          <div class="dc-calc__row"><span>First month’s rent</span><b id="firstOut">—</b></div>
+          <div class="dc-calc__row"><span>Security deposit — legal max (1 month)</span><b id="depOut">—</b></div>
+          <div class="dc-calc__row dc-calc__row--total"><span>Most you should owe up front</span><b id="totalOut">—</b></div>
+          <p class="dc-calc__flag ps-record" id="flagOut"></p>
+        </div>
+      </div>
+      <p class="rk-aside ps-record">A DC landlord asking for first + last + a separate month’s deposit is stacking past the cap. Ask for the up-front total itemized in writing, and see the deposit card below. <em>Current as of {asOf}. Not legal advice.</em></p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §02 WHEN A LANDLORD ASKS -->
+  <section class="ips-sec" id="asks">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">When a landlord asks for&hellip;</h2>
+        <span class="ips-sec-rule"></span>
+        <span class="ps-record">{cards.length} in DC</span>
+      </div>
+      <p class="ips-lede">Whether it’s allowed — and a calm, sourced line you can actually say or send.</p>
+      <ul class="dc-cards">
+        {cards.map((c) => (
+          <li class={`dc-card dc-card--${c.verdict}`}>
+            <p class="dc-card__ask">{c.ask}</p>
+            <p class={`dc-card__verdict dc-card__verdict--${c.verdict}`}><span class="dc-card__dot" aria-hidden="true"></span>{verdictText[c.verdict]} &middot; {c.label}</p>
+            <p class="dc-card__say"><span class="dc-card__saylabel ps-record">You can say</span>“{c.say}”</p>
+            <p class="dc-card__src ps-record">{c.href ? <a href={c.href} target="_blank" rel="noopener">{c.src} &#8599;</a> : c.src}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §03 REAL HELP -->
+  <section class="ips-sec" id="help">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Where to go for real help (DC)</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">For an actual dispute, these are free and real. This page helps you ask the right questions; they can act on your case.</p>
+      <ul class="dc-help">
+        {help.map(([name, desc, href]) => (
+          <li class="dc-help__item">
+            <a class="dc-help__name" href={href} target="_blank" rel="noopener">{name} &#8599;</a>
+            <p class="dc-help__desc">{desc}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="rk-aside ps-record">Survivor of domestic violence? DC’s <a href="https://ovsjg.dc.gov/acp" target="_blank" rel="noopener">Address Confidentiality Program &#8599;</a> and an early lease-termination right (D.C. Code § 42-3505.07) exist for you; Legal Aid DC can walk you through them.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §04 FINE PRINT + SOURCES -->
+  <section class="ips-sec" id="fineprint">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">Sources &amp; fine print</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p><strong>Not legal advice.</strong> This is a plain-language summary of public DC law to help you ask the right questions and recognize a demand that’s out of bounds. For a real dispute, talk to a tenant attorney or one of the offices above.</p>
+        <p><strong>Laws change — every figure here is current as of {asOf}.</strong> Verify against the sources before you rely on it; this region’s housing law changes often.</p>
+        <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The deposit check is arithmetic that runs on your own device.</p>
+      </div>
+      <ul class="dc-sources">
+        {sources.map(([name, href]) => (
+          <li><a href={href} target="_blank" rel="noopener">{name} &#8599;</a></li>
+        ))}
+      </ul>
+      <p class="rk-found ps-record">This is the no-plugin front door for <a href="/rentals">DC Rentals</a> — the same rights the full kit coaches, reachable with no account and no AI. Maryland and Virginia are next. One node in a wider commons of DC civic tools.</p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<script>
+  const rent = document.getElementById('rent');
+  const out = document.getElementById('calcOut');
+  const fmt = (n) => '$' + Math.round(n).toLocaleString('en-US');
+  function update() {
+    const v = parseFloat(rent.value);
+    if (!v || v <= 0) { out.hidden = true; return; }
+    out.hidden = false;
+    document.getElementById('firstOut').textContent = fmt(v);
+    document.getElementById('depOut').textContent = fmt(v);
+    document.getElementById('totalOut').textContent = fmt(v * 2);
+    document.getElementById('flagOut').textContent =
+      'If a DC landlord asks for more than ' + fmt(v * 2) +
+      ' up front — for example first + last + a separate deposit (' + fmt(v * 3) +
+      ') — that stacks past the one-month deposit cap. Ask for it itemized in writing.';
+  }
+  rent.addEventListener('input', update);
+</script>
+
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+  .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
+
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-lede { max-width: 64ch; font-size: 1.12rem; color: var(--ps-ink-soft); margin-bottom: 1.6rem; }
+  .ips-lede strong { color: var(--ps-ink); }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+  .rk-aside { margin-top: 1.3rem; color: var(--ps-ink-soft); max-width: 68ch; line-height: 1.5; }
+
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* Deposit calculator */
+  .dc-calc { display: grid; grid-template-columns: minmax(180px, 260px) 1fr; gap: clamp(1rem, 3vw, 2rem); align-items: start; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.2rem 1.3rem; background: var(--ps-surface-2); max-width: 70ch; }
+  .dc-calc__field { display: block; }
+  .dc-calc__field > .ps-record { display: block; margin-bottom: 0.4rem; color: var(--ps-accent-2); }
+  .dc-calc__input { display: flex; align-items: center; gap: 0.3rem; background: var(--ps-paper); border: 1px solid var(--ps-line); border-radius: 5px; padding: 0.5rem 0.7rem; font-family: var(--ps-font-display); font-size: 1.3rem; }
+  .dc-calc__input input { border: 0; background: transparent; font: inherit; color: var(--ps-ink); width: 100%; outline: none; }
+  .dc-calc__out { align-self: center; }
+  .dc-calc__row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; border-bottom: 1px dotted var(--ps-line); font-size: 1.05rem; color: var(--ps-ink-soft); }
+  .dc-calc__row b { color: var(--ps-ink); font-family: var(--ps-font-display); }
+  .dc-calc__row--total { border-bottom: 0; border-top: 1.5px solid var(--ps-ink); margin-top: 0.2rem; padding-top: 0.6rem; font-size: 1.15rem; color: var(--ps-ink); }
+  .dc-calc__flag { margin-top: 0.7rem; color: var(--ps-accent-2); line-height: 1.5; }
+
+  /* Rights cards */
+  .dc-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+  .dc-card { border: 1px solid var(--ps-line); border-radius: 6px; padding: 1.1rem 1.2rem; background: var(--ps-surface-2); border-top: 3px solid var(--ps-line); }
+  .dc-card--no { border-top-color: var(--ps-accent-2); }
+  .dc-card--ask { border-top-color: #b8860b; }
+  .dc-card__ask { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.12rem; line-height: 1.2; margin-bottom: 0.6rem; }
+  .dc-card__verdict { display: flex; align-items: center; gap: 0.45rem; font-family: var(--ps-font-record); font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .dc-card__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+  .dc-card__verdict--no { color: var(--ps-accent-2); }
+  .dc-card__verdict--ask { color: #b8860b; }
+  .dc-card__say { font-size: 1.04rem; line-height: 1.5; color: var(--ps-ink); margin-bottom: 0.7rem; }
+  .dc-card__saylabel { display: block; color: var(--ps-ink-soft); margin-bottom: 0.2rem; }
+  .dc-card__src { color: var(--ps-ink-soft); line-height: 1.4; }
+  .dc-card__src a { color: var(--ps-ink-soft); }
+  .dc-card__src a:hover { color: var(--ps-ink); }
+
+  /* Help list */
+  .dc-help { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
+  .dc-help__item { border-bottom: 1px solid var(--ps-line); padding: 0.9rem 0.2rem; }
+  .dc-help__name { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.12rem; color: var(--ps-ink); text-decoration: none; }
+  .dc-help__name:hover { color: var(--ps-accent-2); }
+  .dc-help__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.25rem 0 0; }
+
+  /* Sources */
+  .dc-sources { list-style: none; margin: 1.4rem 0 0; padding: 0; max-width: 68ch; }
+  .dc-sources li { padding: 0.35rem 0; border-bottom: 1px dotted var(--ps-line); font-family: var(--ps-font-record); font-size: 0.9rem; }
+  .dc-sources a { color: var(--ps-ink-soft); text-decoration: none; }
+  .dc-sources a:hover { color: var(--ps-ink); }
+  .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 64ch; line-height: 1.5; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+    .dc-calc { grid-template-columns: 1fr; }
+  }
+</style>
