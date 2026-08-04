@@ -46,4 +46,20 @@ Physically moving these folders under `plain-sight/` was considered and rejected
 3. **Nested git repos.** This is a git repo that deploys `dist/`; nesting other repos inside creates embedded-repo problems and risks sweeping their contents into the deploy.
 4. **The orient / marker system classifies top-level folders.** Nesting hides them from the very system meant to keep them oriented.
 
-So the family stays scattered on disk, and **this file is the index** that makes them findable. When a member moves, is renamed, or a new tool joins the family, update the table above.
+So the family stays scattered on disk, and **this file is the index** that makes them findable. When a member moves, is renamed, or a new tool joins the family, update the table above **and the manifest below** (the manifest is what `npm run family` reads).
+
+---
+
+<!-- family-manifest
+[
+  {"display": "In Plain Sight DC (hub)", "folder": ".",                          "owner": "personal", "status": "shipped",  "band": "100"},
+  {"display": "DC Rentals",              "folder": "new rental",                 "owner": "personal", "status": "live",     "band": "400"},
+  {"display": "DC Trash",                "folder": ".",         "match": "trash", "owner": "personal", "status": "live",     "band": "100"},
+  {"display": "DC Laws",                 "folder": "DCMR but Better",            "owner": "split",    "status": "building", "band": "100/600"},
+  {"display": "DC Records",              "folder": "000 DC Inform+",             "owner": "personal", "status": "live",     "band": "000", "engine": "constellation-core (core)"},
+  {"display": "Electify",                "folder": "100 IPS Electify",           "owner": "personal", "status": "not-carded","band": "150"}
+]
+-->
+
+_The HTML comment above is the machine-readable copy of the map. `npm run family` parses it to build the family-status snapshot. Keep it in sync with the table._
+

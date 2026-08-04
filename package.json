@@ -9,7 +9,8 @@
     "build": "node scripts/sync-core-data.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "sync-core": "node scripts/sync-core-data.mjs"
+    "sync-core": "node scripts/sync-core-data.mjs",
+    "family": "node scripts/family-status.mjs"
   },
   "dependencies": {
     "astro": "^5.13.0"
