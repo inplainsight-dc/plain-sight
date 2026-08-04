@@ -29,17 +29,19 @@ export const site = {
   url: 'https://inplainsight-dc.org',
 
   // --- Links (shown in hero + footer) ------------------------------------
-  // Intentionally blank for the initial launch — not ready to be contactable
-  // or to expose repos for inspection/forking yet. Each link only renders if
-  // it has a value, so blanks show nothing (no dead anchors). To re-enable
-  // later, just fill any of these in:
-  //   github:   'https://github.com/<handle-or-repo>'
-  //   linkedin: 'https://www.linkedin.com/in/<handle>'
-  //   email:    'hello@inplainsight-dc.org'  (set up forwarding first)
+  // Each link only renders if it has a value, so a blank shows nothing (no dead
+  // anchors). Current state:
+  //   github  — LIVE, public repo (an asset at a builder event: "fork it").
+  //   email   — OFF. The domain has no MX/mail records, so hello@inplainsight-dc.org
+  //             bounces. Removed 2026-08-03 so the site doesn't advertise a dead
+  //             address. To turn back on: set up mail routing on the domain FIRST
+  //             (e.g. Cloudflare Email Routing / a forwarder + MX records), verify
+  //             a test send arrives, THEN put the address back here.
+  //   linkedin— blank; add 'https://www.linkedin.com/in/<handle>' when you want it.
   links: {
     github: 'https://github.com/inplainsight-dc/plain-sight',
     linkedin: '',
-    email: 'hello@inplainsight-dc.org',
+    email: '',
   },
 
   // --- About (warm, first-person; edit freely) ---------------------------
