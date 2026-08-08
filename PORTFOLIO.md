@@ -31,7 +31,7 @@ Paths are relative to `~/Projects/` (aka `~/Documents/Claude/Projects/`).
 
 ### Notes per tool
 
-- **DC Rentals** — the shipped product is `plain-sight-rentals/` *inside* the `new rental` folder. There is also a clean, PII-free export folder `plain-sight-law/` (created 2026-07-02) intended to seed a static rights site; that build is parked (see `PARKING_LOT.md`).
+- **DC Rentals** — the shipped product is `plain-sight-rentals/` *inside* the `new rental` folder (the Cowork/Claude plugin). The **no-plugin static site** was built directly in this hub reading the law brain in place — `/rentals/rights` and `/rentals/scam-check` are live. (A 2026-07-02 plan to first export a clean `plain-sight-law/` folder was superseded and its records corrected 2026-08-08; that folder was never persisted and is not needed — the `law/` topic files in `plain-sight-rentals/` are the single source of truth.)
 - **DC Trash** — the only tool that genuinely lives inside this repo. Its plan, AWS/Lambda infra, and page are all here. `000 TrashFuture Red Team/` is a *different, unrelated* project (a podcast/red-team research folder) — don't confuse them.
 - **DC Laws** — `DCMR but Better/` is **split-owned**: the work instance also reads it (one common corpus, D1/D2). Do not treat it as personal-only.
 - **DC Records** — the `/records` page reads `constellation-core/` at build time. `constellation-core` is the **core** engine (Pippa-owned, one-way copies to work) — it is not an In Plain Sight product itself, it *feeds* one.
