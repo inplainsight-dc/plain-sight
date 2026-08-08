@@ -14,15 +14,20 @@ Items set aside **on purpose**. They are not active threads for the hub and must
 
 | Parked on | Item | Why parked | Where it really belongs | Ungate-when |
 |-----------|------|-----------|------------------------|-------------|
-| 2026-07-02 | **Build the Plain Sight static rights site** (from `plain-sight-law`) | The clean PII-free export folder is DONE (`new rental/` → `plain-sight-law/`); the static no-AI rights site is a real build, not a quick win, and wants the folder connected as its own project first | Personal — In Plain Sight / `plain-sight-law` | You connect `plain-sight-law` as a project and want to build the site |
 | 2026-08-03 | **Rename `100 IPS Electify` bare** (naming-rule cleanup) | Folder carries a `100 ` prefix that violates `naming.json` (bands 100–900 stay bare; band 150 lives in the tag). Housekeeping, not urgent; touches Meta Minder identity machinery | Meta Minder + Electify folder | You're doing a naming-cleanup pass and can re-run `naming.py` (also fixes `600 AUIE 27 Plan`) |
 | 2026-08-03 | **Card up Electify on the hub** | IPS Civic Almanac is family but has no card yet; gated on the reader being shippable | This project (`src/data/projects/`) | Electify reader is ready to show publicly |
 
 ---
 
+## Retired (resolved — kept for the audit trail)
+
+- **Build the Plain Sight static rights site** — _parked 2026-07-02, retired 2026-08-08._ Superseded by reality: the no-plugin static site was built directly in the hub (`/rentals/rights`, `/rentals/scam-check` — both live), reading the law brain in place. The item's premise was also false — the `plain-sight-law/` export folder it named was never persisted (records corrected in `PORTFOLIO.md` + the Meta Minder registry the same day). No separate export or project is needed; the `law/` topic files in `new rental/plain-sight-rentals/` are the source of truth. Remaining rentals work (finish the drift-proof sync, then convert `lease-review`) is real build work tracked in the handoff, not a parked idea.
+
+---
+
 ## On-board / off-board summary
 
-- **OFF-BOARD (do not surface):** Plain Sight static rights site · Rename `100 IPS Electify` bare · Card up Electify.
+- **OFF-BOARD (do not surface):** Rename `100 IPS Electify` bare · Card up Electify.
 - **To pull back on-board:** cut the row from the table above, paste it into `ROADMAP.md` (or the live handoff) with a concrete next step, and note the date.
 
-_Note: some of these ultimately live in another folder (`plain-sight-law`, `100 IPS Electify`) or in Meta Minder. Parking them here just keeps the hub's roadmap clean — it doesn't move the work across folders._
+_Note: some of these ultimately live in another folder (`100 IPS Electify`) or in Meta Minder. Parking them here just keeps the hub's roadmap clean — it doesn't move the work across folders._
