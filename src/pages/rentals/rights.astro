@@ -4,18 +4,19 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 
 // -----------------------------------------------------------------------------
-// SOURCE OF TRUTH.  The up-front-money FIGURES on this page (§01 deposit check)
-// are generated at build time from the shared DMV tenant-law brain, so they
-// cannot silently drift from the law:
-//   new rental/…/references/law/jurisdiction-facts.json  (the source of truth)
-//     └─ synced by scripts/sync-law-data.mjs → src/data/law/  (this import)
-// To change a deposit/fee figure, edit jurisdiction-facts.json in the law brain
-// (and its prose twin jurisdiction-deposits.md); a build picks it up here.
-// The §02 "when a landlord asks" card COPY below is still hand-authored from the
-// same brain (landlord-tactics.md); folding it into the facts feed is the next
-// increment. Every figure carries its "current as of" date (facts.asOf).
+// SOURCE OF TRUTH.  Nothing on this page is hand-transcribed law; every figure
+// and every card is generated at build time from the shared DMV tenant-law brain,
+// so the page cannot silently drift from the law:
+//   new rental/…/references/law/jurisdiction-facts.json  (§01 up-front-money figures)
+//   new rental/…/references/law/rights-cards.json        (§02 cards + §03 help + §04 sources)
+//     └─ both synced by scripts/sync-law-data.mjs → src/data/law/  (these imports)
+// To change a deposit/fee figure, edit jurisdiction-facts.json (and its prose twin
+// jurisdiction-deposits.md). To change a card's verdict, response line, or citation,
+// edit rights-cards.json (twin of landlord-tactics.md + the jurisdiction topic files).
+// A build picks either up here. Every figure carries its "current as of" date (facts.asOf).
 // -----------------------------------------------------------------------------
 import facts from '../../data/law/jurisdiction-facts.json';
+import rightsCards from '../../data/law/rights-cards.json';
 
 const today = new Date().toLocaleDateString('en-US', {
   month: 'long', day: 'numeric', year: 'numeric',
@@ -39,132 +40,21 @@ const jur = Object.fromEntries(
   })
 );
 
-// "When a landlord asks for X" — one set per jurisdiction.
+// "When a landlord asks for X" cards, the help list, and the sources list all
+// come from rights-cards.json in the law brain (synced above). A card in a
+// jurisdiction list is either an inline card or a {ref} into `shared`; resolve
+// the refs here so the template stays a plain render.
 // verdict: 'no' (not allowed / unsafe) · 'ask' (conditional — know the limit)
-const shared = {
-  ssn: {
-    ask: 'Text or email your Social Security number to “hold” the unit',
-    verdict: 'no', label: 'Don’t send it',
-    say: 'I’m glad to complete screening through your application service, which handles that securely. I don’t send a Social Security number in a message thread.',
-    src: 'Landlord-tactics reference', href: null,
-  },
-  overcollect: {
-    ask: 'Provide your last 3 tax returns and 3 months of bank statements',
-    verdict: 'ask', label: 'More than needed',
-    say: 'I can provide standard proof of income — a recent redacted paystub or an employer letter. Is that sufficient for your screening?',
-    src: 'Landlord-tactics reference', href: null,
-  },
-  inspections: {
-    ask: 'We inspect the unit on a routine schedule (e.g. every 45 days)',
-    verdict: 'no', label: 'Not as a routine',
-    say: 'Entry needs reasonable notice and a real reason; routine sweeps run against my right to quiet enjoyment. Can we put the entry policy in the lease?',
-    src: 'Landlord-tactics reference', href: null,
-  },
-  selfhelp: {
-    ask: 'The lease ends immediately if the landlord decides something’s wrong (self-help)',
-    verdict: 'no', label: 'Unenforceable',
-    say: 'The law requires the legal eviction process. A clause allowing immediate self-help termination isn’t enforceable — I’d like it removed.',
-    src: 'Landlord-tactics reference', href: null,
-  },
-};
-
-const cards = {
-  DC: [
-    { ask: 'Pay first month + last month + a separate security deposit, all up front',
-      verdict: 'no', label: 'Over the DC cap',
-      say: 'In DC the security deposit is capped at one month’s rent, and money held as “last month’s rent” still counts toward that cap. Could you send the full up-front total, itemized, in writing?',
-      src: 'DC Office of the Tenant Advocate', href: 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit' },
-    shared.ssn, shared.overcollect,
-    { ask: 'The application fee is non-refundable even if you’re never screened',
-      verdict: 'no', label: 'Must be refunded',
-      say: 'DC requires an unused or never-run application fee to be refunded within 14 days. Could you confirm that in writing?',
-      src: 'D.C. Code § 42-3505.10', href: 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10' },
-    shared.inspections, shared.selfhelp,
-    { ask: 'No pets — and breed or size restrictions on any animal',
-      verdict: 'ask', label: 'Takes effect Oct 1, 2026',
-      say: 'DC’s Pets in Housing law (Roscoe’s Law) takes effect October 1, 2026 and will bar breed and size restrictions; and assistance animals already aren’t counted as “pets.” Could you confirm your policy against the current rules?',
-      src: 'D.C. Law 25-308 (Roscoe’s Law), eff. Oct 1 2026', href: 'https://code.dccouncil.gov/us/dc/council/laws/25-308' },
-    { ask: 'We don’t accept vouchers — and you must earn 3× the full rent',
-      verdict: 'no', label: 'Source-of-income discrimination',
-      say: 'In DC, refusing a voucher or subsidy is source-of-income discrimination, and an income test generally applies to my share of the rent, not the full rent.',
-      src: 'DC Office of Human Rights — fair housing', href: 'https://ohr.dc.gov/fairhousing' },
-    { ask: 'Your application was auto-rejected for an eviction filing or an old record',
-      verdict: 'ask', label: 'Ask for a human',
-      say: 'Could I get individualized consideration by a person? An eviction filing without a judgment, or a sealed or dismissed case, isn’t a lawful basis for denial in DC.',
-      src: 'D.C. Law 24-115 (record sealing); D.C. Law 21-259', href: 'https://ohr.dc.gov/page/returningcitizens/housing' },
-  ],
-  MD: [
-    { ask: 'Pay first month + last month + a separate security deposit, all up front',
-      verdict: 'no', label: 'Over the MD cap',
-      say: 'In Maryland the security deposit is capped at one month’s rent (leases on/after Oct 1, 2024), and last month’s rent paid in advance counts as a deposit. Could you itemize the full up-front total in writing?',
-      src: 'Maryland People’s Law Library', href: 'https://www.peoples-law.org/security-deposits' },
-    shared.ssn, shared.overcollect,
-    { ask: 'A non-refundable screening fee, no cap',
-      verdict: 'ask', label: 'MD fee limits',
-      say: 'For a landlord with five or more units, Maryland caps the screening fee at $25, and it must be waived if I provide a recent screening report. Could you confirm the fee?',
-      src: 'Maryland People’s Law Library', href: 'https://www.peoples-law.org/security-deposits' },
-    shared.inspections, shared.selfhelp,
-    { ask: 'We don’t accept vouchers — and you must earn 3× the full rent',
-      verdict: 'no', label: 'Source-of-income discrimination',
-      say: 'Maryland’s HOME Act bars refusing my voucher or subsidy, and a 2025 ruling (Hare v. David S. Brown) limits rigid income-ratio screens. The income test should apply to my share of the rent.',
-      src: 'MD HOME Act + Hare (2025)', href: 'https://nlihc.org/resource/maryland-general-assembly-passes-bill-prohibit-source-income-discrimination' },
-    { ask: 'The rent goes up whatever amount we decide at renewal',
-      verdict: 'ask', label: 'County rent caps',
-      say: 'In Montgomery and Prince George’s County, annual rent increases are capped. If this unit is in either county, could you point me to the current allowable increase?',
-      src: 'Montgomery County rent stabilization', href: 'https://www.montgomerycountymd.gov/department-housing-community-affairs/rent-stabilization/rent-stabilization-increases-limitations' },
-    { ask: 'Your application was auto-rejected for a record',
-      verdict: 'ask', label: 'Ask for a human',
-      say: 'Montgomery County limits criminal- and credit-history screening, so a filing or an old record isn’t an automatic bar. Could I get individualized consideration?',
-      src: 'Montgomery County Bill 49-20', href: 'https://codelibrary.amlegal.com/codes/montgomerycounty/latest/montgomeryco_md/0-0-0-135644' },
-  ],
-  VA: [
-    { ask: 'First month + last month + up to two months’ deposit, all up front',
-      verdict: 'ask', label: 'Legal in VA — negotiate',
-      say: 'In Virginia this stack is legal — first, last, and up to two months’ deposit — which is the main reason move-in costs here run high. I’d like to negotiate the deposit down or spread it over the first months.',
-      src: 'Virginia VRLTA (fees & deposits)', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
-    shared.ssn, shared.overcollect,
-    { ask: 'A large application fee',
-      verdict: 'ask', label: 'VA caps it at $50',
-      say: 'Virginia caps the application fee at $50. Could you confirm the fee before I apply?',
-      src: 'Virginia VRLTA (fees & deposits)', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
-    { ask: 'Several months of rent prepaid up front',
-      verdict: 'ask', label: 'Must go to escrow',
-      say: 'Virginia doesn’t cap prepaid rent, but it must be placed in escrow within five days. Where will it be held?',
-      src: 'Virginia VRLTA', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
-    shared.inspections, shared.selfhelp,
-    { ask: 'We don’t accept vouchers',
-      verdict: 'no', label: 'Source-of-income discrimination',
-      say: 'Virginia has prohibited source-of-income discrimination since 2020, so refusing my voucher or subsidy isn’t allowed.',
-      src: 'Virginia Fair Housing Law (eff. 2020)', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-fair-housing-law/' },
-    { ask: 'Your application was auto-rejected for a dismissed eviction case',
-      verdict: 'ask', label: 'Dismissed cases expunge',
-      say: 'Virginia automatically expunges dismissed eviction cases (HB 73), so a dismissed filing isn’t a lawful basis for denial. Could you reconsider with that in mind?',
-      src: 'Virginia HB 73 / VRLTA', href: 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/' },
-  ],
-};
+const shared = rightsCards.shared;
+const resolveCard = (c) => (c && c.ref ? shared[c.ref] : c);
+const cards = Object.fromEntries(
+  facts.order.map((code) => [code, (rightsCards.byJurisdiction[code] || []).map(resolveCard)])
+);
+const help = rightsCards.help;
+const sources = rightsCards.sources;
 
 const verdictText = { no: 'Not allowed', ask: 'Know the limit' };
 const order = facts.order;
-
-// Help — DC-first (the hub's home jurisdiction), plus MD/VA anchors.
-const help = [
-  ['DC — Office of the Tenant Advocate', 'Free DC agency for renters — advice, deposits, disputes.', 'https://ota.dc.gov/'],
-  ['DC — Legal Aid DC', 'Free legal help, including housing and renting with a record.', 'https://www.legalaiddc.org/'],
-  ['DC — Office of Human Rights', 'File a free fair-housing complaint (source of income, disability, family status).', 'https://ohr.dc.gov/fairhousing'],
-  ['MD — People’s Law Library', 'Plain-language Maryland tenant law: deposits, protections, options.', 'https://www.peoples-law.org/security-deposits'],
-  ['VA — Virginia Fair Housing Office', 'Fair-housing complaints and the VRLTA, statewide.', 'https://law.lis.virginia.gov/vacodepopularnames/virginia-fair-housing-law/'],
-];
-
-const sources = [
-  ['Jurisdiction deposit & fee caps — DC Office of the Tenant Advocate', 'https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit'],
-  ['DC tenant screening & application fees — D.C. Code § 42-3505.10', 'https://code.dccouncil.gov/us/dc/council/code/sections/42-3505.10'],
-  ['DC Pets in Housing / Roscoe’s Law — D.C. Law 25-308', 'https://code.dccouncil.gov/us/dc/council/laws/25-308'],
-  ['Maryland security deposits & last month’s rent — People’s Law Library', 'https://www.peoples-law.org/security-deposits'],
-  ['Maryland HOME Act + Hare v. David S. Brown (2025)', 'https://nlihc.org/resource/maryland-general-assembly-passes-bill-prohibit-source-income-discrimination'],
-  ['Montgomery County rent stabilization', 'https://www.montgomerycountymd.gov/department-housing-community-affairs/rent-stabilization/rent-stabilization-increases-limitations'],
-  ['Virginia VRLTA — fees, deposits, prepaid rent, expungement', 'https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/'],
-  ['Virginia Fair Housing Law (source of income, eff. 2020)', 'https://law.lis.virginia.gov/vacodepopularnames/virginia-fair-housing-law/'],
-];
 ---
 <Base title="Know your rights: renting in DC, Maryland & Virginia" description="Your renter rights across DC, Maryland, and Virginia in plain language — the deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with. No account, no AI, nothing you type leaves your browser.">
   <Header slot="header" />
