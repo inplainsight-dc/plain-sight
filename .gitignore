@@ -21,7 +21,10 @@ TRASH-TRACKER-PLAN.md
 PERSONAS-STRESS-TEST.md
 
 # keep internal / infra out of the public repo (added 2026-07-20)
-infra/
+# infra/*.py IS tracked (deployed Lambda logic — no secrets); only the
+# cred-touching setup scripts + build cruft stay local (updated 2026-08-07).
+infra/*.sh
+infra/__pycache__/
 .owner
 .project-id.json
 _OWNED-BY-PERSONAL.md
