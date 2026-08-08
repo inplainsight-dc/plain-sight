@@ -4,42 +4,40 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 
 // -----------------------------------------------------------------------------
-// SOURCE OF TRUTH.  The legal content on this page is transcribed faithfully
-// from the shared DMV tenant-law brain:
-//   new rental/plain-sight-rentals/skills/renter-setup/references/law/*.md
-// (mainly jurisdiction-deposits.md, landlord-tactics.md, sources.md).
-// That brain remains the single source of truth. When a law figure changes,
-// update the topic file there first, then mirror it here. (Follow-up: a
-// sync step like scripts/sync-core-data.mjs so this can't drift.)
-// Every figure carries its "current as of" date.
+// SOURCE OF TRUTH.  The up-front-money FIGURES on this page (§01 deposit check)
+// are generated at build time from the shared DMV tenant-law brain, so they
+// cannot silently drift from the law:
+//   new rental/…/references/law/jurisdiction-facts.json  (the source of truth)
+//     └─ synced by scripts/sync-law-data.mjs → src/data/law/  (this import)
+// To change a deposit/fee figure, edit jurisdiction-facts.json in the law brain
+// (and its prose twin jurisdiction-deposits.md); a build picks it up here.
+// The §02 "when a landlord asks" card COPY below is still hand-authored from the
+// same brain (landlord-tactics.md); folding it into the facts feed is the next
+// increment. Every figure carries its "current as of" date (facts.asOf).
 // -----------------------------------------------------------------------------
+import facts from '../../data/law/jurisdiction-facts.json';
 
 const today = new Date().toLocaleDateString('en-US', {
   month: 'long', day: 'numeric', year: 'numeric',
 });
-const asOf = 'June 2026';
+const asOf = facts.asOf;
 
-// Deposit / up-front-cost parameters per jurisdiction.
-// cap = security-deposit cap in months. lastOnTop = landlord may require last
-// month's rent ON TOP of the deposit (VA); in DC/MD money held as last month's
-// rent counts toward the cap, so it's not extra.
-const jur = {
-  DC: {
-    name: 'Washington DC',
-    cap: 1, lastOnTop: false,
-    depositLine: 'In DC the security deposit is capped at <strong>one month’s rent</strong>, and money held as “last month’s rent” still counts toward that cap.',
-  },
-  MD: {
-    name: 'Maryland',
-    cap: 1, lastOnTop: false,
-    depositLine: 'In Maryland the security deposit is capped at <strong>one month’s rent</strong> for leases on or after Oct 1, 2024 (older leases may still carry up to two months), and last month’s rent paid in advance counts as a deposit.',
-  },
-  VA: {
-    name: 'Virginia',
-    cap: 2, lastOnTop: true,
-    depositLine: 'In Virginia the deposit can be <strong>up to two months’ rent</strong>, and a landlord may also require last month’s rent on top — this is the one place the big move-in stack is legal, so it’s used as a wealth screen.',
-  },
-};
+// Deposit / up-front-cost parameters per jurisdiction, derived from the synced
+// law-brain facts. Field names kept as the calculator script expects them:
+//   cap = security-deposit cap in months. lastOnTop = landlord may require last
+//   month's rent ON TOP of the deposit (VA); in DC/MD money held as last month's
+//   rent counts toward the cap, so it's not extra.
+const jur = Object.fromEntries(
+  facts.order.map((code) => {
+    const f = facts.jurisdictions[code];
+    return [code, {
+      name: f.name,
+      cap: f.depositCapMonths,
+      lastOnTop: f.lastMonthOnTop,
+      depositLine: f.depositLine,
+    }];
+  })
+);
 
 // "When a landlord asks for X" — one set per jurisdiction.
 // verdict: 'no' (not allowed / unsafe) · 'ask' (conditional — know the limit)
@@ -146,7 +144,7 @@ const cards = {
 };
 
 const verdictText = { no: 'Not allowed', ask: 'Know the limit' };
-const order = ['DC', 'MD', 'VA'];
+const order = facts.order;
 
 // Help — DC-first (the hub's home jurisdiction), plus MD/VA anchors.
 const help = [

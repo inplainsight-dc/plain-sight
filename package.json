@@ -6,10 +6,11 @@
   "description": "Plain Sight \u2014 civic tools that bring the fine print into plain sight.",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/sync-core-data.mjs && astro build",
+    "build": "node scripts/sync-core-data.mjs && node scripts/sync-law-data.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "sync-core": "node scripts/sync-core-data.mjs",
+    "sync-law": "node scripts/sync-law-data.mjs",
     "family": "node scripts/family-status.mjs"
   },
   "dependencies": {

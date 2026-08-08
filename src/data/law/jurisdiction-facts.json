@@ -1,0 +1,56 @@
+{
+  "_comment": "MACHINE-READABLE SOURCE OF TRUTH for the DMV up-front-money figures. This is the structured twin of the table in jurisdiction-deposits.md. When a figure changes, change it HERE (and in the prose table), and the Plain Sight rights page picks it up at build time via scripts/sync-law-data.mjs. Keep the two in sync. Not legal advice; every figure carries the collection date in asOf.",
+  "asOf": "June 2026",
+  "notLegalAdvice": true,
+  "order": [
+    "DC",
+    "MD",
+    "VA"
+  ],
+  "jurisdictions": {
+    "DC": {
+      "name": "Washington DC",
+      "depositCapMonths": 1,
+      "lastMonthOnTop": false,
+      "lastMonthCountsToCap": true,
+      "depositLine": "In DC the security deposit is capped at <strong>one month’s rent</strong>, and money held as “last month’s rent” still counts toward that cap.",
+      "applicationFee": {
+        "note": "Must refund an unused or never-run application fee within 14 days.",
+        "refundDays": 14
+      },
+      "sourceOfIncomeProtected": true,
+      "rentStabilization": "Rent control on covered units."
+    },
+    "MD": {
+      "name": "Maryland",
+      "depositCapMonths": 1,
+      "lastMonthOnTop": false,
+      "lastMonthCountsToCap": true,
+      "depositLine": "In Maryland the security deposit is capped at <strong>one month’s rent</strong> for leases on or after Oct 1, 2024 (older leases may still carry up to two months), and last month’s rent paid in advance counts as a deposit.",
+      "applicationFee": {
+        "note": "Screening fee capped at $25 for landlords with 5+ units; must be waived if given a recent screening report.",
+        "capUSD": 25,
+        "capAppliesToUnitsAtLeast": 5
+      },
+      "sourceOfIncomeProtected": true,
+      "rentStabilization": "Montgomery and Prince George’s County cap annual increases; no statewide cap."
+    },
+    "VA": {
+      "name": "Virginia",
+      "depositCapMonths": 2,
+      "lastMonthOnTop": true,
+      "lastMonthCountsToCap": false,
+      "depositLine": "In Virginia the deposit can be <strong>up to two months’ rent</strong>, and a landlord may also require last month’s rent on top — this is the one place the big move-in stack is legal, so it’s used as a wealth screen.",
+      "applicationFee": {
+        "note": "Application fee capped at $50.",
+        "capUSD": 50
+      },
+      "prepaidRent": {
+        "note": "No cap on prepaid rent, but it must be placed in escrow within 5 days.",
+        "escrowDays": 5
+      },
+      "sourceOfIncomeProtected": true,
+      "rentStabilization": "None."
+    }
+  }
+}
