@@ -29,7 +29,7 @@ const stopFlags = [
   { id: 's3', text: 'They can’t show it — “the keys are overseas,” “I’m out of state,” photos only',
     why: 'The one move that defeats most scams is seeing the unit (in person or a live video walkthrough). A reason you can never do that is the tell.' },
   { id: 's4', text: 'They asked for your Social Security number by text or email to “hold” the unit',
-    why: 'Real screening collects an SSN through a bonded service at the application stage — never in a message thread.' },
+    why: 'Real screening collects an SSN through a secure screening service (a bonded one) at the application stage — never in a message thread.' },
 ];
 
 const warnFlags = [
@@ -65,9 +65,9 @@ const toolkit = [
 
 // Already-paid recovery (scams.md).
 const recovery = [
-  ['Call your bank immediately', 'A wire can sometimes be recalled, but the window is narrow — call now, not tomorrow.'],
+  ['Contact your bank or the payment app immediately', 'How you paid decides what’s possible. A wire can sometimes be recalled, but the window is narrow — hours, not days — so call now, not tomorrow. Zelle, Cash App, Venmo, gift cards, and crypto are usually not recoverable — contact that platform anyway to report the fraud and freeze what you can.'],
   ['File a police report', 'It creates a record and can support a recall or a claim.'],
-  ['Report it', 'FTC at reportfraud.ftc.gov and the FBI at ic3.gov.'],
+  ['Report it', 'FTC at reportfraud.ftc.gov and the FBI at ic3.gov. Even when the money is gone, reporting builds the record and can help the next person.'],
 ];
 
 const sources = [
@@ -258,6 +258,10 @@ const sources = [
   function update() {
     const stop = boxes.filter((b) => b.checked && b.dataset.tier === 'stop').length;
     const warn = boxes.filter((b) => b.checked && b.dataset.tier === 'warn').length;
+    // Below-market price (w1) is weighted: the law brain calls it "the single most
+    // consistent" scam sign, so the top verdict leans on it rather than firing on
+    // any three soft warnings alone.
+    const below = boxes.some((b) => b.checked && b.dataset.tier === 'warn' && b.dataset.id === 'w1');
     read.classList.remove('sc-read--stop', 'sc-read--warn', 'sc-read--care', 'sc-read--clear');
 
     if (stop === 0 && warn === 0) {
@@ -275,10 +279,14 @@ const sources = [
       return;
     }
 
-    if (warn >= 3) {
+    if ((below && warn >= 2) || warn >= 4) {
       read.classList.add('sc-read--warn');
-      verdict.textContent = 'High risk — treat this as a likely scam until proven otherwise.';
-      detail.textContent = 'You ticked ' + warn + ' warning signs. Several together is a strong signal. Don’t pay anything until you’ve verified the landlord and the unit independently. Use the verify-without-touring steps below.';
+      verdict.textContent = 'High risk — verify before you pay anything.';
+      detail.textContent = 'You ticked ' + warn + ' warning signs'
+        + (below
+            ? ', including a below-market price — the single most consistent scam sign, alongside at least one more.'
+            : ' — enough stacked together to treat this as high risk.')
+        + ' This isn’t proof, but don’t pay anything until you’ve verified the landlord and the unit independently. Use the verify-without-touring steps below.';
       return;
     }
 
