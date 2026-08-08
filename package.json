@@ -11,7 +11,8 @@
     "astro": "astro",
     "sync-core": "node scripts/sync-core-data.mjs",
     "sync-law": "node scripts/sync-law-data.mjs",
-    "family": "node scripts/family-status.mjs"
+    "family": "node scripts/family-status.mjs",
+    "trash-metrics": "node scripts/trash-metrics.mjs"
   },
   "dependencies": {
     "astro": "^5.13.0"

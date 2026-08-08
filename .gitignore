@@ -25,6 +25,9 @@ PERSONAS-STRESS-TEST.md
 # cred-touching setup scripts + build cruft stay local (updated 2026-08-07).
 infra/*.sh
 infra/__pycache__/
+
+# private ANC accountability outputs — aggregated from private trash data, never publish
+trash-metrics-out/
 .owner
 .project-id.json
 _OWNED-BY-PERSONAL.md
