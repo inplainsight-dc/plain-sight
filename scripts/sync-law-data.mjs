@@ -17,7 +17,7 @@ const brain = path.resolve(
   'new rental', 'plain-sight-rentals', 'skills', 'renter-setup', 'references', 'law'
 );
 const dest = path.join(repo, 'src', 'data', 'law');
-const files = ['jurisdiction-facts.json', 'rights-cards.json', 'lease-clauses.json'];
+const files = ['jurisdiction-facts.json', 'rights-cards.json', 'lease-clauses.json', 'move-in.json'];
 
 fs.mkdirSync(dest, { recursive: true });
 
@@ -28,6 +28,7 @@ const validators = {
   'jurisdiction-facts.json': validateFacts,
   'rights-cards.json': validateCards,
   'lease-clauses.json': validateClauses,
+  'move-in.json': validateMoveIn,
 };
 function validate(name, obj) {
   const fn = validators[name];
@@ -118,6 +119,58 @@ function validateClauses(name, obj) {
   }
 }
 
+// The /rentals/move-in deposit-protection surface. Unlike the shared/{ref} files
+// above, this one is a flat per-jurisdiction facts panel (returnWindow / itemized
+// / interest / inspection / penalty + cites) plus a universal checklist and the
+// printable condition inventory. A missing return-window or an unstyleable
+// inspection value would render a blank or mis-tagged panel, so both fail here
+// rather than shipping silently. Legal claims verified against primary statute —
+// see each jurisdiction's cites[]; keep them in step with the law brain.
+const INSPECTION_KINDS = new Set(['no-statutory', 'on-request', 'strong']);
+function validateMoveIn(name, obj) {
+  if (!obj || typeof obj !== 'object') throw new Error(name + ': not an object');
+  if (!obj.asOf) throw new Error(name + ': missing asOf');
+  if (!Array.isArray(obj.order) || obj.order.length === 0) throw new Error(name + ': missing order[]');
+  if (!obj.depositReturn || typeof obj.depositReturn !== 'object') throw new Error(name + ': missing depositReturn{}');
+  for (const code of obj.order) {
+    const d = obj.depositReturn[code];
+    if (!d) throw new Error(name + ': order lists ' + code + ' but depositReturn.' + code + ' is missing');
+    for (const k of ['name', 'returnWindow', 'itemized', 'interest', 'inspectionNote', 'penalty']) {
+      if (typeof d[k] !== 'string' || !d[k]) throw new Error(name + '.' + code + ': missing ' + k);
+    }
+    if (!INSPECTION_KINDS.has(d.inspection)) throw new Error(name + '.' + code + ': inspection must be one of ' + [...INSPECTION_KINDS].join('/'));
+    if (!Array.isArray(d.cites) || d.cites.length === 0) throw new Error(name + '.' + code + ': missing cites[]');
+    d.cites.forEach((c, i) => {
+      if (!Array.isArray(c) || typeof c[0] !== 'string' || typeof c[1] !== 'string') throw new Error(name + '.' + code + '.cites[' + i + ']: must be [label, href]');
+    });
+  }
+  // Checklist: non-empty phases, each with non-empty items carrying item/why;
+  // an optional `jur` must name a real jurisdiction so it can't hide forever.
+  if (!Array.isArray(obj.checklist) || obj.checklist.length === 0) throw new Error(name + ': missing checklist[]');
+  obj.checklist.forEach((ph, pi) => {
+    if (typeof ph.phase !== 'string' || !ph.phase) throw new Error(name + '.checklist[' + pi + ']: missing phase');
+    if (!Array.isArray(ph.items) || ph.items.length === 0) throw new Error(name + '.checklist[' + pi + ']: missing items[]');
+    ph.items.forEach((it, ii) => {
+      const where = name + '.checklist[' + pi + '].items[' + ii + ']';
+      for (const k of ['item', 'why']) {
+        if (typeof it[k] !== 'string' || !it[k]) throw new Error(where + ': missing ' + k);
+      }
+      if ('jur' in it && !obj.order.includes(it.jur)) throw new Error(where + ': jur "' + it.jur + '" not in order[]');
+    });
+  });
+  // Printable inventory: intro + a room list, each room with items.
+  if (!obj.inventory || typeof obj.inventory !== 'object') throw new Error(name + ': missing inventory{}');
+  if (typeof obj.inventory.intro !== 'string' || !obj.inventory.intro) throw new Error(name + ': missing inventory.intro');
+  if (!Array.isArray(obj.inventory.rooms) || obj.inventory.rooms.length === 0) throw new Error(name + ': missing inventory.rooms[]');
+  obj.inventory.rooms.forEach((r, ri) => {
+    if (typeof r.name !== 'string' || !r.name) throw new Error(name + '.inventory.rooms[' + ri + ']: missing name');
+    if (!Array.isArray(r.items) || r.items.length === 0) throw new Error(name + '.inventory.rooms[' + ri + ']: missing items[]');
+  });
+  for (const listName of ['help', 'sources']) {
+    if (!Array.isArray(obj[listName]) || obj[listName].length === 0) throw new Error(name + ': missing ' + listName + '[]');
+  }
+}
+
 if (!fs.existsSync(brain)) {
   // Law brain not present (e.g. an isolated checkout without the sibling folder).
   // Fall back to the committed copy already in src/data — never fail the build.
@@ -147,7 +200,8 @@ fs.writeFileSync(
     '(`new rental/plain-sight-rentals/skills/renter-setup/references/law/`):\n\n' +
     '- `jurisdiction-facts.json` — up-front-money figures (twin of the table in `jurisdiction-deposits.md`); feeds the §01 deposit calculator.\n' +
     '- `rights-cards.json` — the §02 “when a landlord asks for X” cards + §03 help + §04 sources (twin of `landlord-tactics.md` and the jurisdiction topic files).\n' +
-    '- `lease-clauses.json` — the /rentals/lease-check illegal / unenforceable / negotiable clause reads + asks (twin of the `lease-review` skill + `landlord-tactics.md`).\n\n' +
+    '- `lease-clauses.json` — the /rentals/lease-check illegal / unenforceable / negotiable clause reads + asks (twin of the `lease-review` skill + `landlord-tactics.md`).\n' +
+    '- `move-in.json` — the /rentals/move-in deposit-return facts + move-in checklist + printable condition inventory (deposit-return law twin of `jurisdiction-deposits.md`).\n\n' +
     'Regenerate with `npm run sync-law` (also runs automatically on `npm run build`).\n' +
     'Edit the content in the law brain, never here — this copy is overwritten on every build.\n'
 );
