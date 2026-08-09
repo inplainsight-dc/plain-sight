@@ -1,0 +1,225 @@
+{
+  "_comment": "MACHINE-READABLE SOURCE OF TRUTH for the /rentals/lease-check 'read your lease before you sign' surface. Structured twin of the coaching in the lease-review SKILL.md, landlord-tactics.md, and jurisdiction-deposits.md. When a clause's verdict, ask, or citation changes, change it HERE — the Plain Sight lease-check page picks it up at build time via scripts/sync-law-data.mjs. Not legal advice; the page's as-of date comes from jurisdiction-facts.json (asOf). Three buckets follow the lease-review skill: verdict 'illegal' = a term the law forbids, don't sign; 'unenforceable' = a term that won't hold up or signals a landlord who ignores legal process, a red flag about the landlord; 'negotiable' = lawful but unfavorable, worth an ask. Each clause: clause (the lease term as a renter would recognize it), verdict, label (short chip), ask (the concrete, reasonable move to request), src, href (or null). Shared clauses live in 'shared' and are referenced from a jurisdiction's list as {\"ref\":\"<key>\"} so a single edit propagates. For any clause the brain does not give a specific statute for (late-fee caps, repair-allocation), the ask says 'verify' rather than asserting a rule — per the skill's discipline.",
+  "notLegalAdvice": true,
+  "shared": {
+    "assistanceanimalfee": {
+      "clause": "A pet deposit, pet rent, or pet fee is charged for your service animal or emotional-support animal",
+      "verdict": "illegal",
+      "label": "Not a pet",
+      "ask": "An assistance animal you need as a reasonable accommodation isn’t a “pet,” and no fee or deposit can be charged for it. Ask for the pet charges to be struck for the assistance animal, in writing.",
+      "src": "Fair Housing Act — assistance animals",
+      "href": "https://www.hud.gov/program_offices/fair_housing_equal_opp/assistance_animals"
+    },
+    "sourceofincome": {
+      "clause": "You must earn 3× the full rent, or the lease excludes a housing voucher or subsidy",
+      "verdict": "illegal",
+      "label": "Source-of-income screen",
+      "ask": "Refusing a voucher or subsidy is source-of-income discrimination in DC, Maryland, and Virginia, and an income test should apply to your share of the rent, not the full rent. Ask for the subsidy to be accepted and the ratio applied to your share.",
+      "src": "Fair housing — DC OHR · MD HOME Act · VA Fair Housing Law",
+      "href": null
+    },
+    "selfhelp": {
+      "clause": "The landlord may end the lease, change the locks, or remove you without going to court (“self-help”)",
+      "verdict": "unenforceable",
+      "label": "Court process required",
+      "ask": "The law requires the legal eviction process; a self-help termination or lockout clause isn’t enforceable. Ask for it to be removed and replaced with the standard notice-and-court process.",
+      "src": "Lease-review reference (landlord-tactics)",
+      "href": null
+    },
+    "entrywaiver": {
+      "clause": "You waive your right to advance notice before the landlord enters the unit",
+      "verdict": "unenforceable",
+      "label": "Notice required",
+      "ask": "Entry needs reasonable notice and a real reason. Ask to strike the waiver and write in a normal notice-before-entry policy (an emergency exception is fine).",
+      "src": "Lease-review reference (landlord-tactics)",
+      "href": null
+    },
+    "inspections": {
+      "clause": "The landlord inspects the unit on a fixed routine schedule (e.g. every 45 days)",
+      "verdict": "unenforceable",
+      "label": "Against quiet enjoyment",
+      "ask": "Routine sweeps collide with your right to quiet enjoyment; entry needs notice and a reason. Ask to remove the standing-inspection clause or narrow it to notice-based entry for a specific purpose.",
+      "src": "Lease-review reference (landlord-tactics)",
+      "href": null
+    },
+    "blanketwaiver": {
+      "clause": "You “waive all rights,” or waive notice, a jury, or the right to sue, in one broad clause",
+      "verdict": "unenforceable",
+      "label": "Blanket waiver",
+      "ask": "A blanket waiver of tenant rights generally won’t hold up and signals a landlord who ignores legal process. Ask for it to be struck; rights set by statute can’t be signed away in a lease.",
+      "src": "Lease-review reference (lease-review skill)",
+      "href": null
+    },
+    "asis": {
+      "clause": "You accept the unit “as-is,” with no move-in condition report",
+      "verdict": "negotiable",
+      "label": "Protect your deposit",
+      "ask": "An “as-is” clause with no condition record can be used to charge pre-existing damage against your deposit. Ask to attach a dated, photographed move-in condition inventory that both sides sign.",
+      "src": "Lease-review reference (move-in inventory)",
+      "href": null
+    },
+    "autorenewal": {
+      "clause": "The lease auto-renews unless you cancel within a long or early notice window",
+      "verdict": "negotiable",
+      "label": "Notice window",
+      "ask": "Auto-renewal with a wide notice window can trap you into another term. Ask to shorten the notice window, or to make renewal an opt-in rather than automatic.",
+      "src": "Lease-review reference (lease-review skill)",
+      "href": null
+    },
+    "latefee": {
+      "clause": "A steep late fee, or a penalty that grows every day the rent is late",
+      "verdict": "negotiable",
+      "label": "Verify the cap",
+      "ask": "Some jurisdictions cap late fees as a share of the monthly rent. Ask for the fee in writing and for a short grace period; verify the current cap for your jurisdiction before you agree.",
+      "src": "Lease-review reference — verify local cap",
+      "href": null
+    },
+    "earlytermination": {
+      "clause": "A broad early-termination penalty — e.g. you owe the entire remaining rent if you leave early",
+      "verdict": "negotiable",
+      "label": "Cap the exposure",
+      "ask": "Ask to cap the penalty (for example one to two months’ rent, or the landlord’s actual re-letting costs) rather than the whole remaining term. Note: survivors of domestic violence have a separate statutory early-termination right that a lease can’t waive.",
+      "src": "Lease-review reference (lease-review skill)",
+      "href": null
+    },
+    "repairs": {
+      "clause": "You’re made responsible for major repairs or building systems (roof, HVAC, plumbing)",
+      "verdict": "negotiable",
+      "label": "Who pays for what",
+      "ask": "Major systems are normally the landlord’s responsibility. Ask to move structural and systems repairs back to the landlord and to spell out who pays for what.",
+      "src": "Lease-review reference (lease-review skill)",
+      "href": null
+    },
+    "junkfees": {
+      "clause": "A stack of recurring “admin,” “media,” or “convenience” fees on top of the rent",
+      "verdict": "negotiable",
+      "label": "Itemize the fees",
+      "ask": "Ask for every recurring fee to be itemized in writing, and to fold or drop the junk fees. A fee you can’t get an explanation for is a fee worth pushing back on.",
+      "src": "Lease-review reference (landlord-tactics)",
+      "href": null
+    }
+  },
+  "byJurisdiction": {
+    "DC": [
+      {
+        "clause": "The security deposit is more than one month’s rent",
+        "verdict": "illegal",
+        "label": "Over the DC cap",
+        "ask": "DC caps the security deposit at one month’s rent. Ask to bring it down to one month and cite the cap.",
+        "src": "DC Office of the Tenant Advocate",
+        "href": "https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit"
+      },
+      {
+        "clause": "You must pay last month’s rent on top of a full one-month security deposit",
+        "verdict": "illegal",
+        "label": "Still over the cap",
+        "ask": "In DC money held as “last month’s rent” still counts toward the one-month deposit cap, so this stacks past it. Ask for the full up-front total itemized in writing and brought within the cap.",
+        "src": "DC Office of the Tenant Advocate",
+        "href": "https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit"
+      },
+      {
+        "clause": "A non-refundable pet fee, or a breed or size restriction on any animal",
+        "verdict": "illegal",
+        "label": "Pets in Housing Act",
+        "effective": "Not yet in force — this rule begins October 1, 2026. Before then, a non-refundable pet fee isn’t illegal in DC; it’s barred once the law starts.",
+        "ask": "DC’s Pets in Housing law (Roscoe’s Law) takes effect October 1, 2026: it caps pet deposits and pet rent, prohibits other non-refundable pet fees, and bars breed and size restrictions. For a lease running past that date, ask for the non-refundable pet fee and any breed/size limit to be struck.",
+        "src": "D.C. Law 25-308 (Roscoe’s Law), eff. Oct 1 2026",
+        "href": "https://code.dccouncil.gov/us/dc/council/laws/25-308"
+      },
+      { "ref": "sourceofincome" },
+      { "ref": "assistanceanimalfee" },
+      { "ref": "selfhelp" },
+      { "ref": "entrywaiver" },
+      { "ref": "inspections" },
+      { "ref": "blanketwaiver" },
+      { "ref": "asis" },
+      { "ref": "autorenewal" },
+      { "ref": "latefee" },
+      { "ref": "earlytermination" },
+      { "ref": "repairs" },
+      { "ref": "junkfees" }
+    ],
+    "MD": [
+      {
+        "clause": "The security deposit is more than one month’s rent",
+        "verdict": "illegal",
+        "label": "Over the MD cap",
+        "ask": "Maryland caps the security deposit at one month’s rent for leases on or after October 1, 2024. Ask to bring it down to one month and cite the cap.",
+        "src": "Maryland People’s Law Library",
+        "href": "https://www.peoples-law.org/security-deposits"
+      },
+      {
+        "clause": "You must pay last month’s rent in advance on top of a full one-month deposit",
+        "verdict": "illegal",
+        "label": "Counts as a deposit",
+        "ask": "Maryland defines the deposit to include last month’s rent paid in advance, so this pushes past the one-month cap. Ask for the up-front total itemized in writing and brought within the cap.",
+        "src": "Maryland People’s Law Library",
+        "href": "https://www.peoples-law.org/security-deposits"
+      },
+      { "ref": "sourceofincome" },
+      { "ref": "assistanceanimalfee" },
+      { "ref": "selfhelp" },
+      { "ref": "entrywaiver" },
+      { "ref": "inspections" },
+      { "ref": "blanketwaiver" },
+      { "ref": "asis" },
+      {
+        "clause": "The rent may rise by whatever amount the landlord decides at renewal",
+        "verdict": "negotiable",
+        "label": "County rent caps",
+        "ask": "In Montgomery and Prince George’s County, annual rent increases are capped. If the unit is in either county, ask for the renewal-increase clause to be tied to the current allowable increase.",
+        "src": "Montgomery County rent stabilization",
+        "href": "https://www.montgomerycountymd.gov/department-housing-community-affairs/rent-stabilization/rent-stabilization-increases-limitations"
+      },
+      { "ref": "autorenewal" },
+      { "ref": "latefee" },
+      { "ref": "earlytermination" },
+      { "ref": "repairs" },
+      { "ref": "junkfees" }
+    ],
+    "VA": [
+      {
+        "clause": "First month + last month + up to a two-month security deposit, all up front",
+        "verdict": "negotiable",
+        "label": "Legal in VA — negotiate",
+        "ask": "In Virginia this stack is legal — first, last, and up to two months’ deposit — which is the main reason move-in costs here run high. Ask to negotiate the deposit down or spread it over the first months.",
+        "src": "Virginia VRLTA (fees & deposits)",
+        "href": "https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/"
+      },
+      {
+        "clause": "Several months of rent prepaid up front, with no mention of where it’s held",
+        "verdict": "negotiable",
+        "label": "Must go to escrow",
+        "ask": "Virginia doesn’t cap prepaid rent, but it must be placed in escrow by the end of the fifth business day after the landlord receives it. Ask for the lease to state where the prepaid rent is held.",
+        "src": "Virginia VRLTA",
+        "href": "https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/"
+      },
+      { "ref": "sourceofincome" },
+      { "ref": "assistanceanimalfee" },
+      { "ref": "selfhelp" },
+      { "ref": "entrywaiver" },
+      { "ref": "inspections" },
+      { "ref": "blanketwaiver" },
+      { "ref": "asis" },
+      { "ref": "autorenewal" },
+      { "ref": "latefee" },
+      { "ref": "earlytermination" },
+      { "ref": "repairs" },
+      { "ref": "junkfees" }
+    ]
+  },
+  "help": [
+    ["DC — Office of the Tenant Advocate", "Free DC agency for renters — advice, deposits, lease disputes.", "https://ota.dc.gov/"],
+    ["DC — Legal Aid DC", "Free legal help, including housing and lease review.", "https://www.legalaiddc.org/"],
+    ["MD — People’s Law Library", "Plain-language Maryland tenant law: deposits, leases, protections.", "https://www.peoples-law.org/security-deposits"],
+    ["VA — Virginia Fair Housing Office / VRLTA", "Fair-housing complaints and the statewide landlord-tenant act.", "https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/"]
+  ],
+  "sources": [
+    ["DC deposit & advance-rent caps — DC Office of the Tenant Advocate", "https://ota.dc.gov/release/ask-advocate-last-rent-payment-and-security-deposit"],
+    ["DC Pets in Housing / Roscoe’s Law — D.C. Law 25-308", "https://code.dccouncil.gov/us/dc/council/laws/25-308"],
+    ["Maryland security deposits & last month’s rent — People’s Law Library", "https://www.peoples-law.org/security-deposits"],
+    ["Montgomery County rent stabilization", "https://www.montgomerycountymd.gov/department-housing-community-affairs/rent-stabilization/rent-stabilization-increases-limitations"],
+    ["Virginia VRLTA — fees, deposits, prepaid rent, escrow", "https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/"],
+    ["Assistance animals under the Fair Housing Act — HUD", "https://www.hud.gov/program_offices/fair_housing_equal_opp/assistance_animals"]
+  ]
+}

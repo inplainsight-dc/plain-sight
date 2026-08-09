@@ -151,7 +151,7 @@
         "ask": "Several months of rent prepaid up front",
         "verdict": "ask",
         "label": "Must go to escrow",
-        "say": "Virginia doesn’t cap prepaid rent, but it must be placed in escrow within five days. Where will it be held?",
+        "say": "Virginia doesn’t cap prepaid rent, but it must be placed in escrow by the end of the fifth business day after the landlord receives it. Where will it be held?",
         "src": "Virginia VRLTA",
         "href": "https://law.lis.virginia.gov/vacodepopularnames/virginia-residential-landlord-and-tenant-act/"
       },
