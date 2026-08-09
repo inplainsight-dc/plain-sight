@@ -1,0 +1,565 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+// -----------------------------------------------------------------------------
+// SOURCE OF TRUTH.  The deposit-return facts, the checklist, and the condition
+// inventory on this page are generated at build time from the shared DMV
+// tenant-law brain, so the page cannot silently drift from the law:
+//   new rental/…/references/law/move-in.json  (twin of the return-side table in
+//   jurisdiction-deposits.md — verified vs primary statute, Aug 2026)
+//     └─ synced by scripts/sync-law-data.mjs → src/data/law/  (import below)
+// To change a return window, interest rule, inspection right, penalty, checklist
+// item, or inventory room, edit move-in.json in the brain and rebuild. The
+// inspection field is one of three the page can style: no-statutory (DC),
+// on-request (MD), strong (VA). "Current as of" is move-in.json's own asOf,
+// because the return-side law was collected fresh (later than facts.asOf).
+// -----------------------------------------------------------------------------
+import moveIn from '../../data/law/move-in.json';
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+const asOf = moveIn.asOf;
+const order = moveIn.order;
+const dep = moveIn.depositReturn;
+const checklist = moveIn.checklist;
+const inventory = moveIn.inventory;
+const help = moveIn.help;
+const sources = moveIn.sources;
+
+// Switch label: DC keeps its initialism, the states use their name.
+const switchLabel = (code) => (code === 'DC' ? 'DC' : dep[code].name);
+
+// The inspection field drives a short tag on the facts panel so the strongest
+// (VA) and the weakest (DC) protections read at a glance.
+const inspectionTag = {
+  'strong': 'Strongest move-in protection',
+  'on-request': 'Move-in inspection on request',
+  'no-statutory': 'No inspection in law — you document it',
+};
+---
+<Base title="Protect your deposit at move-in: DC, Maryland & Virginia" description="The day you get the keys is when you protect your deposit. A move-in checklist keyed to DC, Maryland, or Virginia, a plain read of how your deposit has to come back, and a printable room-by-room condition inventory — your strongest evidence against an “as-is” damage charge. No account, no AI, nothing you type leaves your browser.">
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; THE DAY YOU MOVE IN</p>
+      <p class="ips-back"><a href="/rentals">&larr; Back to DC Rentals</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Protect your deposit, <span class="ps-highlight">from day one</span>.</h1>
+          <p class="ips-lead__blurb">A deposit dispute is one of the most common ways renters lose money, and much of it is won or lost on the day you get the keys &mdash; before you move a single box in. Pick your state, work the checklist, and print the condition inventory that&rsquo;s your strongest evidence against an &ldquo;as-is&rdquo; charge later.</p>
+          <p class="ips-lead__note ps-record">A plain-language summary of public law &middot; current as of {asOf} &middot; <strong>not legal advice</strong>.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="rk-privacy ps-record">No account. No AI. Nothing you check off or type on this page leaves your browser &mdash; the inventory is filled and printed on your own device.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- JURISDICTION SWITCH -->
+  <div class="dc-switchwrap">
+    <div class="ps-container mv-switchrow">
+      <div class="dc-switch" role="tablist" aria-label="Choose your jurisdiction">
+        {order.map((code, i) => (
+          <button class:list={["dc-switch__btn", { 'is-active': i === 0 }]} role="tab" data-jur={code} aria-selected={i === 0 ? 'true' : 'false'}>
+            {switchLabel(code)}
+          </button>
+        ))}
+      </div>
+      <p class="mv-showing ps-record">Showing <strong id="mvShowingName">Washington DC</strong> &mdash; not your state? Pick above.</p>
+    </div>
+  </div>
+
+  <!-- ZIP HELPER — resolves your state on-device; nothing is sent anywhere. Also
+       fences the DC/MD/VA scope (an out-of-area ZIP says so). -->
+  <div class="mv-ziphelp">
+    <div class="ps-container">
+      <label class="mv-zip">
+        <span class="mv-zip__label ps-record">Not sure which applies, or moving between them? Enter your ZIP code</span>
+        <input type="text" id="mvZip" class="mv-zip__input" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="20009" aria-describedby="mvZipMsg" />
+      </label>
+      <p class="mv-zip__msg ps-record" id="mvZipMsg" role="status" aria-live="polite">It just picks the right state below &mdash; your ZIP never leaves your browser.</p>
+    </div>
+  </div>
+
+  <!-- §01 HOW YOUR DEPOSIT HAS TO COME BACK -->
+  <section class="ips-sec" id="deposit">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">How your deposit has to come back</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">Your deposit is your money, held in trust &mdash; the landlord holds it, they don&rsquo;t own it &mdash; not theirs to keep for the ordinary wear of living somewhere. The law in your state sets a clock and a penalty. This is why the record you make on move-in day matters: it&rsquo;s what the return is measured against.</p>
+
+      {order.map((code, ci) => (
+        <div class={`mv-facts mv-facts--${dep[code].inspection}`} data-jur={code} hidden={ci !== 0}>
+          <p class="mv-facts__tag ps-record"><span class="mv-facts__dot" aria-hidden="true"></span>{inspectionTag[dep[code].inspection]} &middot; {dep[code].name}</p>
+          <dl class="mv-facts__grid">
+            <div class="mv-fact">
+              <dt>When it must come back</dt>
+              <dd>{dep[code].returnWindow}</dd>
+            </div>
+            <div class="mv-fact">
+              <dt>What they must itemize</dt>
+              <dd>{dep[code].itemized}</dd>
+            </div>
+            <div class="mv-fact">
+              <dt>Interest on your deposit</dt>
+              <dd>{dep[code].interest}</dd>
+            </div>
+            <div class="mv-fact">
+              <dt>Your inspection right</dt>
+              <dd>{dep[code].inspectionNote}</dd>
+            </div>
+            <div class="mv-fact mv-fact--wide">
+              <dt>If they keep it wrongly</dt>
+              <dd>{dep[code].penalty}</dd>
+            </div>
+          </dl>
+          <p class="mv-facts__src ps-record">Source:{dep[code].cites.map((c, i) => (
+            <span>{i > 0 ? ' · ' : ' '}<a href={c[1]} target="_blank" rel="noopener">{c[0]} &#8599;</a></span>
+          ))}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §02 THE MOVE-IN CHECKLIST -->
+  <section class="ips-sec" id="checklist">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">The move-in checklist</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">Work it in order. The steps keyed to <em>your</em> state carry a badge &mdash; those are the time-sensitive ones the law gives you and takes away if you miss the window.</p>
+
+      {checklist.map((phase, pi) => (
+        <div class="mv-phase">
+          <h3 class="mv-phase__h"><span class="mv-phase__no ps-record">{String(pi + 1).padStart(2, '0')}</span>{phase.phase}</h3>
+          <ul class="mv-list">
+            {phase.items.map((it) => (
+              <li class="mv-item" data-jur={it.jur ?? ''} hidden={it.jur && it.jur !== 'DC'}>
+                <label class="mv-check">
+                  <input type="checkbox" class="mv-box" data-jur={it.jur ?? ''} />
+                  <span class="mv-check__body">
+                    <span class="mv-check__item">{it.item}{it.jur && <span class="mv-badge">{it.jur} only</span>}</span>
+                    <span class="mv-check__why ps-record">{it.why}</span>
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <!-- PROGRESS READ -->
+      <div class="mv-read" id="mvRead" role="status" aria-live="polite">
+        <div class="mv-read__bar" aria-hidden="true"><span class="mv-read__fill" id="mvFill"></span></div>
+        <p class="mv-read__line" id="mvLine">Check the steps as you finish them &mdash; your progress shows here.</p>
+        <p class="mv-read__caveat ps-record">The record you build here &mdash; dated photos, a signed inventory, meter readings &mdash; is what you&rsquo;ll reach for at move-out, which could be years away. Save it somewhere you&rsquo;ll still have it then. And when you do move out, give the landlord your new address <em>in writing</em> &mdash; the itemized statement and your returned deposit get mailed to you, and the 45-day clock can run out on an envelope sent to the unit you just left.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §03 THE PRINTABLE CONDITION INVENTORY -->
+  <section class="ips-sec" id="inventory">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Your move-in condition inventory</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">{inventory.intro}</p>
+      <p class="mv-inv-actions">
+        <button type="button" class="mv-print" id="mvPrint">Print / save the inventory as PDF</button>
+        <span class="ps-record mv-inv-hint">Fill it in on screen first if you like, then print &mdash; or print it blank and write as you walk the unit. On a phone, choose &ldquo;Save as PDF&rdquo; in the print screen (on iPhone, tap the share icon) and email it to yourself. What you type here isn&rsquo;t saved until you print or save it.</span>
+      </p>
+
+      <!-- Everything inside .mv-inventory is what prints; the rest of the page is
+           hidden by the print stylesheet. -->
+      <div class="mv-inventory" id="mvInventory">
+        <div class="mv-inv-head">
+          <p class="mv-inv-title">Move-in condition inventory</p>
+          <p class="mv-inv-sub ps-record">Completed before move-in &middot; keep a signed copy &middot; not legal advice</p>
+          <div class="mv-inv-fields">
+            <label class="mv-field"><span>Property address</span><input type="text" /></label>
+            <label class="mv-field mv-field--sm"><span>Unit</span><input type="text" /></label>
+            <label class="mv-field mv-field--sm"><span>Move-in date</span><input type="text" /></label>
+            <label class="mv-field"><span>Tenant name(s)</span><input type="text" /></label>
+            <label class="mv-field"><span>Landlord / agent</span><input type="text" /></label>
+          </div>
+          <p class="mv-inv-note ps-record">In <strong>every</strong> room, check: {inventory.checkEvery.join(' &middot; ')}. Note anything that&rsquo;s marked, worn, stained, or not working &mdash; and photograph each one, dated.</p>
+        </div>
+
+        {inventory.rooms.map((room) => (
+          <table class="mv-inv-table">
+            <caption>{room.name}</caption>
+            <thead>
+              <tr><th scope="col" class="mv-col-item">Item</th><th scope="col" class="mv-col-cond">Condition &mdash; note every mark, wear, or fault (and photo #)</th></tr>
+            </thead>
+            <tbody>
+              {room.items.map((item) => (
+                <tr>
+                  <th scope="row">{item}</th>
+                  <td><input type="text" class="mv-cond" aria-label={`Condition of ${item} in ${room.name}`} /></td>
+                </tr>
+              ))}
+              <tr class="mv-row-extra">
+                <th scope="row">Other</th>
+                <td><input type="text" class="mv-cond" aria-label={`Other notes for ${room.name}`} /></td>
+              </tr>
+            </tbody>
+          </table>
+        ))}
+
+        <div class="mv-inv-sign">
+          <p class="mv-inv-signh ps-record">Both parties sign and date. Each keeps a copy. If the landlord won&rsquo;t sign, email them your completed inventory the same day so it&rsquo;s timestamped &mdash; that&rsquo;s your own record, and it doesn&rsquo;t replace Virginia&rsquo;s report objection or Maryland&rsquo;s certified-mail steps.</p>
+          <div class="mv-inv-signgrid">
+            <div class="mv-sign"><span class="mv-sign__line"></span><span class="ps-record">Tenant signature &amp; date</span></div>
+            <div class="mv-sign"><span class="mv-sign__line"></span><span class="ps-record">Landlord / agent signature &amp; date</span></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="rk-aside ps-record"><strong>An &ldquo;as-is&rdquo; clause is not the last word.</strong> A signed, dated condition record is exactly what a landlord&rsquo;s lawyer least wants to see &mdash; it turns &ldquo;prove it wasn&rsquo;t already like that&rdquo; back on them. If your lease has an as-is clause with no condition report, that&rsquo;s a flag worth reading on the <a href="/rentals/lease-check">lease check</a>.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §04 REAL HELP -->
+  <section class="ips-sec" id="help">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">Where to go for real help</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">If a deposit is wrongly kept, or a move-out charge doesn&rsquo;t match the record you made, these are free and real. This page helps you build the record and know the clock; they can act on your case.</p>
+      <ul class="dc-help">
+        {help.map(([name, desc, href]) => (
+          <li class="dc-help__item">
+            <a class="dc-help__name" href={href} target="_blank" rel="noopener">{name} &#8599;</a>
+            <p class="dc-help__desc">{desc}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §05 FINE PRINT + SOURCES -->
+  <section class="ips-sec" id="fineprint">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 05</span>
+        <h2 class="ips-sec-title">Sources &amp; fine print</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p><strong>Not legal advice.</strong> This is a plain-language read of public law and a checklist to help you protect your deposit. It can&rsquo;t resolve a dispute or tell you a specific charge is legal &mdash; it helps you build the record and know your deadlines.</p>
+        <p><strong>Laws change &mdash; every figure here is current as of {asOf}.</strong> Deposit-return rules differ by state and can change; interest formulas and Maryland&rsquo;s move-out mechanics in particular have moving parts. Verify against the sources before you rely on it.</p>
+        <p><strong>Nothing you type leaves your browser.</strong> There&rsquo;s no account and no AI on this page. The checklist and the inventory live only on your own device; printing or saving to PDF is how you keep them.</p>
+      </div>
+      <ul class="dc-sources">
+        {sources.map(([name, href]) => (
+          <li><a href={href} target="_blank" rel="noopener">{name} &#8599;</a></li>
+        ))}
+      </ul>
+      <p class="rk-found ps-record">The last of four no-plugin front doors for <a href="/rentals">DC Rentals</a> &mdash; it completes the arc the <a href="/rentals/rights">know-your-rights</a>, <a href="/rentals/scam-check">scam check</a>, and <a href="/rentals/lease-check">lease check</a> begin: know the law, don&rsquo;t get scammed, don&rsquo;t sign a bad lease, and protect the deposit at handover. The same read the full kit gives, reachable with no account and no AI. One node in a wider commons of DC civic tools.</p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<script>
+  // Jurisdiction switch drives which deposit-return panel shows and which
+  // state-specific checklist items appear; the progress read counts only the
+  // steps currently visible (universal + the active state's).
+  const factPanels = Array.from(document.querySelectorAll('.mv-facts'));
+  const items = Array.from(document.querySelectorAll('.mv-item'));
+  const boxes = Array.from(document.querySelectorAll('.mv-box'));
+  const fillEl = document.getElementById('mvFill');
+  const lineEl = document.getElementById('mvLine');
+
+  let active = 'DC';
+
+  function update() {
+    const visibleBoxes = boxes.filter((b) => {
+      const jur = b.dataset.jur;
+      return jur === '' || jur === active;
+    });
+    const done = visibleBoxes.filter((b) => b.checked).length;
+    const total = visibleBoxes.length;
+    const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+    fillEl.style.width = pct + '%';
+
+    if (done === 0) {
+      lineEl.textContent = 'Check the steps as you finish them — your progress shows here.';
+    } else if (done < total) {
+      lineEl.textContent = 'You’ve done ' + done + ' of ' + total + ' move-in steps. Keep going — the ones left are what protect the deposit.';
+    } else {
+      lineEl.textContent = 'All ' + total + ' steps checked. If you actually did each one, you’ve built the record — dated photos, a signed inventory, meter readings. Save it somewhere you’ll still have it at move-out.';
+    }
+  }
+
+  const jurNames = { DC: 'Washington DC', MD: 'Maryland', VA: 'Virginia' };
+  const showingName = document.getElementById('mvShowingName');
+
+  function setJur(code) {
+    active = code;
+    document.querySelectorAll('.dc-switch__btn').forEach((b) => {
+      const on = b.dataset.jur === code;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    factPanels.forEach((el) => { el.hidden = el.dataset.jur !== code; });
+    // A state-specific item shows only for its state; universal items (no jur)
+    // always show.
+    items.forEach((el) => {
+      const jur = el.dataset.jur;
+      el.hidden = jur !== '' && jur !== code;
+    });
+    if (showingName) showingName.textContent = jurNames[code] || code;
+    update();
+  }
+
+  document.querySelectorAll('.dc-switch__btn').forEach((b) => {
+    b.addEventListener('click', () => setJur(b.dataset.jur));
+  });
+  boxes.forEach((b) => b.addEventListener('change', update));
+
+  // ZIP → jurisdiction, resolved ON DEVICE (nothing is sent anywhere). ZIP codes
+  // don't cross state lines, so the 3-digit prefix fixes the state unambiguously
+  // for DC/MD/VA. This both auto-selects the right state (killing the silent-DC
+  // default) and fences the tool's scope (an out-of-area ZIP says so).
+  //   DC = 200, 202–205 · VA = 201 (NoVA) + 220–246 · MD = 206–212, 214–219
+  function zipToJur(zip) {
+    const p = parseInt(zip.slice(0, 3), 10);
+    if (Number.isNaN(p)) return null;
+    if (p === 200 || (p >= 202 && p <= 205)) return 'DC';
+    if (p === 201 || (p >= 220 && p <= 246)) return 'VA';
+    if ((p >= 206 && p <= 212) || (p >= 214 && p <= 219)) return 'MD';
+    return 'OTHER';
+  }
+
+  const zipInput = document.getElementById('mvZip');
+  const zipMsg = document.getElementById('mvZipMsg');
+  const zipDefaultMsg = zipMsg ? zipMsg.textContent : '';
+  if (zipInput && zipMsg) {
+    zipInput.addEventListener('input', () => {
+      const digits = zipInput.value.replace(/\D/g, '').slice(0, 5);
+      if (zipInput.value !== digits) zipInput.value = digits;
+      if (digits.length < 5) { zipMsg.textContent = zipDefaultMsg; return; }
+      const res = zipToJur(digits);
+      if (res === 'OTHER' || res === null) {
+        zipMsg.textContent = digits + ' isn’t in DC, Maryland, or Virginia — this tool’s legal deadlines cover those three. The condition inventory below is still worth doing anywhere.';
+      } else {
+        setJur(res);
+        zipMsg.textContent = digits + ' → showing ' + jurNames[res] + '. The law and checklist below are now keyed to your state.';
+        document.getElementById('deposit').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+
+  const printBtn = document.getElementById('mvPrint');
+  if (printBtn) printBtn.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(1.4rem, 4vw, 2.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 48ch; }
+  .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
+  .ips-lead__note strong { color: var(--ps-accent-2); }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+  .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
+
+  /* Jurisdiction switch (shared with the rights + lease pages) */
+  .dc-switchwrap { position: sticky; top: 0; z-index: 5; background: var(--ps-paper); border-bottom: 1px solid var(--ps-line); padding-block: 0.7rem; }
+  .dc-switch { display: inline-flex; max-width: 100%; gap: 0.3rem; border: 1px solid var(--ps-line); border-radius: 8px; padding: 0.25rem; background: var(--ps-surface-2); }
+  .dc-switch__btn { white-space: nowrap; font-family: var(--ps-font-record); font-size: 0.9rem; letter-spacing: 0.02em; padding: 0.45rem 0.95rem; border: 0; border-radius: 6px; background: transparent; color: var(--ps-ink-soft); cursor: pointer; transition: background-color 0.12s ease, color 0.12s ease; }
+  .dc-switch__btn:hover { color: var(--ps-ink); }
+  .dc-switch__btn.is-active { background: var(--ps-ink); color: var(--ps-paper); }
+  .mv-switchrow { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .mv-showing { color: var(--ps-ink-soft); }
+  .mv-showing strong { color: var(--ps-ink); }
+
+  /* ZIP helper — sits just under the sticky switch */
+  .mv-ziphelp { border-bottom: 1px solid var(--ps-line); padding-block: 0.9rem; background: var(--ps-surface-2); }
+  .mv-zip { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+  .mv-zip__label { color: var(--ps-ink-soft); }
+  .mv-zip__input { font-family: var(--ps-font-record); font-size: 1rem; letter-spacing: 0.08em; width: 6.5rem; padding: 0.4rem 0.6rem; border: 1px solid var(--ps-ink-soft); border-radius: 6px; background: var(--ps-paper); color: var(--ps-ink); }
+  .mv-zip__input:focus { outline: none; border-color: var(--ps-accent-2); }
+  .mv-zip__msg { display: block; margin-top: 0.5rem; color: var(--ps-ink-soft); line-height: 1.5; max-width: 70ch; }
+
+  .ips-sec { padding-block: clamp(2rem, 5vw, 3.2rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-lede { max-width: 66ch; font-size: 1.12rem; color: var(--ps-ink-soft); margin-bottom: 1.6rem; }
+  .ips-lede strong { color: var(--ps-ink); }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+  .rk-aside { margin-top: 1.3rem; color: var(--ps-ink-soft); max-width: 68ch; line-height: 1.5; }
+
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* §01 deposit-return facts panel */
+  .mv-facts { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1.3rem 1.4rem; background: var(--ps-surface-2); max-width: 78ch; }
+  .mv-facts--strong { border-left-color: #2f7d4f; }
+  .mv-facts--on-request { border-left-color: #b8860b; }
+  .mv-facts--no-statutory { border-left-color: var(--ps-accent-2); }
+  .mv-facts__tag { display: flex; align-items: center; gap: 0.45rem; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ps-ink-soft); margin-bottom: 1rem; }
+  .mv-facts__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+  .mv-facts--strong .mv-facts__tag { color: #2f7d4f; }
+  .mv-facts--on-request .mv-facts__tag { color: #b8860b; }
+  .mv-facts--no-statutory .mv-facts__tag { color: var(--ps-accent-2); }
+  .mv-facts__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.1rem 1.6rem; margin: 0; }
+  .mv-fact--wide { grid-column: 1 / -1; }
+  .mv-fact dt { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ps-ink-soft); margin-bottom: 0.35rem; }
+  .mv-fact dd { margin: 0; font-size: 1.04rem; line-height: 1.5; color: var(--ps-ink); }
+  .mv-facts__src { margin-top: 1.2rem; padding-top: 0.9rem; border-top: 1px dotted var(--ps-line); color: var(--ps-ink-soft); line-height: 1.6; }
+  .mv-facts__src a { color: var(--ps-ink-soft); }
+  .mv-facts__src a:hover { color: var(--ps-ink); }
+
+  /* §02 checklist */
+  .mv-phase { margin-bottom: 1.8rem; }
+  .mv-phase__h { display: flex; align-items: baseline; gap: 0.7rem; font-family: var(--ps-font-display); font-weight: 700; font-size: 1.3rem; margin-bottom: 0.9rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--ps-line); }
+  .mv-phase__no { font-size: 0.85rem; color: var(--ps-accent-2); }
+  .mv-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+  .mv-item { }
+  .mv-check { display: flex; gap: 0.7rem; align-items: flex-start; cursor: pointer; border: 1px solid var(--ps-line); border-radius: 6px; padding: 0.85rem 1rem; background: var(--ps-surface-2); transition: border-color 0.12s ease; }
+  .mv-check:hover { border-color: var(--ps-ink-soft); }
+  .mv-box { flex: none; width: 1.2rem; height: 1.2rem; margin-top: 0.15rem; accent-color: var(--ps-ink); cursor: pointer; }
+  .mv-box:checked ~ .mv-check__body .mv-check__item { color: var(--ps-ink-soft); text-decoration: line-through; text-decoration-color: var(--ps-line); }
+  .mv-check__body { display: flex; flex-direction: column; gap: 0.25rem; }
+  .mv-check__item { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.06rem; line-height: 1.3; }
+  .mv-badge { display: inline-block; margin-left: 0.5rem; font-family: var(--ps-font-record); font-weight: 400; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; vertical-align: middle; color: var(--ps-paper); background: var(--ps-accent-2); padding: 0.12rem 0.45rem; border-radius: 3px; }
+  .mv-check__why { color: var(--ps-ink-soft); line-height: 1.5; }
+
+  /* progress read */
+  .mv-read { margin-top: 1.6rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1.2rem 1.3rem; background: var(--ps-surface-2); max-width: 74ch; }
+  .mv-read__bar { height: 7px; border-radius: 999px; background: var(--ps-line); overflow: hidden; margin-bottom: 0.9rem; }
+  .mv-read__fill { display: block; height: 100%; width: 0; background: var(--ps-ink); transition: width 0.25s ease; }
+  .mv-read__line { font-family: var(--ps-font-display); font-size: 1.12rem; line-height: 1.45; color: var(--ps-ink); }
+  .mv-read__caveat { display: block; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dotted var(--ps-line); color: var(--ps-ink-soft); line-height: 1.5; }
+
+  /* §03 inventory */
+  .mv-inv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1rem; margin-bottom: 1.6rem; }
+  .mv-print { font-family: var(--ps-font-record); font-size: 0.95rem; letter-spacing: 0.02em; padding: 0.7rem 1.2rem; border: 0; border-radius: 6px; background: var(--ps-ink); color: var(--ps-paper); cursor: pointer; transition: background-color 0.15s ease, transform 0.1s ease; }
+  .mv-print:hover { background: var(--ps-accent-2); transform: translateY(-1px); }
+  .mv-inv-hint { color: var(--ps-ink-soft); max-width: 40ch; line-height: 1.4; }
+
+  .mv-inventory { border: 1px solid var(--ps-ink); border-radius: 8px; padding: clamp(1.2rem, 3vw, 2rem); background: var(--ps-paper); max-width: 80ch; }
+  .mv-inv-head { border-bottom: 2px solid var(--ps-ink); padding-bottom: 1.1rem; margin-bottom: 1.3rem; }
+  .mv-inv-title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.5rem; }
+  .mv-inv-sub { color: var(--ps-ink-soft); margin-top: 0.2rem; }
+  .mv-inv-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem 1rem; margin: 1.1rem 0; }
+  .mv-field { display: flex; flex-direction: column; gap: 0.25rem; }
+  .mv-field span { font-family: var(--ps-font-record); font-size: 0.78rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ps-ink-soft); }
+  .mv-field input { font-family: var(--ps-font-body); font-size: 1rem; padding: 0.4rem 0.5rem; border: 0; border-bottom: 1px solid var(--ps-ink-soft); background: transparent; color: var(--ps-ink); }
+  .mv-field input:focus { outline: none; border-bottom-color: var(--ps-accent-2); }
+  .mv-field--sm { }
+  .mv-inv-note { margin-top: 0.4rem; color: var(--ps-ink-soft); line-height: 1.55; }
+
+  .mv-inv-table { width: 100%; border-collapse: collapse; margin-bottom: 1.4rem; }
+  .mv-inv-table caption { text-align: left; font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; padding: 0.5rem 0; border-bottom: 1px solid var(--ps-ink); margin-bottom: 0.2rem; }
+  .mv-inv-table th[scope="col"] { font-family: var(--ps-font-record); font-size: 0.74rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ps-ink-soft); text-align: left; padding: 0.4rem 0.5rem; font-weight: 600; }
+  .mv-col-item { width: 38%; }
+  .mv-inv-table tbody th { font-family: var(--ps-font-body); font-weight: 400; font-size: 0.98rem; text-align: left; padding: 0.45rem 0.5rem; color: var(--ps-ink); vertical-align: middle; border-top: 1px solid var(--ps-line); }
+  .mv-inv-table tbody td { padding: 0.45rem 0.5rem; border-top: 1px solid var(--ps-line); }
+  .mv-cond { width: 100%; font-family: var(--ps-font-body); font-size: 0.95rem; padding: 0.35rem 0.4rem; border: 0; border-bottom: 1px solid var(--ps-line); background: transparent; color: var(--ps-ink); }
+  .mv-cond:focus { outline: none; border-bottom-color: var(--ps-accent-2); }
+  .mv-row-extra th { color: var(--ps-ink-soft); font-style: italic; }
+
+  .mv-inv-sign { border-top: 2px solid var(--ps-ink); padding-top: 1.1rem; }
+  .mv-inv-signh { color: var(--ps-ink-soft); line-height: 1.5; margin-bottom: 1.2rem; max-width: 62ch; }
+  .mv-inv-signgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+  .mv-sign { display: flex; flex-direction: column; gap: 0.4rem; }
+  .mv-sign__line { height: 2.2rem; border-bottom: 1px solid var(--ps-ink); }
+  .mv-sign span:last-child { color: var(--ps-ink-soft); }
+
+  /* Help list (shared with the rights + lease pages) */
+  .dc-help { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
+  .dc-help__item { border-bottom: 1px solid var(--ps-line); padding: 0.9rem 0.2rem; }
+  .dc-help__name { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.12rem; color: var(--ps-ink); text-decoration: none; }
+  .dc-help__name:hover { color: var(--ps-accent-2); }
+  .dc-help__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.25rem 0 0; }
+
+  /* Sources */
+  .dc-sources { list-style: none; margin: 1.4rem 0 0; padding: 0; max-width: 68ch; }
+  .dc-sources li { padding: 0.35rem 0; border-bottom: 1px dotted var(--ps-line); font-family: var(--ps-font-record); font-size: 0.9rem; }
+  .dc-sources a { color: var(--ps-ink-soft); text-decoration: none; }
+  .dc-sources a:hover { color: var(--ps-ink); }
+  .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 66ch; line-height: 1.5; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+    .mv-facts__grid { grid-template-columns: 1fr; }
+    .mv-inv-fields { grid-template-columns: 1fr; }
+    .mv-inv-signgrid { grid-template-columns: 1fr; }
+  }
+
+  /* -------------------------------------------------------------------------
+     PRINT: only the condition inventory prints, as a clean black-on-white form.
+     Everything else on the page is hidden. The inventory is forced to a light
+     palette so a dark-theme viewer still prints legibly, and rooms avoid
+     breaking across pages where they can.
+     ------------------------------------------------------------------------- */
+  @media print {
+    :global(header), :global(footer), .ips-lead, .dc-switchwrap, .mv-ziphelp, .ips-stardiv,
+    #deposit, #checklist, #help, #fineprint, .ips-sec-head, .ips-lede,
+    .mv-inv-actions, .rk-aside { display: none !important; }
+
+    .ips-sec { padding: 0 !important; }
+    #inventory { padding: 0; }
+
+    .mv-inventory {
+      border: none; border-radius: 0; padding: 0; max-width: none;
+      background: #fff !important; color: #000 !important;
+    }
+    .mv-inventory :global(*) { color: #000 !important; background: transparent !important; }
+    .mv-inv-head, .mv-inv-sign { border-color: #000 !important; }
+    .mv-inv-title { font-size: 1.4rem; }
+    .mv-inv-table { page-break-inside: avoid; }
+    .mv-inv-table caption { border-bottom-color: #000 !important; }
+    .mv-inv-table tbody th, .mv-inv-table tbody td { border-top-color: #999 !important; }
+    .mv-field input, .mv-cond { border-bottom: 1px solid #000 !important; }
+    .mv-sign__line { border-bottom-color: #000 !important; }
+    a[target="_blank"]::after { content: ""; }
+  }
+</style>
