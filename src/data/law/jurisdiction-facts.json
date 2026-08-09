@@ -1,6 +1,6 @@
 {
   "_comment": "MACHINE-READABLE SOURCE OF TRUTH for the DMV up-front-money figures. This is the structured twin of the table in jurisdiction-deposits.md. When a figure changes, change it HERE (and in the prose table), and the Plain Sight rights page picks it up at build time via scripts/sync-law-data.mjs. Keep the two in sync. Not legal advice; every figure carries the collection date in asOf.",
-  "asOf": "June 2026",
+  "asOf": "August 2026",
   "notLegalAdvice": true,
   "order": [
     "DC",
