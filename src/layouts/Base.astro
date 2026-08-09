@@ -1,5 +1,6 @@
 ---
 import { site } from '../config/site';
+import '../styles/fonts.css';
 import '../styles/global.css';
 
 interface Props {
@@ -37,13 +38,7 @@ const pageDesc = description ?? site.blurb;
       })();
     </script>
 
-    <!-- Type: Newsreader (display, legal-record serif) + Public Sans (body) + IBM Plex Mono (record). Self-host later for privacy. Redaction is a parked display upgrade. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Type: Newsreader (display, legal-record serif) + Public Sans (body) + IBM Plex Mono (record). Self-hosted from src/styles/fonts.css — no third-party font requests, so the kit's "nothing leaves your browser" promise holds at the network layer too. Redaction is a parked display upgrade. -->
   </head>
   <body>
     <a class="ps-skip" href="#main" style="position:absolute;left:-9999px">Skip to content</a>
