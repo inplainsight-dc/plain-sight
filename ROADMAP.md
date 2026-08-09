@@ -1,6 +1,6 @@
 # In Plain Sight — Roadmap
 
-_The one place that says where the In Plain Sight **hub** is going and what's next. Source of truth for the landing site; the tool-by-tool build work is tracked in each tool's own folder. For where the tools live on disk, see `PORTFOLIO.md`. Last updated: 2026-08-08._
+_The one place that says where the In Plain Sight **hub** is going and what's next. Source of truth for the landing site; the tool-by-tool build work is tracked in each tool's own folder. For where the tools live on disk, see `PORTFOLIO.md`. Last updated: 2026-08-09._
 
 **Goal in one sentence:** a single warm, trustworthy front door — `inplainsight-dc.org` — that showcases a growing family of civic tools that make DC's fine print readable, each feeling like one brand.
 
@@ -38,7 +38,8 @@ _The one place that says where the In Plain Sight **hub** is going and what's ne
 | 2.1 | Keep the fork convention current (`FORKING.md`, `src/config/site.ts`) | 🟡 | Someone could stand up their own city instance from the docs alone |
 | 2.2 | Consistent tool-to-hub visual return (every tool links back to the family) | 🟡 | Each tool page carries the shared header/footer + back-to-hub |
 | 2.3 | Publish more open-data (Layer 2) sources as tools graduate from DC Inform+ | ⬜ | DC Inform+ gap-finder promotes its next candidate into a card |
-| 2.4 | Localization readiness — product copy in American English as the baseline, structured for future translation | ⬜ | Tool UI copy is American-English clean (Rentals done 2026-08-08); a plan exists for extracting user-facing strings so a locale can be added without a rewrite |
+| 2.4 | Localization readiness — product copy in American English as the baseline, structured for future translation | 🟡 | Tool UI copy is American-English clean (Rentals done 2026-08-08); a plan exists for extracting user-facing strings so a locale can be added without a rewrite |
+| 2.5 | **Language access — Amharic first** _(all tools; on-mission — "In Plain Sight" only lives up to the name if it reaches non-English speakers)_ | 🟡 | Research kicked off 2026-08-09 (DC Language Access Act coverage, Language Line / DC OHR services an **ANC** can request, Amharic specifics). Then: (a) a concrete service request to DC OHR / Language Line — **Pippa's to send** (ANC identity), (b) an Amharic translation of the live tenant tools with native-speaker review, (c) the translation layer reuses the single law-source-of-truth so a legal figure can't drift between languages. Amharic is a DC covered language; large DC-metro Ethiopian/Eritrean community. |
 
 ---
 
