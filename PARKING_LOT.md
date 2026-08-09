@@ -16,6 +16,7 @@ Items set aside **on purpose**. They are not active threads for the hub and must
 |-----------|------|-----------|------------------------|-------------|
 | 2026-08-03 | **Rename `100 IPS Electify` bare** (naming-rule cleanup) | Folder carries a `100 ` prefix that violates `naming.json` (bands 100–900 stay bare; band 150 lives in the tag). Housekeeping, not urgent; touches Meta Minder identity machinery | Meta Minder + Electify folder | You're doing a naming-cleanup pass and can re-run `naming.py` (also fixes `600 AUIE 27 Plan`) |
 | 2026-08-03 | **Card up Electify on the hub** | IPS Civic Almanac is family but has no card yet; gated on the reader being shippable | This project (`src/data/projects/`) | Electify reader is ready to show publicly |
+| 2026-08-09 | **Language access — Amharic first** (all IPS tools) | The **product** can't move: the actual Amharic legal text is gated on OHR reply → vendor → quote → native-speaker review (cost unknown, weeks out), and building the full multilingual layer before that is premature. Research is done and the warm OHR contact is captured (memory `language-access-amharic-initiative`); the outreach email is **Pippa's to send** (ANC identity). | ROADMAP 2.5 → pull back here | OHR replies / a translation vendor + cost are lined up, **or** you want the bounded string-inventory spike (one surface → word count → a real quote). ⏰ **Time-box: FY26 OHR reimbursement deadline is Oct 5, 2026 — revisit well before, don't let it lapse.** |
 
 ---
 
@@ -27,7 +28,7 @@ Items set aside **on purpose**. They are not active threads for the hub and must
 
 ## On-board / off-board summary
 
-- **OFF-BOARD (do not surface):** Rename `100 IPS Electify` bare · Card up Electify.
+- **OFF-BOARD (do not surface):** Rename `100 IPS Electify` bare · Card up Electify · Language access (Amharic) — ⏰ time-boxed to Oct 5, 2026.
 - **To pull back on-board:** cut the row from the table above, paste it into `ROADMAP.md` (or the live handoff) with a concrete next step, and note the date.
 
 _Note: some of these ultimately live in another folder (`100 IPS Electify`) or in Meta Minder. Parking them here just keeps the hub's roadmap clean — it doesn't move the work across folders._
