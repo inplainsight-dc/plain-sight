@@ -28,6 +28,7 @@ _The one place that says where the In Plain Sight **hub** is going and what's ne
 | 1.2 | **Card Electify** — add a card for IPS Civic Almanac once it's ready to show | ⬜ | Electify reader shippable | New file in `src/data/projects/`; grid shows it |
 | 1.3 | **Fill the two placeholder cards** (`on-the-workbench`, `your-idea-here`) or confirm they stay as intentional invites | ⬜ | — | Either replaced with a real tool, or kept by decision |
 | 1.4 | **Naming-rule cleanup** — rename `100 IPS Electify` bare (band 150 lives in the tag), per registry note | ⬜ | coordinate with Meta Minder | Folder is bare; `naming.py` re-run; tag unchanged |
+| 1.5 | **Astro 5 → 7 upgrade** — clears the last 3 build-time security advisories (sharp/esbuild + 1 low) | ⬜ | — (no deadline; own session, on a branch) | `npm audit` shows 0 high; hub builds on Astro 7 and all 8 pages pass QA (light/dark, print, 0 third-party calls); shipped through the gate. Full plan: `ASTRO_UPGRADE_SCOPE.md` |
 
 ---
 
