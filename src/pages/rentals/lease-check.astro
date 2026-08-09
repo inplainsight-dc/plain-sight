@@ -53,7 +53,7 @@ const help = leaseClauses.help;
 const sources = leaseClauses.sources;
 const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable: 'Negotiable' };
 ---
-<Base title="Read your lease before you sign: DC, Maryland & Virginia" description="Tick the clauses in your proposed lease and get a plain read — which terms are illegal, which won’t hold up, and which are just worth negotiating — keyed to DC, Maryland, or Virginia, each with the concrete ask to send back. No account, no AI, nothing you type leaves your browser.">
+<Base title="Read your lease before you sign: DC, Maryland & Virginia" description="Check the clauses in your proposed lease and get a plain read — which terms are illegal, which won’t hold up, and which are just worth negotiating — keyed to DC, Maryland, or Virginia, each with the concrete ask to send back. No account, no AI, nothing you type leaves your browser.">
   <Header slot="header" />
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -68,11 +68,11 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
       <div class="ips-lead__grid">
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">Read your lease, <span class="ps-highlight">before you sign</span>.</h1>
-          <p class="ips-lead__blurb">A lease is the moment the whole search becomes binding. Pick your state and tick the clauses you see in yours — you’ll get a plain read of what’s out of bounds and the exact change to ask for.</p>
+          <p class="ips-lead__blurb">A lease is the moment the whole search becomes binding. Pick your state and check the clauses you see in yours — you’ll get a plain read of what’s out of bounds and the exact change to ask for.</p>
           <p class="ips-lead__note ps-record">A plain-language summary of public law &middot; current as of {asOf} &middot; <strong>not legal advice</strong>.</p>
         </div>
         <aside class="ips-lead__rail">
-          <p class="rk-privacy ps-record">No account. No AI. Nothing you tick on this page leaves your browser — the read runs on your own device.</p>
+          <p class="rk-privacy ps-record">No account. No AI. Nothing you check off on this page leaves your browser — the read runs on your own device.</p>
         </aside>
       </div>
     </div>
@@ -96,10 +96,10 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 01</span>
-        <h2 class="ips-sec-title">Tick the clauses in your lease</h2>
+        <h2 class="ips-sec-title">Check the clauses in your lease</h2>
         <span class="ips-sec-rule"></span>
       </div>
-      <p class="ips-lede">Read your proposed lease or addendum and tick anything that matches. Each one shows whether it’s allowed <em>where you live</em> and the concrete ask to send back. Your read builds as you go.</p>
+      <p class="ips-lede">Read your proposed lease or addendum and check anything that matches. Each one shows whether it’s allowed <em>where you live</em> and the concrete ask to send back. Your read builds as you go.</p>
 
       {order.map((code, ci) => (
         <div class="lc-jur dc-jur" data-jur={code} hidden={ci !== 0}>
@@ -132,7 +132,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
 
       <!-- LIVE READ -->
       <div class="lc-read" id="lcRead" role="status" aria-live="polite">
-        <p class="lc-read__verdict" id="lcVerdict">Tick anything above and your read appears here.</p>
+        <p class="lc-read__verdict" id="lcVerdict">Check anything above and your read appears here.</p>
         <div class="lc-read__tally" id="lcTally" hidden>
           <span class="lc-pill lc-pill--illegal"><b id="cIllegal">0</b> won’t sign</span>
           <span class="lc-pill lc-pill--unenforceable"><b id="cUnenf">0</b> red flags</span>
@@ -142,7 +142,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
           <p class="lc-asks__h ps-record">Your asks — the changes to send back (copy these into a message)</p>
           <ul class="lc-asks__list" id="lcAsksList"></ul>
         </div>
-        <p class="lc-read__caveat ps-record">This flags the clauses that most often go wrong — not every possible term. A short read here doesn’t mean the lease is clean: skim the rest and check anything unfamiliar.</p>
+        <p class="lc-read__caveat ps-record">This flags the clauses that most often go wrong — not every possible term. A short read here doesn’t mean the lease is clean: skim the rest and look over anything unfamiliar.</p>
       </div>
 
       <p class="rk-aside ps-record"><strong>A lease can be steep and still be legal.</strong> In Virginia the big up-front stack — first + last + up to a two-month deposit — is legal and uncapped; DC and Maryland cap the deposit at one month. That’s why the read is keyed to your state. Check the numbers on the <a href="/rentals/rights">up-front money check</a>.</p>
@@ -214,7 +214,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
       <div class="ips-about">
         <p><strong>Not legal advice.</strong> This is a plain-language read of public law to help you spot a problem clause and ask the right question. It can’t tell you your specific lease is safe or unsafe — it surfaces the terms worth a second look.</p>
         <p><strong>Laws change — every figure here is current as of {asOf}.</strong> This region’s housing law changes often, and rules can differ by county and by lease date. Verify against the sources before you rely on it, and for a clause the summary doesn’t cover, treat it as one to check rather than a settled rule.</p>
-        <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The read is computed on your own device from the boxes you tick.</p>
+        <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The read is computed on your own device from the boxes you check.</p>
       </div>
       <ul class="dc-sources">
         {sources.map(([name, href]) => (
@@ -249,7 +249,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
     const nego = ticked.filter((b) => b.dataset.verdict === 'negotiable');
 
     if (ticked.length === 0) {
-      verdictEl.textContent = 'Tick anything above and your read appears here.';
+      verdictEl.textContent = 'Check anything above and your read appears here.';
       tallyEl.hidden = true;
       asksEl.hidden = true;
       return;
@@ -265,7 +265,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
       const one = illegal.length === 1;
       line = 'Don’t sign as written. You flagged ' + illegal.length + (one ? ' term that’s illegal in ' : ' terms that are illegal in ') + active + ' — ask for ' + (one ? 'it' : 'those') + ' to be struck before you sign, and don’t treat ' + (one ? 'it' : 'them') + ' as negotiable.';
     } else if (unenf.length > 0) {
-      line = 'Read the landlord carefully. Nothing you ticked is outright illegal, but ' + unenf.length + (unenf.length === 1 ? ' clause won’t hold up' : ' clauses won’t hold up') + ' and signal a landlord who leans on terms the law doesn’t back. Ask for those removed.';
+      line = 'Read the landlord carefully. Nothing you checked is outright illegal, but ' + unenf.length + (unenf.length === 1 ? ' clause won’t hold up' : ' clauses won’t hold up') + ' and signal a landlord who leans on terms the law doesn’t back. Ask for those removed.';
     } else {
       line = 'Nothing illegal or unenforceable — the rest is fair game to negotiate. Send the asks below; they’re the kind a landlord can say yes to.';
     }

@@ -93,11 +93,11 @@ const sources = [
       <div class="ips-lead__grid">
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">Is this a <span class="ps-highlight">scam</span>?</h1>
-          <p class="ips-lead__blurb">A 60-second check before you pay a deposit or send an SSN. Tick what’s true about your listing — you’ll get a plain read and the safe way to proceed.</p>
+          <p class="ips-lead__blurb">A 60-second check before you pay a deposit or send an SSN. Check what’s true about your listing — you’ll get a plain read and the safe way to proceed.</p>
           <p class="ips-lead__note ps-record">Most exposed: renting <strong>sight-unseen</strong> or on a relocation deadline &middot; not legal advice.</p>
         </div>
         <aside class="ips-lead__rail">
-          <p class="rk-privacy ps-record">No account. No AI. Nothing you tick on this page leaves your browser — the read runs on your own device.</p>
+          <p class="rk-privacy ps-record">No account. No AI. Nothing you check off on this page leaves your browser — the read runs on your own device.</p>
         </aside>
       </div>
     </div>
@@ -108,7 +108,7 @@ const sources = [
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 01</span>
-        <h2 class="ips-sec-title">Tick what’s true</h2>
+        <h2 class="ips-sec-title">Check what’s true</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -139,7 +139,7 @@ const sources = [
       </ul>
 
       <div class="sc-read" id="scRead" role="status" aria-live="polite">
-        <p class="sc-read__verdict" id="scVerdict">Tick anything above and your read appears here.</p>
+        <p class="sc-read__verdict" id="scVerdict">Check anything above and your read appears here.</p>
         <p class="sc-read__detail ps-record" id="scDetail"></p>
       </div>
 
@@ -234,8 +234,8 @@ const sources = [
       </div>
       <div class="ips-about">
         <p><strong>Not legal advice.</strong> This is a plain-language checklist to help you recognize a scam pattern and protect yourself. It can’t tell you for certain whether a specific listing is fraudulent — it can only surface the signals.</p>
-        <p><strong>A clean read is not a guarantee.</strong> No boxes ticked doesn’t prove a listing is safe. Verify the landlord and pay traceably regardless — that’s the defense that always holds.</p>
-        <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The read is computed on your own device from the boxes you tick.</p>
+        <p><strong>A clean read is not a guarantee.</strong> No boxes checked doesn’t prove a listing is safe. Verify the landlord and pay traceably regardless — that’s the defense that always holds.</p>
+        <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The read is computed on your own device from the boxes you check.</p>
       </div>
       <ul class="dc-sources">
         {sources.map(([name, href]) => (
@@ -265,7 +265,7 @@ const sources = [
     read.classList.remove('sc-read--stop', 'sc-read--warn', 'sc-read--care', 'sc-read--clear');
 
     if (stop === 0 && warn === 0) {
-      verdict.textContent = 'Tick anything above and your read appears here.';
+      verdict.textContent = 'Check anything above and your read appears here.';
       detail.textContent = '';
       return;
     }
@@ -273,7 +273,7 @@ const sources = [
     if (stop >= 1) {
       read.classList.add('sc-read--stop');
       verdict.textContent = 'Stop — don’t send money or an SSN yet.';
-      detail.textContent = 'You ticked ' + stop + (stop === 1 ? ' stop sign' : ' stop signs')
+      detail.textContent = 'You checked ' + stop + (stop === 1 ? ' stop sign' : ' stop signs')
         + (warn ? ' and ' + warn + (warn === 1 ? ' warning sign' : ' warning signs') : '')
         + '. Any one stop sign is enough to pause. Don’t pay until you’ve verified the landlord independently, seen the unit (in person or live video), and signed a real lease — then pay traceably. Walk through the safe order below.';
       return;
@@ -282,7 +282,7 @@ const sources = [
     if ((below && warn >= 2) || warn >= 4) {
       read.classList.add('sc-read--warn');
       verdict.textContent = 'High risk — verify before you pay anything.';
-      detail.textContent = 'You ticked ' + warn + ' warning signs'
+      detail.textContent = 'You checked ' + warn + ' warning signs'
         + (below
             ? ', including a below-market price — the single most consistent scam sign, alongside at least one more.'
             : ' — enough stacked together to treat this as high risk.')
@@ -292,7 +292,7 @@ const sources = [
 
     read.classList.add('sc-read--care');
     verdict.textContent = 'Be careful — verify before you pay.';
-    detail.textContent = 'You ticked ' + warn + (warn === 1 ? ' warning sign' : ' warning signs')
+    detail.textContent = 'You checked ' + warn + (warn === 1 ? ' warning sign' : ' warning signs')
       + '. Not proof of a scam, but reason to slow down: confirm the landlord and the unit independently, and never pay before a signed, verified lease. The safe order is below.';
   }
 
