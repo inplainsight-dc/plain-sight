@@ -17,7 +17,7 @@ const brain = path.resolve(
   'new rental', 'plain-sight-rentals', 'skills', 'renter-setup', 'references', 'law'
 );
 const dest = path.join(repo, 'src', 'data', 'law');
-const files = ['jurisdiction-facts.json', 'rights-cards.json'];
+const files = ['jurisdiction-facts.json', 'rights-cards.json', 'lease-clauses.json'];
 
 fs.mkdirSync(dest, { recursive: true });
 
@@ -27,6 +27,7 @@ fs.mkdirSync(dest, { recursive: true });
 const validators = {
   'jurisdiction-facts.json': validateFacts,
   'rights-cards.json': validateCards,
+  'lease-clauses.json': validateClauses,
 };
 function validate(name, obj) {
   const fn = validators[name];
@@ -80,6 +81,43 @@ function validateCards(name, obj) {
   }
 }
 
+// The /rentals/lease-check clauses. Same shared/{ref} shape as the rights cards,
+// but a clause carries clause/verdict/label/ask/src/href, and the verdict is one
+// of the three lease-review buckets (illegal / unenforceable / negotiable). A bad
+// verdict or an unresolved {ref} would render a mis-bucketed or blank card, so
+// both fail the build here rather than shipping silently.
+const CLAUSE_VERDICTS = new Set(['illegal', 'unenforceable', 'negotiable']);
+function validateClause(where, c, shared) {
+  if (!c || typeof c !== 'object') throw new Error(where + ': clause is not an object');
+  if (c.ref !== undefined) {
+    if (!shared[c.ref]) throw new Error(where + ': ref "' + c.ref + '" not found in shared');
+    return;
+  }
+  for (const k of ['clause', 'label', 'ask', 'src']) {
+    if (typeof c[k] !== 'string' || !c[k]) throw new Error(where + ': missing ' + k);
+  }
+  if (!CLAUSE_VERDICTS.has(c.verdict)) throw new Error(where + ': verdict must be one of ' + [...CLAUSE_VERDICTS].join('/'));
+  if (!('href' in c)) throw new Error(where + ': missing href (use null for none)');
+  // Optional: a not-yet-in-force caveat rendered on the card (e.g. a law with a
+  // future effective date). If present it must be real text, not an empty string.
+  if ('effective' in c && (typeof c.effective !== 'string' || !c.effective)) {
+    throw new Error(where + ': effective must be a non-empty string when present');
+  }
+}
+function validateClauses(name, obj) {
+  if (!obj || typeof obj !== 'object') throw new Error(name + ': not an object');
+  if (!obj.shared || typeof obj.shared !== 'object') throw new Error(name + ': missing shared{}');
+  for (const [key, c] of Object.entries(obj.shared)) validateClause(name + '.shared.' + key, c, obj.shared);
+  if (!obj.byJurisdiction || typeof obj.byJurisdiction !== 'object') throw new Error(name + ': missing byJurisdiction{}');
+  for (const [code, list] of Object.entries(obj.byJurisdiction)) {
+    if (!Array.isArray(list) || list.length === 0) throw new Error(name + '.byJurisdiction.' + code + ': must be a non-empty array');
+    list.forEach((c, i) => validateClause(name + '.byJurisdiction.' + code + '[' + i + ']', c, obj.shared));
+  }
+  for (const listName of ['help', 'sources']) {
+    if (!Array.isArray(obj[listName]) || obj[listName].length === 0) throw new Error(name + ': missing ' + listName + '[]');
+  }
+}
+
 if (!fs.existsSync(brain)) {
   // Law brain not present (e.g. an isolated checkout without the sibling folder).
   // Fall back to the committed copy already in src/data — never fail the build.
@@ -108,7 +146,8 @@ fs.writeFileSync(
     'Synced from the canonical source of truth in the shared law brain\n' +
     '(`new rental/plain-sight-rentals/skills/renter-setup/references/law/`):\n\n' +
     '- `jurisdiction-facts.json` — up-front-money figures (twin of the table in `jurisdiction-deposits.md`); feeds the §01 deposit calculator.\n' +
-    '- `rights-cards.json` — the §02 “when a landlord asks for X” cards + §03 help + §04 sources (twin of `landlord-tactics.md` and the jurisdiction topic files).\n\n' +
+    '- `rights-cards.json` — the §02 “when a landlord asks for X” cards + §03 help + §04 sources (twin of `landlord-tactics.md` and the jurisdiction topic files).\n' +
+    '- `lease-clauses.json` — the /rentals/lease-check illegal / unenforceable / negotiable clause reads + asks (twin of the `lease-review` skill + `landlord-tactics.md`).\n\n' +
     'Regenerate with `npm run sync-law` (also runs automatically on `npm run build`).\n' +
     'Edit the content in the law brain, never here — this copy is overwritten on every build.\n'
 );

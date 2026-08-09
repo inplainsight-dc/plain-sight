@@ -1,0 +1,409 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+// -----------------------------------------------------------------------------
+// SOURCE OF TRUTH.  Nothing on this page is hand-transcribed law; every clause,
+// verdict, ask, and citation is generated at build time from the shared DMV
+// tenant-law brain, so the page cannot silently drift from the law:
+//   new rental/…/references/law/lease-clauses.json  (twin of the lease-review
+//   skill + landlord-tactics.md + jurisdiction-deposits.md)
+//     └─ synced by scripts/sync-law-data.mjs → src/data/law/  (import below)
+// To change a clause's bucket, ask, or citation, edit lease-clauses.json in the
+// brain and rebuild. Three buckets follow the lease-review skill:
+//   illegal (a term the law forbids — don't sign) · unenforceable (won't hold up
+//   or a red flag about the landlord) · negotiable (lawful but unfavorable — ask).
+// The "current as of" date is shared with the rights page (facts.asOf).
+// -----------------------------------------------------------------------------
+import facts from '../../data/law/jurisdiction-facts.json';
+import leaseClauses from '../../data/law/lease-clauses.json';
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+const asOf = facts.asOf;
+const order = facts.order;
+const jurName = Object.fromEntries(order.map((c) => [c, facts.jurisdictions[c].name]));
+
+// A clause in a jurisdiction list is either inline or a {ref} into `shared`;
+// resolve refs here so the template stays a plain render, then group each
+// jurisdiction's clauses by verdict into the three lease-review buckets.
+const shared = leaseClauses.shared;
+const resolveClause = (c) => (c && c.ref ? shared[c.ref] : c);
+
+// Bucket presentation (labels/blurbs are UI, not law — the law is the verdict
+// field in the JSON). Order = the order the renter should read them in.
+const buckets = [
+  { key: 'illegal', title: 'Illegal — don’t sign it',
+    blurb: 'A term the law in your state forbids. This isn’t a negotiation — ask for it to be struck before you sign.' },
+  { key: 'unenforceable', title: 'Won’t hold up — a red flag',
+    blurb: 'A term that wouldn’t survive in court, or that signals a landlord who ignores legal process. Ask for it removed; treat it as a warning about the landlord.' },
+  { key: 'negotiable', title: 'Lawful, but worth negotiating',
+    blurb: 'Legal but unfavorable. Not a dealbreaker — an ask a reasonable landlord can say yes to.' },
+];
+
+const byJur = Object.fromEntries(order.map((code) => {
+  const list = (leaseClauses.byJurisdiction[code] || []).map(resolveClause);
+  const grouped = Object.fromEntries(buckets.map((b) => [b.key, list.filter((c) => c.verdict === b.key)]));
+  return [code, grouped];
+}));
+
+const help = leaseClauses.help;
+const sources = leaseClauses.sources;
+const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable: 'Negotiable' };
+---
+<Base title="Read your lease before you sign: DC, Maryland & Virginia" description="Tick the clauses in your proposed lease and get a plain read — which terms are illegal, which won’t hold up, and which are just worth negotiating — keyed to DC, Maryland, or Virginia, each with the concrete ask to send back. No account, no AI, nothing you type leaves your browser.">
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; BEFORE YOU SIGN</p>
+      <p class="ips-back"><a href="/rentals">&larr; Back to DC Rentals</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Read your lease, <span class="ps-highlight">before you sign</span>.</h1>
+          <p class="ips-lead__blurb">A lease is the moment the whole search becomes binding. Pick your state and tick the clauses you see in yours — you’ll get a plain read of what’s out of bounds and the exact change to ask for.</p>
+          <p class="ips-lead__note ps-record">A plain-language summary of public law &middot; current as of {asOf} &middot; <strong>not legal advice</strong>.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="rk-privacy ps-record">No account. No AI. Nothing you tick on this page leaves your browser — the read runs on your own device.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- JURISDICTION SWITCH -->
+  <div class="dc-switchwrap">
+    <div class="ps-container">
+      <div class="dc-switch" role="tablist" aria-label="Choose your jurisdiction">
+        {order.map((code, i) => (
+          <button class:list={["dc-switch__btn", { 'is-active': i === 0 }]} role="tab" data-jur={code} aria-selected={i === 0 ? 'true' : 'false'}>
+            {code === 'DC' ? 'DC' : jurName[code]}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- §01 THE CHECK -->
+  <section class="ips-sec" id="check">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">Tick the clauses in your lease</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">Read your proposed lease or addendum and tick anything that matches. Each one shows whether it’s allowed <em>where you live</em> and the concrete ask to send back. Your read builds as you go.</p>
+
+      {order.map((code, ci) => (
+        <div class="lc-jur dc-jur" data-jur={code} hidden={ci !== 0}>
+          {buckets.map((b) => (
+            byJur[code][b.key].length > 0 && (
+              <div class={`lc-group lc-group--${b.key}`}>
+                <div class="lc-group__head">
+                  <h3 class="lc-group__title">{b.title}</h3>
+                  <p class="lc-group__blurb ps-record">{b.blurb}</p>
+                </div>
+                <ul class="lc-list">
+                  {byJur[code][b.key].map((c, i) => (
+                    <li class={`lc-card lc-card--${c.verdict}`}>
+                      <label class="lc-check">
+                        <input type="checkbox" class="lc-box" data-jur={code} data-verdict={c.verdict} data-ask={c.ask} />
+                        <span class="lc-check__clause">{c.clause}</span>
+                      </label>
+                      <p class={`lc-card__verdict lc-card__verdict--${c.verdict}`}><span class="lc-card__dot" aria-hidden="true"></span>{verdictText[c.verdict]} &middot; {c.label}</p>
+                      {c.effective && <p class="lc-card__effective">&#9203; {c.effective}</p>}
+                      <p class="lc-card__ask"><span class="lc-card__asklabel ps-record">Ask for</span>{c.ask}</p>
+                      <p class="lc-card__src ps-record">{c.href ? <a href={c.href} target="_blank" rel="noopener">{c.src} &#8599;</a> : c.src}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          ))}
+        </div>
+      ))}
+
+      <!-- LIVE READ -->
+      <div class="lc-read" id="lcRead" role="status" aria-live="polite">
+        <p class="lc-read__verdict" id="lcVerdict">Tick anything above and your read appears here.</p>
+        <div class="lc-read__tally" id="lcTally" hidden>
+          <span class="lc-pill lc-pill--illegal"><b id="cIllegal">0</b> won’t sign</span>
+          <span class="lc-pill lc-pill--unenforceable"><b id="cUnenf">0</b> red flags</span>
+          <span class="lc-pill lc-pill--negotiable"><b id="cNego">0</b> to negotiate</span>
+        </div>
+        <div class="lc-asks" id="lcAsks" hidden>
+          <p class="lc-asks__h ps-record">Your asks — the changes to send back (copy these into a message)</p>
+          <ul class="lc-asks__list" id="lcAsksList"></ul>
+        </div>
+        <p class="lc-read__caveat ps-record">This flags the clauses that most often go wrong — not every possible term. A short read here doesn’t mean the lease is clean: skim the rest and check anything unfamiliar.</p>
+      </div>
+
+      <p class="rk-aside ps-record"><strong>A lease can be steep and still be legal.</strong> In Virginia the big up-front stack — first + last + up to a two-month deposit — is legal and uncapped; DC and Maryland cap the deposit at one month. That’s why the read is keyed to your state. Check the numbers on the <a href="/rentals/rights">up-front money check</a>.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §02 THREE MOVES -->
+  <section class="ips-sec" id="moves">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">Three kinds of clause, three moves</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">Your move is different for each. Sort every flag into one of three, and you know what to do with it.</p>
+      <ol class="lc-moves">
+        {buckets.map((b, i) => (
+          <li class={`lc-move lc-move--${b.key}`}>
+            <h3 class="lc-move__h">{verdictText[b.key]}</h3>
+            <p class="lc-move__d">{b.blurb}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="rk-aside ps-record">This is a read and a set of asks, not a redraft of your lease. Keep the asks specific and reasonable — the kind a landlord can say yes to — and hold firm on the illegal terms. A clause you can’t get changed, or any real dispute, goes to a tenant attorney or one of the offices below.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §03 REAL HELP -->
+  <section class="ips-sec" id="help">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Where to go for real help</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="ips-lede">For a clause you can’t get changed, or a signature under pressure, these are free and real. This page helps you spot the problem and ask; they can act on your case.</p>
+      <ul class="dc-help">
+        {help.map(([name, desc, href]) => (
+          <li class="dc-help__item">
+            <a class="dc-help__name" href={href} target="_blank" rel="noopener">{name} &#8599;</a>
+            <p class="dc-help__desc">{desc}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="rk-aside ps-record">Survivor of domestic violence? Each jurisdiction has an early lease-termination right that a lease can’t waive — Legal Aid DC (or the MD/VA equivalent) can walk you through it before you sign.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- §04 FINE PRINT + SOURCES -->
+  <section class="ips-sec" id="fineprint">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">Sources &amp; fine print</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p><strong>Not legal advice.</strong> This is a plain-language read of public law to help you spot a problem clause and ask the right question. It can’t tell you your specific lease is safe or unsafe — it surfaces the terms worth a second look.</p>
+        <p><strong>Laws change — every figure here is current as of {asOf}.</strong> This region’s housing law changes often, and rules can differ by county and by lease date. Verify against the sources before you rely on it, and for a clause the summary doesn’t cover, treat it as one to check rather than a settled rule.</p>
+        <p><strong>Nothing you type leaves your browser.</strong> There’s no account and no AI on this page. The read is computed on your own device from the boxes you tick.</p>
+      </div>
+      <ul class="dc-sources">
+        {sources.map(([name, href]) => (
+          <li><a href={href} target="_blank" rel="noopener">{name} &#8599;</a></li>
+        ))}
+      </ul>
+      <p class="rk-found ps-record">Another no-plugin front door for <a href="/rentals">DC Rentals</a> — pairs with the <a href="/rentals/rights">know-your-rights</a> page and the <a href="/rentals/scam-check">is-this-a-scam check</a>. The same read the full kit gives, reachable with no account and no AI. One node in a wider commons of DC civic tools.</p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<script>
+  const boxesAll = Array.from(document.querySelectorAll('.lc-box'));
+  const verdictEl = document.getElementById('lcVerdict');
+  const tallyEl = document.getElementById('lcTally');
+  const asksEl = document.getElementById('lcAsks');
+  const asksList = document.getElementById('lcAsksList');
+  const cIllegal = document.getElementById('cIllegal');
+  const cUnenf = document.getElementById('cUnenf');
+  const cNego = document.getElementById('cNego');
+
+  let active = 'DC';
+
+  function update() {
+    // Only count boxes in the active jurisdiction — a shared clause has its own
+    // checkbox in each state, and the read is keyed to where the unit is.
+    const ticked = boxesAll.filter((b) => b.checked && b.dataset.jur === active);
+    const illegal = ticked.filter((b) => b.dataset.verdict === 'illegal');
+    const unenf = ticked.filter((b) => b.dataset.verdict === 'unenforceable');
+    const nego = ticked.filter((b) => b.dataset.verdict === 'negotiable');
+
+    if (ticked.length === 0) {
+      verdictEl.textContent = 'Tick anything above and your read appears here.';
+      tallyEl.hidden = true;
+      asksEl.hidden = true;
+      return;
+    }
+
+    cIllegal.textContent = String(illegal.length);
+    cUnenf.textContent = String(unenf.length);
+    cNego.textContent = String(nego.length);
+    tallyEl.hidden = false;
+
+    let line;
+    if (illegal.length > 0) {
+      const one = illegal.length === 1;
+      line = 'Don’t sign as written. You flagged ' + illegal.length + (one ? ' term that’s illegal in ' : ' terms that are illegal in ') + active + ' — ask for ' + (one ? 'it' : 'those') + ' to be struck before you sign, and don’t treat ' + (one ? 'it' : 'them') + ' as negotiable.';
+    } else if (unenf.length > 0) {
+      line = 'Read the landlord carefully. Nothing you ticked is outright illegal, but ' + unenf.length + (unenf.length === 1 ? ' clause won’t hold up' : ' clauses won’t hold up') + ' and signal a landlord who leans on terms the law doesn’t back. Ask for those removed.';
+    } else {
+      line = 'Nothing illegal or unenforceable — the rest is fair game to negotiate. Send the asks below; they’re the kind a landlord can say yes to.';
+    }
+    verdictEl.textContent = line;
+
+    // Build the copyable ask list from the ticked clauses, worst bucket first.
+    const ordered = [...illegal, ...unenf, ...nego];
+    asksList.innerHTML = '';
+    ordered.forEach((b) => {
+      const li = document.createElement('li');
+      li.textContent = b.dataset.ask || '';
+      asksList.appendChild(li);
+    });
+    asksEl.hidden = false;
+  }
+
+  function setJur(code) {
+    active = code;
+    document.querySelectorAll('.dc-switch__btn').forEach((b) => {
+      const on = b.dataset.jur === code;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('.dc-jur').forEach((el) => { el.hidden = el.dataset.jur !== code; });
+    update();
+  }
+
+  document.querySelectorAll('.dc-switch__btn').forEach((b) => {
+    b.addEventListener('click', () => setJur(b.dataset.jur));
+  });
+  boxesAll.forEach((b) => b.addEventListener('change', update));
+</script>
+
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(1.4rem, 4vw, 2.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 48ch; }
+  .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
+  .ips-lead__note strong { color: var(--ps-accent-2); }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+  .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
+
+  /* Jurisdiction switch (shared with the rights page) */
+  .dc-switchwrap { position: sticky; top: 0; z-index: 5; background: var(--ps-paper); border-bottom: 1px solid var(--ps-line); padding-block: 0.7rem; }
+  .dc-switch { display: inline-flex; max-width: 100%; gap: 0.3rem; border: 1px solid var(--ps-line); border-radius: 8px; padding: 0.25rem; background: var(--ps-surface-2); }
+  .dc-switch__btn { white-space: nowrap; font-family: var(--ps-font-record); font-size: 0.9rem; letter-spacing: 0.02em; padding: 0.45rem 0.95rem; border: 0; border-radius: 6px; background: transparent; color: var(--ps-ink-soft); cursor: pointer; transition: background-color 0.12s ease, color 0.12s ease; }
+  .dc-switch__btn:hover { color: var(--ps-ink); }
+  .dc-switch__btn.is-active { background: var(--ps-ink); color: var(--ps-paper); }
+
+  .ips-sec { padding-block: clamp(2rem, 5vw, 3.2rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-lede { max-width: 64ch; font-size: 1.12rem; color: var(--ps-ink-soft); margin-bottom: 1.6rem; }
+  .ips-lede strong { color: var(--ps-ink); }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+  .rk-aside { margin-top: 1.3rem; color: var(--ps-ink-soft); max-width: 68ch; line-height: 1.5; }
+
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* Clause groups */
+  .lc-group { margin-bottom: 2rem; }
+  .lc-group__head { border-left: 3px solid var(--ps-line); padding-left: 0.9rem; margin-bottom: 1rem; }
+  .lc-group--illegal .lc-group__head { border-left-color: var(--ps-accent-2); }
+  .lc-group--unenforceable .lc-group__head { border-left-color: #b8860b; }
+  .lc-group--negotiable .lc-group__head { border-left-color: #3b6ea5; }
+  .lc-group__title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.35rem; margin-bottom: 0.3rem; }
+  .lc-group__blurb { color: var(--ps-ink-soft); line-height: 1.5; max-width: 66ch; }
+
+  /* Clause cards */
+  .lc-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+  .lc-card { border: 1px solid var(--ps-line); border-radius: 6px; padding: 1.1rem 1.2rem; background: var(--ps-surface-2); border-top: 3px solid var(--ps-line); }
+  .lc-card--illegal { border-top-color: var(--ps-accent-2); }
+  .lc-card--unenforceable { border-top-color: #b8860b; }
+  .lc-card--negotiable { border-top-color: #3b6ea5; }
+  .lc-check { display: flex; gap: 0.6rem; align-items: flex-start; cursor: pointer; margin-bottom: 0.6rem; }
+  .lc-box { flex: none; width: 1.15rem; height: 1.15rem; margin-top: 0.15rem; accent-color: var(--ps-ink); cursor: pointer; }
+  .lc-check__clause { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.08rem; line-height: 1.25; }
+  .lc-card__verdict { display: flex; align-items: center; gap: 0.45rem; font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .lc-card__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+  .lc-card__verdict--illegal { color: var(--ps-accent-2); }
+  .lc-card__verdict--unenforceable { color: #b8860b; }
+  .lc-card__verdict--negotiable { color: #3b6ea5; }
+  .lc-card__effective { font-family: var(--ps-font-record); font-size: 0.82rem; line-height: 1.45; color: var(--ps-ink); background: var(--ps-paper); border: 1px dashed var(--ps-ink-soft); border-radius: 5px; padding: 0.45rem 0.6rem; margin-bottom: 0.7rem; }
+  .lc-card__ask { font-size: 1.02rem; line-height: 1.5; color: var(--ps-ink); margin-bottom: 0.6rem; }
+  .lc-card__asklabel { display: block; color: var(--ps-ink-soft); margin-bottom: 0.2rem; }
+  .lc-card__src { color: var(--ps-ink-soft); line-height: 1.4; }
+  .lc-card__src a { color: var(--ps-ink-soft); }
+  .lc-card__src a:hover { color: var(--ps-ink); }
+
+  /* Live read */
+  .lc-read { margin-top: 1.8rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1.2rem 1.3rem; background: var(--ps-surface-2); max-width: 74ch; }
+  .lc-read__verdict { font-family: var(--ps-font-display); font-size: 1.15rem; line-height: 1.45; color: var(--ps-ink); }
+  .lc-read__tally { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; }
+  .lc-pill { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.03em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 999px; border: 1px solid var(--ps-line); color: var(--ps-ink-soft); }
+  .lc-pill b { color: var(--ps-ink); }
+  .lc-pill--illegal { border-color: var(--ps-accent-2); }
+  .lc-pill--unenforceable { border-color: #b8860b; }
+  .lc-pill--negotiable { border-color: #3b6ea5; }
+  .lc-asks { margin-top: 1.1rem; border-top: 1px dotted var(--ps-line); padding-top: 0.9rem; }
+  .lc-asks__h { display: block; color: var(--ps-ink-soft); margin-bottom: 0.6rem; }
+  .lc-asks__list { margin: 0; padding-left: 1.1rem; }
+  .lc-asks__list li { margin-bottom: 0.5rem; line-height: 1.5; color: var(--ps-ink); }
+  .lc-read__caveat { display: block; margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px dotted var(--ps-line); color: var(--ps-ink-soft); line-height: 1.5; }
+
+  /* Three moves */
+  .lc-moves { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; counter-reset: mv; }
+  .lc-move { border: 1px solid var(--ps-line); border-top: 3px solid var(--ps-line); border-radius: 6px; padding: 1.1rem 1.2rem; background: var(--ps-surface-2); }
+  .lc-move--illegal { border-top-color: var(--ps-accent-2); }
+  .lc-move--unenforceable { border-top-color: #b8860b; }
+  .lc-move--negotiable { border-top-color: #3b6ea5; }
+  .lc-move__h { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: 0.4rem; }
+  .lc-move__d { color: var(--ps-ink-soft); font-size: 1rem; line-height: 1.5; }
+
+  /* Help list (shared with the rights page) */
+  .dc-help { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
+  .dc-help__item { border-bottom: 1px solid var(--ps-line); padding: 0.9rem 0.2rem; }
+  .dc-help__name { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.12rem; color: var(--ps-ink); text-decoration: none; }
+  .dc-help__name:hover { color: var(--ps-accent-2); }
+  .dc-help__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.25rem 0 0; }
+
+  /* Sources */
+  .dc-sources { list-style: none; margin: 1.4rem 0 0; padding: 0; max-width: 68ch; }
+  .dc-sources li { padding: 0.35rem 0; border-bottom: 1px dotted var(--ps-line); font-family: var(--ps-font-record); font-size: 0.9rem; }
+  .dc-sources a { color: var(--ps-ink-soft); text-decoration: none; }
+  .dc-sources a:hover { color: var(--ps-ink); }
+  .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 64ch; line-height: 1.5; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+  }
+</style>

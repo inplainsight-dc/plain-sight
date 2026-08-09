@@ -5,6 +5,7 @@ Synced from the canonical source of truth in the shared law brain
 
 - `jurisdiction-facts.json` — up-front-money figures (twin of the table in `jurisdiction-deposits.md`); feeds the §01 deposit calculator.
 - `rights-cards.json` — the §02 “when a landlord asks for X” cards + §03 help + §04 sources (twin of `landlord-tactics.md` and the jurisdiction topic files).
+- `lease-clauses.json` — the /rentals/lease-check illegal / unenforceable / negotiable clause reads + asks (twin of the `lease-review` skill + `landlord-tactics.md`).
 
 Regenerate with `npm run sync-law` (also runs automatically on `npm run build`).
 Edit the content in the law brain, never here — this copy is overwritten on every build.
