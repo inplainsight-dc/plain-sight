@@ -53,7 +53,7 @@ const help = leaseClauses.help;
 const sources = leaseClauses.sources;
 const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable: 'Negotiable' };
 ---
-<Base title="Read your lease before you sign: DC, Maryland & Virginia" description="Check the clauses in your proposed lease and get a plain read — which terms are illegal, which won’t hold up, and which are just worth negotiating — keyed to DC, Maryland, or Virginia, each with the concrete ask to send back. No account, no AI, nothing you type leaves your browser.">
+<Base title="Read your lease before you sign: DC, Maryland & Virginia" ogImage="/og/rentals-lease-check.png" description="Check the clauses in your proposed lease and get a plain read — which terms are illegal, which won’t hold up, and which are just worth negotiating — keyed to DC, Maryland, or Virginia, each with the concrete ask to send back. No account, no AI, nothing you type leaves your browser.">
   <Header slot="header" />
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -150,7 +150,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §02 THREE MOVES -->
@@ -175,7 +175,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §03 REAL HELP -->
@@ -200,7 +200,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §04 FINE PRINT + SOURCES -->
@@ -309,7 +309,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 48ch; }
   .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
-  .ips-lead__note strong { color: var(--ps-accent-2); }
+  .ips-lead__note strong { color: var(--ps-accent-text); }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
 
@@ -337,26 +337,26 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   /* Clause groups */
   .lc-group { margin-bottom: 2rem; }
   .lc-group__head { border-left: 3px solid var(--ps-line); padding-left: 0.9rem; margin-bottom: 1rem; }
-  .lc-group--illegal .lc-group__head { border-left-color: var(--ps-accent-2); }
-  .lc-group--unenforceable .lc-group__head { border-left-color: #b8860b; }
-  .lc-group--negotiable .lc-group__head { border-left-color: #3b6ea5; }
+  .lc-group--illegal .lc-group__head { border-left-color: var(--ps-accent-text); }
+  .lc-group--unenforceable .lc-group__head { border-left-color: var(--ps-caution); }
+  .lc-group--negotiable .lc-group__head { border-left-color: var(--ps-info); }
   .lc-group__title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.35rem; margin-bottom: 0.3rem; }
   .lc-group__blurb { color: var(--ps-ink-soft); line-height: 1.5; max-width: 66ch; }
 
   /* Clause cards */
   .lc-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
   .lc-card { border: 1px solid var(--ps-line); border-radius: 6px; padding: 1.1rem 1.2rem; background: var(--ps-surface-2); border-top: 3px solid var(--ps-line); }
-  .lc-card--illegal { border-top-color: var(--ps-accent-2); }
-  .lc-card--unenforceable { border-top-color: #b8860b; }
-  .lc-card--negotiable { border-top-color: #3b6ea5; }
+  .lc-card--illegal { border-top-color: var(--ps-accent-text); }
+  .lc-card--unenforceable { border-top-color: var(--ps-caution); }
+  .lc-card--negotiable { border-top-color: var(--ps-info); }
   .lc-check { display: flex; gap: 0.6rem; align-items: flex-start; cursor: pointer; margin-bottom: 0.6rem; }
   .lc-box { flex: none; width: 1.15rem; height: 1.15rem; margin-top: 0.15rem; accent-color: var(--ps-ink); cursor: pointer; }
   .lc-check__clause { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.08rem; line-height: 1.25; }
   .lc-card__verdict { display: flex; align-items: center; gap: 0.45rem; font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.6rem; }
   .lc-card__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
-  .lc-card__verdict--illegal { color: var(--ps-accent-2); }
-  .lc-card__verdict--unenforceable { color: #b8860b; }
-  .lc-card__verdict--negotiable { color: #3b6ea5; }
+  .lc-card__verdict--illegal { color: var(--ps-accent-text); }
+  .lc-card__verdict--unenforceable { color: var(--ps-caution); }
+  .lc-card__verdict--negotiable { color: var(--ps-info); }
   .lc-card__effective { font-family: var(--ps-font-record); font-size: 0.82rem; line-height: 1.45; color: var(--ps-ink); background: var(--ps-paper); border: 1px dashed var(--ps-ink-soft); border-radius: 5px; padding: 0.45rem 0.6rem; margin-bottom: 0.7rem; }
   .lc-card__ask { font-size: 1.02rem; line-height: 1.5; color: var(--ps-ink); margin-bottom: 0.6rem; }
   .lc-card__asklabel { display: block; color: var(--ps-ink-soft); margin-bottom: 0.2rem; }
@@ -370,9 +370,9 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   .lc-read__tally { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; }
   .lc-pill { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.03em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 999px; border: 1px solid var(--ps-line); color: var(--ps-ink-soft); }
   .lc-pill b { color: var(--ps-ink); }
-  .lc-pill--illegal { border-color: var(--ps-accent-2); }
-  .lc-pill--unenforceable { border-color: #b8860b; }
-  .lc-pill--negotiable { border-color: #3b6ea5; }
+  .lc-pill--illegal { border-color: var(--ps-accent-text); }
+  .lc-pill--unenforceable { border-color: var(--ps-caution); }
+  .lc-pill--negotiable { border-color: var(--ps-info); }
   .lc-asks { margin-top: 1.1rem; border-top: 1px dotted var(--ps-line); padding-top: 0.9rem; }
   .lc-asks__h { display: block; color: var(--ps-ink-soft); margin-bottom: 0.6rem; }
   .lc-asks__list { margin: 0; padding-left: 1.1rem; }
@@ -382,9 +382,9 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   /* Three moves */
   .lc-moves { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; counter-reset: mv; }
   .lc-move { border: 1px solid var(--ps-line); border-top: 3px solid var(--ps-line); border-radius: 6px; padding: 1.1rem 1.2rem; background: var(--ps-surface-2); }
-  .lc-move--illegal { border-top-color: var(--ps-accent-2); }
-  .lc-move--unenforceable { border-top-color: #b8860b; }
-  .lc-move--negotiable { border-top-color: #3b6ea5; }
+  .lc-move--illegal { border-top-color: var(--ps-accent-text); }
+  .lc-move--unenforceable { border-top-color: var(--ps-caution); }
+  .lc-move--negotiable { border-top-color: var(--ps-info); }
   .lc-move__h { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: 0.4rem; }
   .lc-move__d { color: var(--ps-ink-soft); font-size: 1rem; line-height: 1.5; }
 
@@ -392,7 +392,7 @@ const verdictText = { illegal: 'Illegal', unenforceable: 'Red flag', negotiable:
   .dc-help { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
   .dc-help__item { border-bottom: 1px solid var(--ps-line); padding: 0.9rem 0.2rem; }
   .dc-help__name { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.12rem; color: var(--ps-ink); text-decoration: none; }
-  .dc-help__name:hover { color: var(--ps-accent-2); }
+  .dc-help__name:hover { color: var(--ps-accent-text); }
   .dc-help__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.25rem 0 0; }
 
   /* Sources */

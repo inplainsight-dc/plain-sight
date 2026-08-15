@@ -40,7 +40,7 @@ const inspectionTag = {
   'no-statutory': 'No inspection in law — you document it',
 };
 ---
-<Base title="Protect your deposit at move-in: DC, Maryland & Virginia" description="The day you get the keys is when you protect your deposit. A move-in checklist keyed to DC, Maryland, or Virginia, a plain read of how your deposit has to come back, and a printable room-by-room condition inventory — your strongest evidence against an “as-is” damage charge. No account, no AI, nothing you type leaves your browser.">
+<Base title="Protect your deposit at move-in: DC, Maryland & Virginia" ogImage="/og/rentals-move-in.png" description="The day you get the keys is when you protect your deposit. A move-in checklist keyed to DC, Maryland, or Virginia, a plain read of how your deposit has to come back, and a printable room-by-room condition inventory — your strongest evidence against an “as-is” damage charge. No account, no AI, nothing you type leaves your browser.">
   <Header slot="header" />
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -135,7 +135,7 @@ const inspectionTag = {
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §02 THE MOVE-IN CHECKLIST -->
@@ -177,7 +177,7 @@ const inspectionTag = {
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §03 THE PRINTABLE CONDITION INVENTORY -->
@@ -245,7 +245,7 @@ const inspectionTag = {
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §04 REAL HELP -->
@@ -269,7 +269,7 @@ const inspectionTag = {
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §05 FINE PRINT + SOURCES -->
@@ -401,7 +401,7 @@ const inspectionTag = {
   .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 48ch; }
   .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
-  .ips-lead__note strong { color: var(--ps-accent-2); }
+  .ips-lead__note strong { color: var(--ps-accent-text); }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
 
@@ -420,7 +420,7 @@ const inspectionTag = {
   .mv-zip { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
   .mv-zip__label { color: var(--ps-ink-soft); }
   .mv-zip__input { font-family: var(--ps-font-record); font-size: 1rem; letter-spacing: 0.08em; width: 6.5rem; padding: 0.4rem 0.6rem; border: 1px solid var(--ps-ink-soft); border-radius: 6px; background: var(--ps-paper); color: var(--ps-ink); }
-  .mv-zip__input:focus { outline: none; border-color: var(--ps-accent-2); }
+  .mv-zip__input:focus { outline: none; border-color: var(--ps-accent-text); }
   .mv-zip__msg { display: block; margin-top: 0.5rem; color: var(--ps-ink-soft); line-height: 1.5; max-width: 70ch; }
 
   .ips-sec { padding-block: clamp(2rem, 5vw, 3.2rem); }
@@ -439,14 +439,14 @@ const inspectionTag = {
 
   /* §01 deposit-return facts panel */
   .mv-facts { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1.3rem 1.4rem; background: var(--ps-surface-2); max-width: 78ch; }
-  .mv-facts--strong { border-left-color: #2f7d4f; }
-  .mv-facts--on-request { border-left-color: #b8860b; }
-  .mv-facts--no-statutory { border-left-color: var(--ps-accent-2); }
+  .mv-facts--strong { border-left-color: var(--ps-good); }
+  .mv-facts--on-request { border-left-color: var(--ps-caution); }
+  .mv-facts--no-statutory { border-left-color: var(--ps-accent-text); }
   .mv-facts__tag { display: flex; align-items: center; gap: 0.45rem; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ps-ink-soft); margin-bottom: 1rem; }
   .mv-facts__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
-  .mv-facts--strong .mv-facts__tag { color: #2f7d4f; }
-  .mv-facts--on-request .mv-facts__tag { color: #b8860b; }
-  .mv-facts--no-statutory .mv-facts__tag { color: var(--ps-accent-2); }
+  .mv-facts--strong .mv-facts__tag { color: var(--ps-good); }
+  .mv-facts--on-request .mv-facts__tag { color: var(--ps-caution); }
+  .mv-facts--no-statutory .mv-facts__tag { color: var(--ps-accent-text); }
   .mv-facts__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.1rem 1.6rem; margin: 0; }
   .mv-fact--wide { grid-column: 1 / -1; }
   .mv-fact dt { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ps-ink-soft); margin-bottom: 0.35rem; }
@@ -458,7 +458,7 @@ const inspectionTag = {
   /* §02 checklist */
   .mv-phase { margin-bottom: 1.8rem; }
   .mv-phase__h { display: flex; align-items: baseline; gap: 0.7rem; font-family: var(--ps-font-display); font-weight: 700; font-size: 1.3rem; margin-bottom: 0.9rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--ps-line); }
-  .mv-phase__no { font-size: 0.85rem; color: var(--ps-accent-2); }
+  .mv-phase__no { font-size: 0.85rem; color: var(--ps-accent-text); }
   .mv-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
   .mv-item { }
   .mv-check { display: flex; gap: 0.7rem; align-items: flex-start; cursor: pointer; border: 1px solid var(--ps-line); border-radius: 6px; padding: 0.85rem 1rem; background: var(--ps-surface-2); transition: border-color 0.12s ease; }
@@ -467,7 +467,7 @@ const inspectionTag = {
   .mv-box:checked ~ .mv-check__body .mv-check__item { color: var(--ps-ink-soft); text-decoration: line-through; text-decoration-color: var(--ps-line); }
   .mv-check__body { display: flex; flex-direction: column; gap: 0.25rem; }
   .mv-check__item { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.06rem; line-height: 1.3; }
-  .mv-badge { display: inline-block; margin-left: 0.5rem; font-family: var(--ps-font-record); font-weight: 400; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; vertical-align: middle; color: var(--ps-paper); background: var(--ps-accent-2); padding: 0.12rem 0.45rem; border-radius: 3px; }
+  .mv-badge { display: inline-block; margin-left: 0.5rem; font-family: var(--ps-font-record); font-weight: 400; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; vertical-align: middle; color: #fff; background: #B0122B; padding: 0.12rem 0.45rem; border-radius: 3px; }
   .mv-check__why { color: var(--ps-ink-soft); line-height: 1.5; }
 
   /* progress read */
@@ -491,7 +491,7 @@ const inspectionTag = {
   .mv-field { display: flex; flex-direction: column; gap: 0.25rem; }
   .mv-field span { font-family: var(--ps-font-record); font-size: 0.78rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ps-ink-soft); }
   .mv-field input { font-family: var(--ps-font-body); font-size: 1rem; padding: 0.4rem 0.5rem; border: 0; border-bottom: 1px solid var(--ps-ink-soft); background: transparent; color: var(--ps-ink); }
-  .mv-field input:focus { outline: none; border-bottom-color: var(--ps-accent-2); }
+  .mv-field input:focus { outline: none; border-bottom-color: var(--ps-accent-text); }
   .mv-field--sm { }
   .mv-inv-note { margin-top: 0.4rem; color: var(--ps-ink-soft); line-height: 1.55; }
 
@@ -502,7 +502,7 @@ const inspectionTag = {
   .mv-inv-table tbody th { font-family: var(--ps-font-body); font-weight: 400; font-size: 0.98rem; text-align: left; padding: 0.45rem 0.5rem; color: var(--ps-ink); vertical-align: middle; border-top: 1px solid var(--ps-line); }
   .mv-inv-table tbody td { padding: 0.45rem 0.5rem; border-top: 1px solid var(--ps-line); }
   .mv-cond { width: 100%; font-family: var(--ps-font-body); font-size: 0.95rem; padding: 0.35rem 0.4rem; border: 0; border-bottom: 1px solid var(--ps-line); background: transparent; color: var(--ps-ink); }
-  .mv-cond:focus { outline: none; border-bottom-color: var(--ps-accent-2); }
+  .mv-cond:focus { outline: none; border-bottom-color: var(--ps-accent-text); }
   .mv-row-extra th { color: var(--ps-ink-soft); font-style: italic; }
 
   .mv-inv-sign { border-top: 2px solid var(--ps-ink); padding-top: 1.1rem; }
@@ -516,7 +516,7 @@ const inspectionTag = {
   .dc-help { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
   .dc-help__item { border-bottom: 1px solid var(--ps-line); padding: 0.9rem 0.2rem; }
   .dc-help__name { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.12rem; color: var(--ps-ink); text-decoration: none; }
-  .dc-help__name:hover { color: var(--ps-accent-2); }
+  .dc-help__name:hover { color: var(--ps-accent-text); }
   .dc-help__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.25rem 0 0; }
 
   /* Sources */

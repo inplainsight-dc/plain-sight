@@ -56,7 +56,7 @@ const sources = rightsCards.sources;
 const verdictText = { no: 'Not allowed', ask: 'Know the limit' };
 const order = facts.order;
 ---
-<Base title="Know your rights: renting in DC, Maryland & Virginia" description="Your renter rights across DC, Maryland, and Virginia in plain language — the deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with. No account, no AI, nothing you type leaves your browser.">
+<Base title="Know your rights: renting in DC, Maryland & Virginia" ogImage="/og/rentals-rights.png" description="Your renter rights across DC, Maryland, and Virginia in plain language — the deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with. No account, no AI, nothing you type leaves your browser.">
   <Header slot="header" />
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -111,7 +111,7 @@ const order = facts.order;
           <span class="ps-record">Monthly rent</span>
           <span class="dc-calc__input"><span aria-hidden="true">$</span><input id="rent" type="number" inputmode="numeric" min="0" step="50" placeholder="2000" aria-label="Monthly rent in dollars" /></span>
         </label>
-        <div class="dc-calc__out" id="calcOut" hidden>
+        <div class="dc-calc__out" id="calcOut" role="status" aria-live="polite" hidden>
           <div class="dc-calc__row"><span>First month’s rent</span><b id="firstOut">—</b></div>
           <div class="dc-calc__row" id="lastRow" hidden><span>Last month’s rent (VA — allowed on top)</span><b id="lastOut">—</b></div>
           <div class="dc-calc__row"><span id="depLabel">Security deposit — legal max</span><b id="depOut">—</b></div>
@@ -124,7 +124,7 @@ const order = facts.order;
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §02 WHEN A LANDLORD ASKS -->
@@ -152,7 +152,7 @@ const order = facts.order;
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §03 REAL HELP -->
@@ -177,7 +177,7 @@ const order = facts.order;
   </section>
 
   <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
   <!-- §04 FINE PRINT + SOURCES -->
@@ -261,7 +261,7 @@ const order = facts.order;
   .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
   .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
-  .ips-lead__note strong { color: var(--ps-accent-2); }
+  .ips-lead__note strong { color: var(--ps-accent-text); }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .rk-privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; }
 
@@ -290,25 +290,25 @@ const order = facts.order;
   /* Deposit calculator */
   .dc-calc { display: grid; grid-template-columns: minmax(180px, 260px) 1fr; gap: clamp(1rem, 3vw, 2rem); align-items: start; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.2rem 1.3rem; background: var(--ps-surface-2); max-width: 74ch; }
   .dc-calc__field { display: block; }
-  .dc-calc__field > .ps-record { display: block; margin-bottom: 0.4rem; color: var(--ps-accent-2); }
+  .dc-calc__field > .ps-record { display: block; margin-bottom: 0.4rem; color: var(--ps-accent-text); }
   .dc-calc__input { display: flex; align-items: center; gap: 0.3rem; background: var(--ps-paper); border: 1px solid var(--ps-line); border-radius: 5px; padding: 0.5rem 0.7rem; font-family: var(--ps-font-display); font-size: 1.3rem; }
   .dc-calc__input input { border: 0; background: transparent; font: inherit; color: var(--ps-ink); width: 100%; outline: none; }
   .dc-calc__out { align-self: center; }
   .dc-calc__row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; border-bottom: 1px dotted var(--ps-line); font-size: 1.05rem; color: var(--ps-ink-soft); }
   .dc-calc__row b { color: var(--ps-ink); font-family: var(--ps-font-display); }
   .dc-calc__row--total { border-bottom: 0; border-top: 1.5px solid var(--ps-ink); margin-top: 0.2rem; padding-top: 0.6rem; font-size: 1.15rem; color: var(--ps-ink); }
-  .dc-calc__flag { margin-top: 0.7rem; color: var(--ps-accent-2); line-height: 1.5; }
+  .dc-calc__flag { margin-top: 0.7rem; color: var(--ps-accent-text); line-height: 1.5; }
 
   /* Rights cards */
   .dc-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
   .dc-card { border: 1px solid var(--ps-line); border-radius: 6px; padding: 1.1rem 1.2rem; background: var(--ps-surface-2); border-top: 3px solid var(--ps-line); }
-  .dc-card--no { border-top-color: var(--ps-accent-2); }
-  .dc-card--ask { border-top-color: #b8860b; }
+  .dc-card--no { border-top-color: var(--ps-accent-text); }
+  .dc-card--ask { border-top-color: var(--ps-caution); }
   .dc-card__ask { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.12rem; line-height: 1.2; margin-bottom: 0.6rem; }
   .dc-card__verdict { display: flex; align-items: center; gap: 0.45rem; font-family: var(--ps-font-record); font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.7rem; }
   .dc-card__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
-  .dc-card__verdict--no { color: var(--ps-accent-2); }
-  .dc-card__verdict--ask { color: #b8860b; }
+  .dc-card__verdict--no { color: var(--ps-accent-text); }
+  .dc-card__verdict--ask { color: var(--ps-caution); }
   .dc-card__say { font-size: 1.04rem; line-height: 1.5; color: var(--ps-ink); margin-bottom: 0.7rem; }
   .dc-card__saylabel { display: block; color: var(--ps-ink-soft); margin-bottom: 0.2rem; }
   .dc-card__src { color: var(--ps-ink-soft); line-height: 1.4; }
@@ -319,7 +319,7 @@ const order = facts.order;
   .dc-help { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
   .dc-help__item { border-bottom: 1px solid var(--ps-line); padding: 0.9rem 0.2rem; }
   .dc-help__name { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.12rem; color: var(--ps-ink); text-decoration: none; }
-  .dc-help__name:hover { color: var(--ps-accent-2); }
+  .dc-help__name:hover { color: var(--ps-accent-text); }
   .dc-help__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.25rem 0 0; }
 
   /* Sources */

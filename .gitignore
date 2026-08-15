@@ -4,6 +4,14 @@ dist/
 .astro/
 # dependencies
 node_modules/
+# python venv. Used by two build/kit scripts:
+#   • Civic Almanac build gate: schema/validate.py needs jsonschema (scripts/sync-almanac-data.mjs)
+#   • Outreach kit QR codes: segno (scripts/gen-outreach-kit.py)
+# One-time: python3 -m venv .venv && ./.venv/bin/pip install jsonschema segno
+.venv/
+
+# local preview scratch (temp copies served via the dev server, never committed)
+public/_preview-*.html
 # env & secrets (never commit AWS keys)
 .env
 .env.*

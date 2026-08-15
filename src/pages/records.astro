@@ -30,6 +30,7 @@ const FIELD_INFO = {
 
 <Base
   title="DC Records"
+  ogImage="/og/records.png"
   description="How long DC government must keep each kind of record — and when it can be destroyed or sent to the Archives. Browsable, filterable, free to download, no login."
 >
   <Header slot="header" />
@@ -554,7 +555,7 @@ const FIELD_INFO = {
   .rr .rr-search input { border: 0; background: transparent; font-family: var(--ps-font-body); font-size: 0.95rem; color: var(--ps-ink); width: 100%; outline: none; }
   .rr .rr-search svg { flex: 0 0 auto; color: var(--ps-ink-soft); }
   .rr .rr-btn { font-family: var(--ps-font-body); font-weight: 600; font-size: 0.85rem; border: 1px solid var(--ps-line); background: var(--ps-surface); color: var(--ps-ink); border-radius: var(--ps-radius-sm); padding: 0.55rem 0.8rem; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem; transition: border-color 0.15s ease, color 0.15s ease; }
-  .rr .rr-btn:hover { border-color: var(--ps-accent); color: var(--ps-accent-2); }
+  .rr .rr-btn:hover { border-color: var(--ps-accent); color: var(--ps-accent-text); }
   .rr .rr-filters { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 0.9rem; }
   .rr .rr-fgroup { display: flex; flex-direction: column; gap: 0.25rem; }
   .rr .rr-fgroup label { font-family: var(--ps-font-record); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); }
@@ -562,14 +563,14 @@ const FIELD_INFO = {
   .rr .rr-exportrow { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; align-items: center; border-top: 1px solid var(--ps-line); padding-top: 0.9rem; }
   .rr .rr-lbl { font-family: var(--ps-font-record); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); margin-right: 0.15rem; }
   .rr .rr-count { margin-left: auto; font-size: 0.85rem; color: var(--ps-ink-soft); font-weight: 600; }
-  .rr .rr-count b { color: var(--ps-accent-2); }
+  .rr .rr-count b { color: var(--ps-accent-text); }
 
   /* schedule group header */
   .rr #register { margin-top: 1.4rem; }
   .rr .schedule-h { font-family: var(--ps-font-display); font-size: 1.15rem; font-weight: 600; margin: 1.6rem 0 0.5rem; color: var(--ps-ink); display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
   .rr .schedule-h small { font-family: var(--ps-font-record); font-weight: 500; color: var(--ps-ink-soft); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
   .rr .comp { font-family: var(--ps-font-record); font-weight: 600; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.12rem 0.5rem; border-radius: 999px; }
-  .rr .comp.full { background: var(--ps-mark); color: var(--ps-accent-2); }
+  .rr .comp.full { background: var(--ps-mark); color: var(--ps-accent-text); }
   .rr .comp.sel { background: var(--ps-surface-2); color: var(--ps-ink-soft); border: 1px solid var(--ps-line); }
 
   /* register rows */
@@ -585,9 +586,9 @@ const FIELD_INFO = {
   .rr .tag { font-family: var(--ps-font-record); font-size: 0.64rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 0.14rem 0.5rem; border-radius: 999px; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.25rem; }
   .rr .t-destroy { background: var(--ps-surface-2); color: var(--ps-ink-soft); }
   .rr .t-permanent { background: transparent; border: 1px solid var(--ps-ink); color: var(--ps-ink); }
-  .rr .t-archives { background: transparent; border: 1px solid var(--ps-accent); color: var(--ps-accent-2); }
+  .rr .t-archives { background: transparent; border: 1px solid var(--ps-accent); color: var(--ps-accent-text); }
   .rr .t-transfer { background: transparent; border: 1px solid var(--ps-line); color: var(--ps-ink-soft); }
-  .rr .t-personal { background: var(--ps-mark); color: var(--ps-accent-2); }
+  .rr .t-personal { background: var(--ps-mark); color: var(--ps-accent-text); }
   .rr .t-sensitive { background: var(--ps-accent); color: #fff; }
   .rr .t-legal { background: var(--ps-ink); color: var(--ps-paper); }
   .rr .rbody { padding: 0.2rem 1rem 1.1rem; border-top: 1px solid var(--ps-line); }
@@ -596,18 +597,18 @@ const FIELD_INFO = {
   .rr .rbody dd { margin: 0; color: var(--ps-ink-soft); }
   .rr .prov { margin-top: 0.9rem; padding-top: 0.75rem; border-top: 1px dashed var(--ps-line); font-size: 0.82rem; color: var(--ps-ink-soft); }
   .rr .prov a { font-weight: 600; }
-  .rr .permalink { font-family: var(--ps-font-record); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; color: var(--ps-accent-2); cursor: pointer; background: none; border: 0; padding: 0; margin-top: 0.7rem; display: inline-flex; align-items: center; gap: 0.3rem; }
+  .rr .permalink { font-family: var(--ps-font-record); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; color: var(--ps-accent-text); cursor: pointer; background: none; border: 0; padding: 0; margin-top: 0.7rem; display: inline-flex; align-items: center; gap: 0.3rem; }
   .rr .permalink:hover { color: var(--ps-ink); }
 
   /* INFO popover */
-  .rr .info { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--ps-mark); color: var(--ps-accent-2); font-size: 0.62rem; font-weight: 800; cursor: help; font-family: var(--ps-font-body); position: relative; flex: 0 0 auto; }
+  .rr .info { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--ps-mark); color: var(--ps-accent-text); font-size: 0.62rem; font-weight: 800; cursor: help; font-family: var(--ps-font-body); position: relative; flex: 0 0 auto; }
   .rr .info:hover, .rr .info:focus { background: var(--ps-accent); color: #fff; outline: none; }
   .rr .info .pop { display: none; position: absolute; left: 50%; top: 22px; transform: translateX(-50%); width: 250px; background: var(--ps-ink); color: var(--ps-paper); font-weight: 400; font-size: 0.78rem; line-height: 1.5; letter-spacing: 0; text-transform: none; padding: 0.7rem 0.8rem; border-radius: var(--ps-radius); z-index: 30; }
   .rr .info.open .pop { display: block; }
   .rr .info .pop::after { content: ''; position: absolute; left: 50%; top: -6px; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background: var(--ps-ink); }
 
   /* fail / empty */
-  .rr .failbox { background: var(--ps-mark); border: 1px solid var(--ps-accent); border-radius: var(--ps-radius); padding: 1rem 1.1rem; color: var(--ps-accent-2); font-weight: 600; }
+  .rr .failbox { background: var(--ps-mark); border: 1px solid var(--ps-accent); border-radius: var(--ps-radius); padding: 1rem 1.1rem; color: var(--ps-accent-text); font-weight: 600; }
   .rr .emptybox { background: var(--ps-surface-2); border: 1px solid var(--ps-line); border-radius: var(--ps-radius); padding: 1rem 1.1rem; color: var(--ps-ink); font-weight: 600; }
   .rr .emptybox .rr-btn { margin-top: 0.6rem; }
 
