@@ -1,0 +1,246 @@
+{
+  "_generated": "Built by scripts/sync-almanac-data.mjs — do not edit by hand. Source: 100 IPS Electify/schema/examples/.",
+  "jurisdiction": {
+    "id": "dc",
+    "name": "District of Columbia",
+    "short_name": "DC",
+    "timezone": "America/New_York",
+    "bbox": [
+      -77.12,
+      38.79,
+      -76.9,
+      39
+    ]
+  },
+  "area_levels": [
+    {
+      "level": "jurisdiction",
+      "label": "the District",
+      "explainer": "Citywide offices and citywide ballot measures."
+    },
+    {
+      "level": "ward",
+      "label": "Ward",
+      "explainer": "One of eight areas, each with its own Council member."
+    },
+    {
+      "level": "anc",
+      "label": "Advisory Neighborhood Commission",
+      "explainer": "A neighbourhood body whose written positions agencies must give 'great weight'."
+    },
+    {
+      "level": "smd",
+      "label": "Single Member District",
+      "explainer": "A few thousand neighbours, one elected commissioner. The smallest elected seat in the country."
+    },
+    {
+      "level": "precinct",
+      "label": "Voting precinct",
+      "explainer": "Determines where you vote on election day and how results are reported."
+    }
+  ],
+  "governance": {
+    "not_affiliated_notice": "Civic Almanac is not affiliated with the tools it links to, or with the District government.",
+    "no_endorsement_notice": "A listing is not an endorsement. We link to tools because they do a job well, not because we vouch for them.",
+    "author_owns_it_notice": "Each linked tool is built and owned by the person or body named beside it.",
+    "corrections_url": "/corrections",
+    "review_cadence_days": 180
+  },
+  "footprint": {
+    "enabled": true,
+    "derivation_default": "off",
+    "storage": "device",
+    "export_formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "avenues": [
+    {
+      "order": 1,
+      "featured": true,
+      "kind": "elections.vote",
+      "title": "Vote in an election",
+      "one_liner": "Decide who holds the offices that run your city, your ward and your block.",
+      "what_it_is": "An election is a fixed window in which residents choose who holds public office. Most of it is not the voting itself -- it is the paperwork and the dates around it: being registered, knowing what is on your ballot, knowing where and when you can hand it in. That is the part that is technically public and practically invisible.",
+      "why_it_matters": "Offices decided at an election set budgets, write rules, and appoint the people who enforce them. Every other avenue on this site leads to a body that someone was elected to, or appointed by someone who was.",
+      "delivery": "native",
+      "local_note": "DC gives away both halves of the ballot problem for free: OmniBallot for the pre-election sample ballot, DCBOE's results API afterwards. The 2018 cost centre -- address to voting geography -- is now open ArcGIS layers.",
+      "authority": {
+        "name": "District of Columbia Board of Elections",
+        "url": "https://dcboe.org/"
+      },
+      "external_tools": [
+        {
+          "name": "Precinct Explorer",
+          "operator": "Josh Jacobson",
+          "url": "https://dcprecinct.com/",
+          "covers": "Past DC election results by precinct. Complements this avenue; it is not the upcoming-ballot surface."
+        }
+      ],
+      "steps": [
+        {
+          "title": "Check you are registered",
+          "leaves_site": true
+        },
+        {
+          "title": "See what is actually on your ballot",
+          "leaves_site": false
+        },
+        {
+          "title": "Understand what each office does",
+          "leaves_site": false
+        },
+        {
+          "title": "Pick how you will vote",
+          "leaves_site": false
+        },
+        {
+          "title": "Find your place and time",
+          "leaves_site": false
+        },
+        {
+          "title": "Hand in your ballot",
+          "leaves_site": true
+        },
+        {
+          "title": "Check the result",
+          "leaves_site": true
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "featured": false,
+      "kind": "rulemaking.comment",
+      "title": "Comment on a proposed rule",
+      "one_liner": "When an agency wants to change the rules, there is a window where it has to read what you write.",
+      "what_it_is": "Agencies cannot usually change a regulation quietly. They publish the proposed text and open a comment period -- normally 30 days -- during which anyone can write in. The comments become part of the record the agency has to respond to. Almost nobody uses this, which is exactly why a single well-argued comment carries weight here that it does not carry anywhere else.",
+      "why_it_matters": "Regulations are where a law becomes the thing that actually happens to you. The comment period is the only routine moment a resident is invited into that text before it binds them.",
+      "delivery": "hybrid",
+      "local_note": "DC publishes the Register twice a month. The comment window is inside the notice, not on a calendar anywhere -- which is precisely the fine print this project exists to surface.",
+      "authority": {
+        "name": "Office of the Secretary, District of Columbia",
+        "url": "https://os.dc.gov/page/dc-municipal-regulations-and-register"
+      },
+      "external_tools": [
+        {
+          "name": "DCMR Explorer",
+          "operator": "Josh Jacobson",
+          "url": "https://dcmr.online/",
+          "covers": "Browsing and searching the DC Municipal Regulations -- the text of the rule being changed."
+        }
+      ],
+      "steps": [
+        {
+          "title": "Find the rule that affects you",
+          "leaves_site": true
+        },
+        {
+          "title": "Read what is actually changing",
+          "leaves_site": true
+        },
+        {
+          "title": "Check the closing date",
+          "leaves_site": false
+        },
+        {
+          "title": "Write what you know",
+          "leaves_site": false
+        },
+        {
+          "title": "Send it to the address in the notice",
+          "leaves_site": true
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "featured": false,
+      "kind": "budget.comment",
+      "title": "Say something about the budget",
+      "one_liner": "Once a year the people who set the budget have to sit and listen to residents, on the record.",
+      "what_it_is": "Budget and oversight hearings are scheduled, public, and open to anyone who signs up in time. You get a few minutes on the record, and staff read the written version whether or not you speak. It is the most concrete point of contact between a resident and a number in a spreadsheet.",
+      "why_it_matters": "A budget is the only document that says what a government will actually do next year. Everything else is intention.",
+      "delivery": "route_out",
+      "local_note": "The Council holds performance and budget oversight hearings each spring, one per agency. Signing up to testify is a short form and a deadline, and it is the least-known door in DC government.",
+      "authority": {
+        "name": "Council of the District of Columbia",
+        "url": "https://dccouncil.gov/"
+      },
+      "external_tools": [
+        {
+          "name": "DC Budget Explorer",
+          "operator": "Josh Jacobson",
+          "url": "https://dcbudget.com/",
+          "covers": "Browsing the DC budget -- agencies, programs, and how the numbers move year to year."
+        }
+      ],
+      "steps": [
+        {
+          "title": "See where the money currently goes",
+          "leaves_site": true
+        },
+        {
+          "title": "Find the hearing for that agency",
+          "leaves_site": false
+        },
+        {
+          "title": "Sign up by the deadline",
+          "leaves_site": true
+        },
+        {
+          "title": "Decide: speak, write, or both",
+          "leaves_site": false
+        },
+        {
+          "title": "Say the specific thing",
+          "leaves_site": false
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "featured": false,
+      "kind": "service.request",
+      "title": "Report something broken",
+      "one_liner": "The pothole, the streetlight, the pile that has been there three weeks -- reporting it creates a record with a number on it.",
+      "what_it_is": "A service request is the smallest unit of civic participation, and the only one most people ever use. What is not obvious is that each report becomes a tracked, public record -- which means a street with twenty logged reports is a street that can be pointed at in a hearing.",
+      "why_it_matters": "Individually it fixes a thing. Collectively it is evidence, and evidence is what the other avenues on this site run on.",
+      "delivery": "route_out",
+      "local_note": "DC's 311 record is public, which is what makes the second step -- keep the number -- worth saying out loud.",
+      "authority": {
+        "name": "Office of Unified Communications (DC 311)",
+        "url": "https://311.dc.gov/"
+      },
+      "external_tools": [
+        {
+          "name": "Snap311",
+          "operator": "Kyle Fiducia",
+          "url": "https://snap311.com/",
+          "covers": "Filing and tracking a DC 311 service request from a photo."
+        },
+        {
+          "name": "DC 311",
+          "operator": "Office of Unified Communications",
+          "url": "https://311.dc.gov/",
+          "covers": "The official channel, for anyone who would rather use it directly."
+        }
+      ],
+      "steps": [
+        {
+          "title": "Report it",
+          "leaves_site": true
+        },
+        {
+          "title": "Keep the number",
+          "leaves_site": false
+        },
+        {
+          "title": "Follow it up if it closes without being fixed",
+          "leaves_site": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,282 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+// -----------------------------------------------------------------------------
+// SOURCE OF TRUTH.  This page names no jurisdiction of its own. Everything
+// place-specific — the jurisdiction, its districts, the avenues and the tools
+// they route to — arrives as DATA from the Civic Almanac content brain:
+//   100 IPS Electify/schema/examples/  (avenue / binding / instance-config)
+//     └─ resolved + validated by scripts/sync-almanac-data.mjs → src/data/almanac/almanac.json
+// A fork changes only that content (the binding/opportunity/config records); this
+// template stays put. That is the whole point of the avenue model, so the rule is
+// enforced by construction: if you find yourself typing a place name into this
+// file, it belongs in the config instead.
+//
+// SCOPE — this is the p2-t1 SHELL only: it "visibly holds four avenues, not one."
+// The address→districts lookup (p2-t2), the ballot explainer (p2-t3), the .ics
+// checklist (p2-t4) and the footprint log (p2-t5) are later tasks; here they are
+// named as what is coming, not built.
+// -----------------------------------------------------------------------------
+import almanac from '../../data/almanac/almanac.json';
+
+const j = almanac.jurisdiction;             // {id,name,short_name,timezone,bbox}
+const gov = almanac.governance || {};
+const avenues = almanac.avenues || [];
+const levels = almanac.area_levels || [];
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+
+// How each avenue reaches the resident — the build-vs-plug-in call, said plainly.
+const DELIVERY = {
+  native:    { label: 'Done here',        note: 'Built into the Almanac.' },
+  hybrid:    { label: 'Timing here, tool theirs', note: 'We surface the deadline and the plain language; the reading tool is someone else’s, credited below.' },
+  route_out: { label: 'We point you there', note: 'A good tool already does this well. We name it and the step, and send you on.' },
+};
+
+const featured = avenues.find((a) => a.featured) || avenues[0];
+const rest = avenues.filter((a) => a !== featured);
+---
+<Base
+  title="Civic Almanac"
+  description="See the ways you can be heard by your local government — elections, rulemaking, budget hearings, reporting what’s broken — each with its deadline, held in one place instead of buried in the fine print.">
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; A TOOL IN THE INDEX &middot; IN DEVELOPMENT</p>
+      <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Civic Almanac <span class="ps-highlight">in plain sight</span>.</h1>
+          <p class="ips-lead__blurb">Type your address and see what you can actually weigh in on where you live — starting with the election coming at you, and holding {avenues.length} ways in, not one. Most of them are technically public and practically invisible. This is the fine print of participation, with the deadlines put back.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="al-rail__h ps-record">The four avenues</p>
+          <ul class="al-rail__list">
+            {avenues.map((a) => (
+              <li><span class="al-dot" data-d={a.delivery}></span>{a.title}</li>
+            ))}
+          </ul>
+          <p class="al-rail__note ps-record">Elections is avenue #1. The model is built to hold the rest.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 — WHAT IT IS -->
+  <section class="ips-sec" id="what">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">What it is</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p>There are more ways to be heard by your local government than anyone tells you: an election, a comment window on a rule being written, a budget hearing, a report of something broken on your block. Each is public. Each has a deadline. And each is buried somewhere different — a notice, a calendar, a form — so in practice most people never see the window before it closes.</p>
+        <p>The Civic Almanac puts them in one place, keyed to where you live, each with the one thing the fine print leaves out: <em>when it closes and how to actually do it.</em> It shows you a door of {avenues.length}, not one — and it never tells you <em>who</em> to support, only <em>how</em> to take part.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- 02 — THE AVENUES -->
+  <section class="ips-sec" id="avenues">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">The avenues</h2>
+        <span class="ips-sec-rule"></span>
+        <span class="ps-record">{avenues.length} ways in</span>
+      </div>
+
+      {featured && (
+        <article class="al-avenue al-avenue--feat">
+          <div class="al-avenue__head">
+            <h3 class="al-avenue__title">{featured.title}</h3>
+            <span class="al-tag al-tag--feat ps-record">Avenue #1</span>
+            <span class="al-tag ps-record" data-d={featured.delivery}>{DELIVERY[featured.delivery]?.label}</span>
+          </div>
+          <p class="al-avenue__lead">{featured.one_liner}</p>
+          <p class="al-avenue__what">{featured.what_it_is}</p>
+          <div class="al-soon">
+            <span class="ps-record">Coming in v1</span>
+            <p>Type your address → your districts, your ballot, and where &amp; when to hand it in. Built on {j.name}’s own open data. <span class="al-soon__flag">not yet wired — that’s the next task.</span></p>
+          </div>
+          {featured.authority && (
+            <p class="al-avenue__auth ps-record">Authority: <a href={featured.authority.url} target="_blank" rel="noopener">{featured.authority.name} &#8599;</a></p>
+          )}
+        </article>
+      )}
+
+      <div class="al-grid">
+        {rest.map((a) => (
+          <article class="al-avenue">
+            <div class="al-avenue__head">
+              <h3 class="al-avenue__title">{a.title}</h3>
+              <span class="al-tag ps-record" data-d={a.delivery}>{DELIVERY[a.delivery]?.label}</span>
+            </div>
+            <p class="al-avenue__lead">{a.one_liner}</p>
+            {a.local_note && <p class="al-avenue__note">{a.local_note}</p>}
+            {a.external_tools.length > 0 && (
+              <ul class="al-tools">
+                {a.external_tools.map((t) => (
+                  <li>
+                    <a href={t.url} target="_blank" rel="noopener">{t.name} &#8599;</a>
+                    <span class="al-tools__by ps-record">by {t.operator}</span>
+                    <span class="al-tools__covers">{t.covers}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {a.authority && (
+              <p class="al-avenue__auth ps-record">Authority: <a href={a.authority.url} target="_blank" rel="noopener">{a.authority.name} &#8599;</a></p>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <p class="al-aside ps-record">The delivery mode is an honest call, not a default: some avenues we build, some we hand to a tool that already nails it — named and credited, never rebuilt. A listing here is not an endorsement.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- 03 — YOUR DISTRICTS (preview) -->
+  <section class="ips-sec" id="districts">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Keyed to where you live</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about"><p>Nearly everything above depends on your address — sometimes down to a single block. In v1 you’ll type it once; it’s resolved to the districts below and then <strong>discarded</strong> — never stored, never logged, because there is no server to store it on. These are the layers the {j.short_name} instance resolves:</p></div>
+      <ol class="al-levels">
+        {levels.map((l) => (
+          <li class="al-level">
+            <span class="al-level__name ps-record">{l.label}</span>
+            <span class="al-level__desc">{l.explainer}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="al-aside ps-record">The address lookup itself is the next build task (p2-t2). This scaffold names the layers; it does not yet resolve them.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- 04 — FINE PRINT -->
+  <section class="ips-sec" id="fineprint">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">The fine print</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p><strong>It never tells you who to support.</strong> The Almanac illuminates <em>how</em> to take part, never <em>whom</em> to back. It explains what a seat controls; it does not rate, rank, or recommend anyone who holds or seeks it.</p>
+        {gov.not_affiliated_notice && <p><strong>Not affiliated.</strong> {gov.not_affiliated_notice}</p>}
+        {gov.no_endorsement_notice && <p><strong>A link is not an endorsement.</strong> {gov.no_endorsement_notice}</p>}
+        <p><strong>Nothing about you leaves your browser.</strong> No accounts, no tracking. Your address is resolved and discarded; any future participation log stays on your device, private by default.</p>
+        <p><strong>Not legal advice, and dates move.</strong> This surfaces public processes and points you to the official authority for each. Verify a deadline against that authority before you rely on it.</p>
+      </div>
+      <p class="al-feedback">
+        <a class="al-feedback__btn" href={gov.corrections_url || '/'}>
+          Something out of date or wrong? Tell us &rarr;
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
+  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 52ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+
+  .al-rail__h { display: block; color: var(--ps-accent-text); margin-bottom: 0.6rem; }
+  .al-rail__list { list-style: none; margin: 0 0 0.8rem; padding: 0; display: grid; gap: 0.5rem; }
+  .al-rail__list li { display: flex; align-items: baseline; gap: 0.55rem; font-family: var(--ps-font-record); font-size: 0.92rem; color: var(--ps-ink); }
+  .al-dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; flex: none; background: var(--ps-ink-soft); }
+  .al-dot[data-d="native"] { background: var(--ps-accent); }
+  .al-rail__note { display: block; color: var(--ps-ink-soft); line-height: 1.4; }
+
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* Avenue cards */
+  .al-avenue { border: 1px solid var(--ps-line); border-radius: 8px; padding: 1.2rem 1.35rem; background: var(--ps-surface); }
+  .al-avenue--feat { border-left: 3px solid var(--ps-accent); background: var(--ps-surface-2); margin-bottom: 1.4rem; }
+  .al-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1rem; }
+  .al-avenue__head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .al-avenue__title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.3rem; }
+  .al-tag { font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.12rem 0.5rem; border-radius: 999px; border: 1px solid var(--ps-line); color: var(--ps-ink-soft); white-space: nowrap; }
+  .al-tag[data-d="native"] { border-color: var(--ps-accent); color: var(--ps-accent-text); }
+  .al-tag--feat { background: var(--ps-ink); color: var(--ps-paper); border-color: var(--ps-ink); }
+  .al-avenue__lead { font-size: 1.08rem; color: var(--ps-ink); margin-bottom: 0.5rem; }
+  .al-avenue__what { color: var(--ps-ink-soft); font-size: 1rem; margin-bottom: 0.7rem; }
+  .al-avenue__note { color: var(--ps-ink-soft); font-size: 0.98rem; margin-bottom: 0.7rem; }
+  .al-avenue__auth { color: var(--ps-ink-soft); margin-top: 0.4rem; }
+  .al-avenue__auth a { color: var(--ps-ink); }
+
+  .al-soon { border-left: 2px solid var(--ps-accent); background: color-mix(in srgb, var(--ps-accent) 6%, transparent); padding: 0.7rem 0.9rem; border-radius: 0 6px 6px 0; margin: 0.4rem 0 0.7rem; }
+  .al-soon > .ps-record { display: inline-block; color: var(--ps-accent-text); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.25rem; }
+  .al-soon p { margin: 0; color: var(--ps-ink-soft); font-size: 1rem; }
+  .al-soon__flag { color: var(--ps-accent-text); font-style: italic; }
+
+  .al-tools { list-style: none; margin: 0.2rem 0 0.4rem; padding: 0; display: grid; gap: 0.55rem; }
+  .al-tools li { display: grid; gap: 0.15rem; padding-left: 0.8rem; border-left: 2px solid var(--ps-line); }
+  .al-tools a { color: var(--ps-ink); font-weight: 600; }
+  .al-tools__by { color: var(--ps-accent-text); font-size: 0.72rem; letter-spacing: 0.03em; }
+  .al-tools__covers { color: var(--ps-ink-soft); font-size: 0.95rem; }
+
+  .al-aside { margin-top: 1.3rem; color: var(--ps-ink-soft); max-width: 66ch; line-height: 1.5; }
+
+  /* Area levels */
+  .al-levels { list-style: none; margin: 1rem 0 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 68ch; }
+  .al-level { display: grid; grid-template-columns: 12rem 1fr; gap: 1rem; padding: 0.85rem 0.2rem; border-bottom: 1px solid var(--ps-line); }
+  .al-level__name { color: var(--ps-ink); align-self: baseline; }
+  .al-level__desc { color: var(--ps-ink-soft); font-size: 1.02rem; }
+
+  /* Feedback button */
+  .al-feedback { margin-top: 1.6rem; }
+  .al-feedback__btn { display: inline-block; font-family: var(--ps-font-record); font-size: 0.85rem; letter-spacing: 0.03em; color: var(--ps-ink); text-decoration: none; border: 1px solid var(--ps-ink); border-radius: 6px; padding: 0.6rem 1rem; transition: background-color 0.15s ease, color 0.15s ease; }
+  .al-feedback__btn:hover { background: var(--ps-ink); color: var(--ps-paper); }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+    .al-level { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>
