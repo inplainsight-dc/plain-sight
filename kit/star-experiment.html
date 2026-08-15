@@ -1,0 +1,59 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stars experiment · In Plain Sight</title>
+<style>
+  :root{--ink:#1a2438;--red:#E81B39;--paper:#fbf7f0;--soft:#515a70;--line:#e7ddc9;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Public Sans',system-ui,sans-serif;padding:32px;}
+  h1{font-family:Georgia,serif;font-weight:700;font-size:1.6rem;margin:0 0 .2rem;}
+  .lede{color:var(--soft);max-width:60ch;margin:0 0 2rem;}
+  .row{display:flex;gap:32px;flex-wrap:wrap;align-items:flex-end;margin:0 0 2.4rem;}
+  .cell{text-align:center;}
+  .cell .cap{margin-top:10px;font-size:.85rem;color:var(--soft);}
+  .cell .cap b{color:var(--ink);}
+  .small-row .big{display:none;}
+  svg{display:block;}
+  .badge-lg{width:150px;height:150px;}
+  .badge-sm{width:44px;height:44px;}
+  hr{border:none;border-top:1px solid var(--line);margin:2.5rem 0;}
+</style></head><body>
+<h1>Stars experiment</h1>
+<p class="lede">The DC flag badge, three ways. Look at the 44px column — that's the real test (favicon, mobile header). Anything that turns to mud there can't be the mark, however nice it looks big.</p>
+
+<div class="row" id="lg"></div>
+<hr>
+<h1 style="font-size:1.2rem;">At favicon / mobile-header size (44px)</h1>
+<div class="row small-row" id="sm"></div>
+
+<script>
+  // Favicon star polygon (local center ≈ 12,11), scaled + placed so 3 stars sit across the badge.
+  const STAR = "12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5";
+  function star(cx, cy, s, letter, lsize){
+    const tx = cx - 12*s, ty = cy - 11*s;
+    const g = `<g transform="translate(${tx},${ty}) scale(${s})"><polygon points="${STAR}"/></g>`;
+    const t = letter ? `<text x="${cx}" y="${cy+ (11*s*0.02) }" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="'Public Sans',system-ui,sans-serif" font-weight="800" font-size="${lsize}">${letter}</text>` : '';
+    return g + t;
+  }
+  // mode: 'plain' | 'perStar' (I/P/S) | 'crammed' ("IPS" in each)
+  function badge(mode, px){
+    const cls = px>100 ? 'badge-lg' : 'badge-sm';
+    const s = 1.5, cy = 34, xs = [30,60,90];
+    let stars = '';
+    if(mode==='plain') stars = xs.map(x=>star(x,cy,s)).join('');
+    if(mode==='perStar') stars = ['I','P','S'].map((L,i)=>star(xs[i],cy,s,L, 12)).join('');
+    if(mode==='crammed') stars = xs.map(x=>star(x,cy,s,'IPS', 7)).join('');
+    return `<svg class="${cls}" viewBox="0 0 120 120" aria-hidden="true">
+      <rect x="3" y="3" width="114" height="114" rx="8" fill="${'#fbf7f0'}" stroke="#1a2438" stroke-width="4"/>
+      <g fill="#E81B39">${stars}
+        <rect x="16" y="64" width="88" height="11"/>
+        <rect x="16" y="84" width="88" height="11"/>
+      </g></svg>`;
+  }
+  const defs = [
+    ['plain','<b>Plain</b><br>the flag as-is'],
+    ['perStar','<b>I · P · S</b><br>one letter per star'],
+    ['crammed','<b>“IPS” in each</b><br>your literal idea'],
+  ];
+  document.getElementById('lg').innerHTML = defs.map(([m,c])=>`<div class="cell">${badge(m,150)}<div class="cap">${c}</div></div>`).join('');
+  document.getElementById('sm').innerHTML = defs.map(([m,c])=>`<div class="cell">${badge(m,44)}<div class="cap">${c.split('<br>')[0]}</div></div>`).join('');
+</script>
+</body></html>

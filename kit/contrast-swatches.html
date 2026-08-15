@@ -1,0 +1,265 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contrast swatches · In Plain Sight</title><style>
+  :root{--ink:#1a2438;--soft:#515a70;--line:#e7ddc9;--paper:#fbf7f0;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Public Sans',system-ui,sans-serif;line-height:1.5;}
+  .wrap{max-width:1000px;margin:0 auto;padding:36px 22px 70px;}
+  h1{font-family:Georgia,serif;font-size:2rem;margin:0 0 .2rem;}
+  .lede{color:var(--soft);max-width:66ch;margin:0 0 1.4rem;}
+  .principle{background:#fff;border:1px solid var(--line);border-left:4px solid #1a2438;padding:12px 16px;border-radius:4px;margin:0 0 2rem;font-size:.95rem;}
+  section{margin:0 0 2.4rem;}
+  section > h2{font-family:Georgia,serif;font-size:1.4rem;margin:0 0 1rem;border-bottom:2px solid var(--line);padding-bottom:.3rem;}
+  .ramp{margin:0 0 1.4rem;}
+  .ramp h3{font-size:1rem;margin:0 0 .2rem;}
+  .note{color:var(--soft);font-size:.9rem;margin:0 0 .7rem;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .sw{margin:0;flex:1 1 160px;min-width:150px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff;}
+  .sw.rec{border-color:#1a8a4a;box-shadow:0 0 0 2px #1a8a4a;}
+  .chip{padding:16px 14px;display:flex;flex-direction:column;gap:8px;min-height:92px;justify-content:center;}
+  .chip .small{font-size:13px;font-weight:600;}
+  .chip .lg{font-size:22px;font-weight:700;}
+  figcaption{padding:8px 12px;font-size:.82rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  figcaption code{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:.8rem;}
+  .ratio{color:var(--soft);font-variant-numeric:tabular-nums;}
+  .badge{margin-left:auto;font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:999px;}
+  .badge.pass{background:#d8f0e0;color:#146c37;}
+  .badge.large{background:#fdeecb;color:#7a5a00;}
+  .badge.fail{background:#f7d6dc;color:#a11229;}
+  .reccap{width:100%;color:#1a8a4a;font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;}
+</style></head>
+<body><div class="wrap">
+  <h1>Contrast fixes — before &amp; after</h1>
+  <p class="lede">The two AA failures as small text, with darker candidates. Each swatch shows its exact WCAG
+    ratio; <b>AA small text needs 4.5:1</b>. The green-ringed swatch is the lightest option that passes —
+    i.e. the smallest change from today's brand colour.</p>
+  <div class="principle">This is small <em>text</em> only. The DC-flag red <code>#E81B39</code> stays exactly as-is
+    for the flag, solid fills, and big headlines — those already pass at the 3:1 large-text bar. We're only darkening
+    the hue when it's set as small type on a pale background.</div>
+
+  <section>
+    <h2>1 · The accent red</h2>
+    <div class="ramp">
+    <h3>On cream (light theme)</h3>
+    <p class="note">The current red is 4.23:1 here — just under the line. <strong>The first swatch is today's colour.</strong></p>
+    <div class="row"><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#E81B39">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#E81B39">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#E81B39</code>
+      <span class="ratio">4.23:1</span>
+      <span class="badge large">large only</span>
+      
+    </figcaption>
+  </figure><figure class="sw rec">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#C71430">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#C71430">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#C71430</code>
+      <span class="ratio">5.51:1</span>
+      <span class="badge pass">AA ✓</span>
+      <span class="reccap">recommended</span>
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#B0122B">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#B0122B">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#B0122B</code>
+      <span class="ratio">6.63:1</span>
+      <span class="badge pass">AA ✓</span>
+      
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#A11229">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#A11229">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#A11229</code>
+      <span class="ratio">7.47:1</span>
+      <span class="badge pass">AA ✓</span>
+      
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#96122A">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#96122A">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#96122A</code>
+      <span class="ratio">8.14:1</span>
+      <span class="badge pass">AA ✓</span>
+      
+    </figcaption>
+  </figure></div>
+  </div>
+    <div class="ramp">
+    <h3>On dark surface (dark theme)</h3>
+    <p class="note">In dark mode, small red text should switch to the brightened red. <strong>The first swatch is today's colour.</strong></p>
+    <div class="row"><figure class="sw ">
+    <div class="chip" style="background:#232c3e">
+      <span class="small" style="color:#E81B39">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#E81B39">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#E81B39</code>
+      <span class="ratio">3.10:1</span>
+      <span class="badge large">large only</span>
+      
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#232c3e">
+      <span class="small" style="color:#FF4A60">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#FF4A60">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#FF4A60</code>
+      <span class="ratio">4.26:1</span>
+      <span class="badge large">large only</span>
+      
+    </figcaption>
+  </figure><figure class="sw rec">
+    <div class="chip" style="background:#232c3e">
+      <span class="small" style="color:#FF6072">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#FF6072">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#FF6072</code>
+      <span class="ratio">4.77:1</span>
+      <span class="badge pass">AA ✓</span>
+      <span class="reccap">recommended</span>
+    </figcaption>
+  </figure></div>
+  </div>
+  </section>
+
+  <section>
+    <h2>2 · The amber “caution” colour</h2>
+    <div class="ramp">
+    <h3>On cream (light theme)</h3>
+    <p class="note">The current amber is 2.82:1 — a clear fail; it needs to go notably darker. <strong>The first swatch is today's colour.</strong></p>
+    <div class="row"><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#B8860B">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#B8860B">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#B8860B</code>
+      <span class="ratio">3.05:1</span>
+      <span class="badge large">large only</span>
+      
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#977006">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#977006">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#977006</code>
+      <span class="ratio">4.24:1</span>
+      <span class="badge large">large only</span>
+      
+    </figcaption>
+  </figure><figure class="sw rec">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#856200">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#856200">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#856200</code>
+      <span class="ratio">5.25:1</span>
+      <span class="badge pass">AA ✓</span>
+      <span class="reccap">recommended</span>
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#785900">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#785900">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#785900</code>
+      <span class="ratio">6.09:1</span>
+      <span class="badge pass">AA ✓</span>
+      
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#fbf7f0">
+      <span class="small" style="color:#6E5200">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#6E5200">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#6E5200</code>
+      <span class="ratio">6.85:1</span>
+      <span class="badge pass">AA ✓</span>
+      
+    </figcaption>
+  </figure></div>
+  </div>
+    <div class="ramp">
+    <h3>On the warm alt surface</h3>
+    <p class="note">Where the warning chips actually sit (slightly darker cream). <strong>The first swatch is today's colour.</strong></p>
+    <div class="row"><figure class="sw ">
+    <div class="chip" style="background:#f5eee1">
+      <span class="small" style="color:#B8860B">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#B8860B">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#B8860B</code>
+      <span class="ratio">2.82:1</span>
+      <span class="badge fail">fail</span>
+      
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#f5eee1">
+      <span class="small" style="color:#977006">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#977006">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#977006</code>
+      <span class="ratio">3.93:1</span>
+      <span class="badge large">large only</span>
+      
+    </figcaption>
+  </figure><figure class="sw rec">
+    <div class="chip" style="background:#f5eee1">
+      <span class="small" style="color:#856200">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#856200">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#856200</code>
+      <span class="ratio">4.86:1</span>
+      <span class="badge pass">AA ✓</span>
+      <span class="reccap">recommended</span>
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#f5eee1">
+      <span class="small" style="color:#785900">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#785900">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#785900</code>
+      <span class="ratio">5.64:1</span>
+      <span class="badge pass">AA ✓</span>
+      
+    </figcaption>
+  </figure><figure class="sw ">
+    <div class="chip" style="background:#f5eee1">
+      <span class="small" style="color:#6E5200">Know the limit · $2,600 deposit</span>
+      <span class="lg" style="color:#6E5200">Deposit cap</span>
+    </div>
+    <figcaption>
+      <code>#6E5200</code>
+      <span class="ratio">6.34:1</span>
+      <span class="badge pass">AA ✓</span>
+      
+    </figcaption>
+  </figure></div>
+  </div>
+  </section>
+</div></body></html>
