@@ -6,10 +6,11 @@
   "description": "Plain Sight \u2014 civic tools that bring the fine print into plain sight.",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/sync-core-data.mjs && node scripts/sync-law-data.mjs && node scripts/sync-almanac-data.mjs && node scripts/gen-og-cards.mjs && astro build",
+    "build": "node scripts/sync-core-data.mjs && node scripts/sync-law-data.mjs && node scripts/sync-almanac-data.mjs && node scripts/sync-str-data.mjs && node scripts/gen-og-cards.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "sync-core": "node scripts/sync-core-data.mjs",
+    "sync-str": "node scripts/sync-str-data.mjs",
     "sync-law": "node scripts/sync-law-data.mjs",
     "sync-almanac": "node scripts/sync-almanac-data.mjs",
     "gen-og": "node scripts/gen-og-cards.mjs",
