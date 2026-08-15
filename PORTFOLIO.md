@@ -1,6 +1,6 @@
 # In Plain Sight — Portfolio Map
 
-_The one place that says **where every tool in the family actually lives on disk**, so you never have to hunt for them again. Last updated: 2026-08-08._
+_The one place that says **where every tool in the family actually lives on disk**, so you never have to hunt for them again. Last updated: 2026-08-14._
 
 ## Why this file exists
 
@@ -28,6 +28,7 @@ Paths are relative to `~/Projects/` (aka `~/Documents/Claude/Projects/`).
 | **DC Laws** | DC Laws But Better | `DCMR but Better/` | 100 personal / 600 work | **split** | building | — |
 | **DC Records** | DC Inform+ | `000 DC Inform+/` (+ engine `constellation-core/`) | 000 | personal / **core** | live | `/records` |
 | _(no card yet)_ | IPS Civic Almanac (Electify) | `100 IPS Electify/` | 150 | personal | not yet carded | — |
+| _(no card yet)_ | DC Short-Term Rentals and Housing | `DC Short-Term Rentals and Housing/` | 100 | personal | research node (building) | — |
 
 ### Notes per tool
 
@@ -36,6 +37,7 @@ Paths are relative to `~/Projects/` (aka `~/Documents/Claude/Projects/`).
 - **DC Laws** — `DCMR but Better/` is **split-owned**: the work instance also reads it (one common corpus, D1/D2). Do not treat it as personal-only.
 - **DC Records** — the `/records` page reads `constellation-core/` at build time. `constellation-core` is the **core** engine (Pippa-owned, one-way copies to work) — it is not an In Plain Sight product itself, it *feeds* one.
 - **Electify** — In Plain Sight family, but not yet a card on the hub. Its folder still carries a `100 ` prefix, which the registry flags as a naming-rule violation to be fixed later (rename bare, band is 150). Add a card here when it's ready to show.
+- **DC Short-Term Rentals and Housing** — the research node behind a future explorer card. Measures how much DC housing stock is held out of the residential market as short-term rental inventory. Built entirely on public data (Level 0). Not yet a card: the public explorer is Phase 6 and ships only after the DLCP license-record match (Phase 2) and behind a redteam + persona gate. Stood up 2026-08-14 from an In Plain Sight spin-off. Time-sensitive: the Inside Airbnb snapshot upstream replaces each capture, so the quarterly capture cadence (roadmap p1) is the first priority.
 
 ## Why they're not all nested inside this repo
 
@@ -57,7 +59,8 @@ So the family stays scattered on disk, and **this file is the index** that makes
   {"display": "DC Trash",                "folder": ".",         "match": "trash", "owner": "personal", "status": "live",     "band": "100"},
   {"display": "DC Laws",                 "folder": "DCMR but Better",            "owner": "split",    "status": "building", "band": "100/600"},
   {"display": "DC Records",              "folder": "000 DC Inform+",             "owner": "personal", "status": "live",     "band": "000", "engine": "constellation-core (core)"},
-  {"display": "Electify",                "folder": "100 IPS Electify",           "owner": "personal", "status": "not-carded","band": "150"}
+  {"display": "Electify",                "folder": "100 IPS Electify",           "owner": "personal", "status": "not-carded","band": "150"},
+  {"display": "STR & Housing",           "folder": "DC Short-Term Rentals and Housing", "owner": "personal", "status": "building", "band": "100"}
 ]
 -->
 

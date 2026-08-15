@@ -1,6 +1,6 @@
 # In Plain Sight — Roadmap
 
-_The one place that says where the In Plain Sight **hub** is going and what's next. Source of truth for the landing site; the tool-by-tool build work is tracked in each tool's own folder. For where the tools live on disk, see `PORTFOLIO.md`. Last updated: 2026-08-09._
+_The one place that says where the In Plain Sight **hub** is going and what's next. Source of truth for the landing site; the tool-by-tool build work is tracked in each tool's own folder. For where the tools live on disk, see `PORTFOLIO.md`. Last updated: 2026-08-12._
 
 **Goal in one sentence:** a single warm, trustworthy front door — `inplainsight-dc.org` — that showcases a growing family of civic tools that make DC's fine print readable, each feeling like one brand.
 
@@ -41,6 +41,36 @@ _The one place that says where the In Plain Sight **hub** is going and what's ne
 | 2.3 | Publish more open-data (Layer 2) sources as tools graduate from DC Inform+ | ⬜ | DC Inform+ gap-finder promotes its next candidate into a card |
 | 2.4 | Localization readiness — product copy in American English as the baseline, structured for future translation | 🟡 | Tool UI copy is American-English clean (Rentals done 2026-08-08); a plan exists for extracting user-facing strings so a locale can be added without a rewrite |
 | 2.5 | **Language access — Amharic first** _(all tools; on-mission — "In Plain Sight" only lives up to the name if it reaches non-English speakers)_ | ⏸ parked 2026-08-09 → `PARKING_LOT.md` | **Parked because the product is gated on translation cost/avenue** — the Amharic legal text needs OHR reply → vendor → quote → native-speaker review before anything ships, and building the layer first is premature. Research is done and preserved (memory `language-access-amharic-initiative`, transcript in `language-access/`); the outreach email is **Pippa's to send** (ANC identity). **Ungate:** OHR replies / a vendor + cost line up, or you want the bounded string-inventory spike. ⏰ FY26 OHR reimbursement deadline **Oct 5, 2026**. |
+
+---
+
+## Phase 3 — Distribution & discoverability _(new 2026-08-12 — "let people find the tools")_
+
+_The tools are built and live but were effectively invisible. This phase is about being **found** and **shared**. The technical plumbing is done; the human channels are ongoing, paced to bandwidth. Full channel playbook: `OUTREACH.md`._
+
+| # | Task | Status | Done looks like |
+|---|------|--------|-----------------|
+| 3.1 | **Social share cards** — per-tool `og:image` so a pasted link renders a branded preview | ✅ done | `public/og/*.png` via `npm run gen-og` (in build); `Base.astro` emits og:image/url + `summary_large_image` |
+| 3.2 | **Search discoverability** — sitemap + robots + canonical URLs | ✅ done | `/sitemap.xml` (curated; excludes in-dev `/almanac`), `robots.txt`, `<link rel=canonical>` on every page |
+| 3.3 | **Printable outreach kit** — QR flyers + wallet tear-off tabs for community boards | ✅ built | `kit/spread-the-word.html` via `npm run gen-kit` (needs `.venv` + segno). Every QR → a verified-live URL |
+| 3.4 | **Free-channel outreach** — ANC newsletters, tenant orgs, libraries, Reddit, universities, local press | ⬜ ongoing (Pippa's to execute) | Blurbs drafted in `OUTREACH.md`; each send is a ship-gate step. Start-here: 5 physical flyers + 1 ANC blurb + 1 helpful Reddit reply |
+| 3.5 | **Privacy-preserving reach signal** (optional) | ⏸ deferred | No analytics by design; if ever wanted, CDN log page-counts (no per-person tracking) — a deliberate later decision |
+
+---
+
+## Cross-cutting — Accessibility (WCAG AA baseline)
+
+| Task | Status | Notes |
+|------|--------|-------|
+| **AA baseline on the four rental tools** | ✅ done 2026-08-12 | 8/8 page-theme combos at 0 contrast fails. Skip-link focus, `aria-live`, decorative-icon `aria-hidden`, and **theme-aware category-color tokens** (`--ps-accent-text` / `--ps-caution` / `--ps-good` / `--ps-info`) — see `A11Y_2026-08-12_rentals-audit.md`. Now a standing account-level ship-gate rule. |
+| **`prefers-contrast: more` enhancement** | ⬜ deferred | The silent "tailored-on-request" layer (no visible toggle). Baseline-for-all is done; this is the above-baseline bonus. |
+| **AA sweep of hub + trash + records** | ⬜ not started | The token system is global, so the hub inherits it; a focused both-theme sweep of the non-rental pages would confirm. |
+
+---
+
+## Brand — logo lockup _(decision made 2026-08-12)_
+
+- **Direction A — plain DC flag badge + wordmark** chosen (see `kit/logo-lab.html`; the highlighter and letters-in-stars ideas were tested and rejected on accessibility/legibility grounds). **Wiring pending:** header, share cards, a social avatar. The badge is a *jurisdiction-mark slot* for forks (flag-less cities swap in a fallback mark).
 
 ---
 
