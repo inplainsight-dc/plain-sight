@@ -66,6 +66,12 @@ function svg({ eyebrow, lines, sub, path }) {
 
 // --- The card set: one per live tool + the hub -----------------------------
 const CARDS = {
+  'ghost-homes': {
+    eyebrow: 'IN PLAIN SIGHT · GHOST HOMES',
+    lines: ['Whole homes,', 'run as hotels.'],
+    sub: 'How much of DC housing is held as full-time short-term rentals — look up your block.',
+    path: '/ghost-homes',
+  },
   'default': {
     eyebrow: 'IN PLAIN SIGHT · DC',
     lines: ['Bringing the fine print', 'into plain sight.'],

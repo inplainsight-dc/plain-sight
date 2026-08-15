@@ -1,0 +1,108 @@
+<nav class="tabs" aria-label="Views">
+  <div class="tabrow" role="tablist">
+    <button class="tab" role="tab" id="tab-door" aria-controls="p-door" aria-selected="true">Your block</button>
+    <button class="tab" role="tab" id="tab-city" aria-controls="p-city" aria-selected="false">Explore the city</button>
+    <button class="tab" role="tab" id="tab-rules" aria-controls="p-rules" aria-selected="false">Understand the rules</button>
+  </div>
+</nav>
+
+
+  <div class="panel" id="p-door" role="tabpanel" aria-label="Your block" tabindex="0">
+    <section class="card door">
+      <span class="kick">Find your block</span>
+      <h2>What's happening near you</h2>
+      <p class="note">Enter your address, or pick your neighborhood. You'll see how many whole homes nearby run as full-time short-term rentals, what share of local listings that is, and the ward, ANC and single-member district you're in.</p>
+      <div class="finder">
+        <div class="field">
+          <label for="addr">Your address</label>
+          <div class="row">
+            <input id="addr" type="text" placeholder="e.g. 700 A St NE" autocomplete="off" enterkeyhint="search">
+            <button class="gobtn" id="addrGo" type="button">Find</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="hood">Or your neighborhood</label>
+          <select id="hood"><option value="">Pick one of 39 neighborhoods…</option></select>
+        </div>
+      </div>
+      <p class="geo-msg" id="geoMsg" role="status" aria-live="polite"></p>
+      <div class="result" id="result" role="region" aria-live="polite" aria-atomic="true" hidden></div>
+      <div id="doorMap" hidden></div>
+      <div class="legend" id="doorLegend" hidden>
+        <span><i style="background:var(--ps-accent)"></i>whole home · full-time STR</span>
+        <span><i style="background:var(--ps-ink-soft)"></i>other listing</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="panel" id="p-city" role="tabpanel" aria-label="Explore the city" tabindex="0" hidden>
+    <section class="card">
+      <span class="kick">Citywide</span>
+      <h2 tabindex="-1">The whole District, at a glance</h2>
+      <p class="note">"Whole unit" is a self-contained home let in full — not a spare bedroom. "Full-time STR" adds two tests: a minimum stay under 30 nights and the calendar open at least 90 nights of the year.</p>
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <section class="card">
+      <span class="kick">Where the pressure is</span>
+      <h2>Full-time STR intensity</h2>
+      <p class="note">Each area is shaded by the share of its listings that are whole homes running as full-time STRs. Darker red = more of the local stock. Hover or tap an area for its numbers.</p>
+      <div class="ctrl">
+        <div class="field"><label for="fGeo">Shade by</label><select id="fGeo">
+          <option value="cluster">Neighborhood cluster</option><option value="anc">Advisory Neighborhood Commission (ANC)</option></select></div>
+        <div class="field"><label for="fMetric">Measure</label><select id="fMetric">
+          <option value="share">Full-time STR share of listings</option><option value="count">Number of full-time STRs</option></select></div>
+      </div>
+      <div id="cityMap"></div>
+      <div class="legend" id="cityLegend"></div>
+    </section>
+
+    <section class="card">
+      <span class="kick">By ward</span>
+      <h2>Whole-unit full-time STRs by ward</h2>
+      <p class="note">Split by whether the surrounding neighborhood rents at or below the citywide average of $2,446.</p>
+      <div id="wards"></div>
+    </section>
+
+    <section class="card">
+      <span class="kick">Break it down</span>
+      <h2>By ward, ANC, cluster or district</h2>
+      <div class="ctrl">
+        <div class="field"><label for="fBreak">Break down by</label><select id="fBreak">
+          <option value="ward">Ward (8)</option><option value="anc">ANC (46)</option>
+          <option value="cluster" selected>Neighborhood cluster (39)</option><option value="smd">Single-member district (345)</option></select></div>
+        <button class="gobtn" id="dl" type="button" style="padding:10px 16px;align-self:flex-end">Download tables (CSV)</button>
+      </div>
+      <div class="tablewrap"><table id="tbl">
+        <caption id="tblCap"></caption>
+        <thead><tr id="tblHead"></tr></thead><tbody></tbody>
+      </table></div>
+    </section>
+
+    <section class="card">
+      <span class="kick">Concentration</span>
+      <h2>How few hands hold how much</h2>
+      <p class="note" id="opsNote"></p>
+      <div id="ops"></div>
+      <p class="note" style="margin-top:12px">Operators are counted at the account level because scale is the point — but no operator is named. The 10 largest are shown by size only.</p>
+    </section>
+  </div>
+
+  <div class="panel rules" id="p-rules" role="tabpanel" aria-label="Understand the rules" tabindex="0" hidden>
+    <section class="card">
+      <span class="kick">Plain language</span>
+      <h2 tabindex="-1">What the rules actually say</h2>
+      <p class="note">Written for someone who has never heard of a "hosted license." No jargon assumed.</p>
+      <div class="kv"><b>What is legal today.</b> Renting out space short-term in DC requires a short-term rental license. There are two kinds, and which one you need depends on whether you live there.</div>
+      <div class="kv"><b>Hosted license.</b> The home is your primary residence and you're present during the stay — a spare room, a basement flat while you live upstairs. No night cap.</div>
+      <div class="kv"><b>Unhosted (vacation rental) license.</b> The whole place is let while you're away. This is the one a whole-home rental needs — and it's capped at <b>90 nights a year</b>.</div>
+      <div class="kv"><b>Why the gap matters.</b> A whole home advertising a <i>hosted</i> license while its calendar is open most of the year is the population worth a closer look — not proof of anything, a place to ask the question.</div>
+      <div class="kv"><b>What would change <span class="pendtag">B26-0647 · pending, NOT law</span></b> The Short-Term Rental Regulation Amendment Act of 2026 would <i>expand</i> short-term rentals, not restrict them: it would let renters operate at their primary residence, let owners license a second property they own (still capped at 90 nights), add a special-event license, and consolidate the hosted and unhosted (vacation-rental) categories above into one. It is before the Council; nothing on this page assumes it has passed.</div>
+      <div class="kv"><b>How to raise a complaint.</b> Concerns go to DC's Department of Licensing and Consumer Protection (DLCP). Your ANC and single-member district — shown on the "Your block" tab — are also where neighbors organize a response.</div>
+
+      <h3>How to read the numbers</h3>
+      <div class="kv"><b>What counts.</b> "Full-time STR" = a whole home (not a spare room), a minimum stay under 30 nights, and the calendar open at least 90 nights a year. Deliberately conservative — it knowingly undercounts.</div>
+      <div class="kv"><b>Three limits, stated not hidden.</b> This is one day's snapshot (24 June 2026), so no trend is claimed. One host can list the same home twice, so the count is an <i>upper bound</i> on distinct dwellings. Rent benchmarks are estimated in 10 of 39 clusters and marked wherever they appear.</div>
+      <div class="kv"><b>License is a signal, not a verdict.</b> The license shown is self-reported by the host and displayed on the listing. It marks a population worth auditing; it is never a finding that a listing is unlawful, and no host is named.</div>
+    </section>
+  </div>
