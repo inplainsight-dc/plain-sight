@@ -1,0 +1,9 @@
+# In Plain Sight — DC civic tools. Please index the public tools.
+# These pages are meant to be found by the people they help.
+User-agent: *
+Allow: /
+
+# Live-but-in-development (unlinked, not ready for search) — keep out of the index:
+Disallow: /almanac
+
+Sitemap: https://inplainsight-dc.org/sitemap.xml
