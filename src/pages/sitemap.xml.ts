@@ -22,6 +22,9 @@ const ROUTES: { path: string; priority: number; changefreq: string }[] = [
   { path: '/rentals/move-in',      priority: 0.9, changefreq: 'monthly' },
   { path: '/trash',                priority: 0.8, changefreq: 'weekly' },
   { path: '/records',              priority: 0.8, changefreq: 'monthly' },
+  // Added at launch 2026-08-16. Unlike /almanac, Ghost Homes has passed its redteam/persona
+  // waves and the ship gate, so it is meant to be found.
+  { path: '/ghost-homes',          priority: 0.9, changefreq: 'monthly' },
 ];
 
 export const GET: APIRoute = ({ site }) => {

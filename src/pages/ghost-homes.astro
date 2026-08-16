@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+// The panel markup is generated from the verified explorer build in the DC research node
+// (scripts/build_public_explorer.py). Styles: /ghost-homes/app.css (scoped under #gh).
+// Logic + de-identified data: /ghost-homes/app.js. Data bundle: /ghost-homes/*.json.
+import body from '../ghost-homes-body.html?raw';
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+---
+<Base
+  title="Ghost Homes"
+  ogImage="/og/ghost-homes.png"
+  description="How many whole homes in DC are held off the housing market as full-time short-term rentals — citywide, by ward and ANC, and on your own block.">
+  <Header slot="header" />
+
+  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="/ghost-homes/app.css" />
+
+  <section class="ps-section">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red">{today.toUpperCase()} &nbsp;·&nbsp; WASHINGTON, DC</p>
+      <p class="gh-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <h1 class="gh-h1">Ghost <span class="ps-highlight">Homes</span></h1>
+      <p class="gh-blurb">Whole homes held off DC's housing market as full-time short-term rentals — citywide, by ward and ANC, and on your own block. <span class="gh-sub">Short-term rentals.</span></p>
+      <p class="gh-evid"><b>How to read this:</b> a listing's license is what the host displays on it — a signal that points to a population worth auditing, <b>never</b> a finding that any listing is unlawful. No individual host is identified here. <b>Airbnb listings only</b> — Vrbo and other platforms are not counted, so every figure here is a floor, not a total.</p>
+
+      <div id="gh" set:html={body}></div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+
+  <!-- map lib: vendored (no third-party runtime dependency) -->
+  <script is:inline src="/vendor/leaflet/leaflet.js"></script>
+
+  <!-- Address geocoder: DC's Master Address Repository via our proxy (deployed 2026-08-16, see
+       infra/geocode-proxy/README.md). Authoritative DC address matching, no third-party rate limit.
+       Falls back to OpenStreetMap Nominatim automatically if the proxy errors or finds no match.
+       Districts (ANC/SMD/cluster) come from client-side point-in-polygon either way. -->
+  <script is:inline>window.GHOST_GEOCODER_PROXY = "https://0kxgfnzlzk.execute-api.us-east-1.amazonaws.com/";</script>
+
+  <script is:inline src="/ghost-homes/app.js"></script>
+</Base>
+
+<style>
+  .gh-back { margin: 0 0 0.75rem; font-size: 0.85rem; }
+  .gh-h1 { font-family: var(--ps-font-display); font-size: clamp(2rem, 5vw, 2.6rem); font-weight: 700; margin: 0.1em 0 0.15em; letter-spacing: -0.01em; }
+  .gh-blurb { color: var(--ps-ink-soft); max-width: 64ch; margin: 0 0 1rem; }
+  .gh-sub { font-family: var(--ps-font-record); font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.08em; }
+  .gh-evid { color: var(--ps-ink-soft); font-size: 0.8rem; max-width: 78ch; border-top: 1px solid var(--ps-line); padding-top: 0.75rem; margin: 0 0 1.5rem; }
+  .gh-evid b { color: var(--ps-ink); }
+</style>
