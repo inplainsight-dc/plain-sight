@@ -68,7 +68,9 @@ function drawDoorMap(cidx){
   initDoorMap();doorMap.invalidateSize();
   doorClusterLayer.clearLayers();doorPtLayer.clearLayers();
   const feat=NBc.features.find(f=>f.properties.i===cidx);
-  if(feat){doorClusterLayer.addData(feat);doorMap.fitBounds(doorClusterLayer.getBounds(),{padding:[24,24]});}
+  if(feat){doorClusterLayer.addData(feat);
+    const db=doorClusterLayer.getBounds();   // same empty-bounds guard as drawChoro
+    if(db&&db.isValid())doorMap.fitBounds(db,{padding:[24,24]});}
   P.forEach(p=>{if(p[3]!==cidx)return;const c=isCore(p);
     L.circleMarker([p[0],p[1]],{radius:c?4:3,weight:0,interactive:false,
       fillOpacity:c?.85:.42,fillColor:c?cssVar("--ps-accent"):cssVar("--ps-ink-soft")}).addTo(doorPtLayer);});
@@ -116,13 +118,20 @@ async function geocodePoint(q){
 }
 async function geocode(){
   const q=addr.value.trim();if(!q){geoMsg.textContent="";return;}
+  // Clear any previous answer BEFORE looking up. Otherwise a failed lookup left the last
+  // address's numbers sitting under an error about a different address — a reader could take
+  // those figures as the answer to what they just typed. (Wave 2 R5)
+  document.getElementById("result").innerHTML="";
   geoMsg.textContent="Looking up "+q+" …";
   try{
     const hit=await geocodePoint(q);
     if(!hit){geoMsg.textContent="No match — add the quadrant (NE, NW, SE, SW), or use the neighborhood list.";return;}
     const lat=hit.lat,lon=hit.lon;
     const ci=locateIdx(lat,lon,NBc);
-    if(ci<0){geoMsg.textContent="That address is outside DC's mapped neighborhoods — try the neighborhood list.";return;}
+    // The address resolved, but it sits outside the 39 residential neighborhood clusters (the
+    // federal core, the Mall and parkland are not clustered). Say that, rather than implying
+    // the address was not found.
+    if(ci<0){geoMsg.textContent="That address sits outside DC's 39 residential neighborhood clusters — the federal core, the Mall and parkland aren't covered. Try a nearby residential address, or pick a neighborhood.";return;}
     const ai=locateIdx(lat,lon,NBa);await ensureSMD();const si=locateIdx(lat,lon,NBs);
     const ancId=ai>=0?AN[ai]:null,smdId=si>=0?SM[si]:null;
     const ward=ancId?ancId.replace(/[^0-9].*$/,""):(smdId?smdId[0]:"");
@@ -148,7 +157,7 @@ addr.addEventListener("keydown",e=>{if(e.key==="Enter")geocode();});
 /* ---------- tiles ---------- */
 const H=D.head;
 document.getElementById("tiles").innerHTML=[
- [H.listings,"listings in DC (all types)"],
+ [H.listings,"<b>Airbnb</b> listings in DC (all types)"],
  [H.whole,"whole units listed"],
  [H.core,"whole units run as full-time STRs",1],
  [H.mid,`in mid-range or below neighborhoods (&le; $2,446) — of the ${H.core_na.toLocaleString()} that are not basement / accessory units`,1],
@@ -183,7 +192,13 @@ function drawChoro(){
     l.on("mouseover",()=>l.setStyle({weight:2,color:cssVar("--ps-ink")}));
     l.on("mouseout",()=>l.setStyle({weight:1,color:cssVar("--ps-line")}));
   });
-  try{cityMap.fitBounds(choroLayer.getBounds(),{padding:[10,10]});}catch(e){}
+  // Guard on validity rather than try/catch: fitBounds() on an EMPTY layer throws only
+  // after Leaflet has written a NaN center, so swallowing the throw left the map broken and
+  // the NEXT invalidateSize() (any window resize / phone rotation) threw uncaught. Since the
+  // bundle build fetches geojson asynchronously, drawChoro can legitimately run before the
+  // features have landed — so an empty layer here is a normal state, not an error. (Wave 2 R4)
+  const cb=choroLayer.getBounds();
+  if(cb&&cb.isValid())cityMap.fitBounds(cb,{padding:[10,10]});
   const legTitle=metric==="count"?"full-time STRs (relative)":"full-time STR share";
   const labs=metric==="count"
     ?["lowest","","","","highest"]
@@ -209,7 +224,10 @@ function buildRows(dim){
   showRent=(dim==="cluster");
   if(dim==="ward")return D.wardstat_full.map((s,i)=>["Ward "+(i+1),s[0],s[1],s[2],s[0]?s[2]/s[0]:0,null,false]);
   if(dim==="anc")return AN.map((a,i)=>["ANC "+a,AS[i][0],AS[i][1],AS[i][2],AS[i][0]?AS[i][2]/AS[i][0]:0,null,false]);
-  if(dim==="smd")return SM.map((s,i)=>["SMD "+s,SS[i][0],SS[i][1],SS[i][2],SS[i][0]?SS[i][2]/SS[i][0]:0,null,false]);
+  // SS[i][2] is SUPPRESSED (-1) for small cells on the public build — the real count is not
+  // in the payload at all. Share is meaningless then, so send 0 and let renderTable mask it.
+  if(dim==="smd")return SM.map((s,i)=>{const c=SS[i][2];
+    return ["SMD "+s,SS[i][0],SS[i][1],c,(c>=0&&SS[i][0])?c/SS[i][0]:0,null,false];});
   return CL.map((c,i)=>[c,CS[i][0],CS[i][1],CS[i][2],CS[i][0]?CS[i][2]/CS[i][0]:0,CR[i],CE[i]]);
 }
 function renderTable(){
@@ -229,7 +247,9 @@ function renderTable(){
   const tb=document.querySelector("#tbl tbody");
   let anySuppressed=false;
   tb.innerHTML=tblRows.map(r=>{
-    const suppressed=THR>0&&r[3]<THR;  // hide tiny full-time cells (deanonymization)
+    // Suppressed cells arrive as the SUPPRESSED sentinel (<0) from the builder — the count
+    // itself is not in the payload. The THR test also covers a full internal payload.
+    const suppressed=THR>0&&(r[3]<0||r[3]<THR);
     if(suppressed)anySuppressed=true;
     const share=suppressed?"—":(100*r[4]).toFixed(0)+"%";
     const ftCell=suppressed?`&lt;${THR}`:`<span class="bar" style="width:${44*r[3]/mx}px"></span> ${r[3]}`;
@@ -252,7 +272,7 @@ function downloadCSV(){
   const rows=[["geography","area","all_listings","whole_units","fulltime_str","share_pct","avg_rent"]];
   CL.forEach((c,i)=>rows.push(["cluster",c,CS[i][0],CS[i][1],CS[i][2],(100*CS[i][2]/CS[i][0]).toFixed(1),CR[i]||""]));
   AN.forEach((a,i)=>rows.push(["anc","ANC "+a,AS[i][0],AS[i][1],AS[i][2],(100*AS[i][2]/AS[i][0]).toFixed(1),""]));
-  SM.forEach((s,i)=>{const sup=THR>0&&SS[i][2]<THR;
+  SM.forEach((s,i)=>{const sup=THR>0&&(SS[i][2]<0||SS[i][2]<THR);
     rows.push(["smd","SMD "+s,SS[i][0],SS[i][1],sup?("<"+THR):SS[i][2],sup?"":(100*SS[i][2]/SS[i][0]).toFixed(1),""]);});
   D.wardstat_full.forEach((w,i)=>rows.push(["ward","Ward "+(i+1),w[0],w[1],w[2],(100*w[2]/w[0]).toFixed(1),""]));
   const hdr="# In Plain Sight — DC short-term rentals, aggregate counts. Snapshot: Inside Airbnb "+D.snap+".\n"+

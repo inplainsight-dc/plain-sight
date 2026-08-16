@@ -26,7 +26,7 @@ const today = new Date().toLocaleDateString('en-US', {
       <p class="gh-back"><a href="/">&larr; Back to In Plain Sight</a></p>
       <h1 class="gh-h1">Ghost <span class="ps-highlight">Homes</span></h1>
       <p class="gh-blurb">Whole homes held off DC's housing market as full-time short-term rentals — citywide, by ward and ANC, and on your own block. <span class="gh-sub">Short-term rentals.</span></p>
-      <p class="gh-evid"><b>How to read this:</b> a listing's license is what the host displays on it — a signal that points to a population worth auditing, <b>never</b> a finding that any listing is unlawful. No individual host is identified here.</p>
+      <p class="gh-evid"><b>How to read this:</b> a listing's license is what the host displays on it — a signal that points to a population worth auditing, <b>never</b> a finding that any listing is unlawful. No individual host is identified here. <b>Airbnb listings only</b> — Vrbo and other platforms are not counted, so every figure here is a floor, not a total.</p>
 
       <div id="gh" set:html={body}></div>
     </div>
@@ -37,10 +37,11 @@ const today = new Date().toLocaleDateString('en-US', {
   <!-- map lib: vendored (no third-party runtime dependency) -->
   <script is:inline src="/vendor/leaflet/leaflet.js"></script>
 
-  <!-- Address geocoder: unset = OpenStreetMap Nominatim (works now). After deploying the DC MAR
-       proxy (see infra/geocode-proxy/README.md), uncomment + set the Function URL for authoritative
-       DC address matching. Districts (ANC/SMD/cluster) come from point-in-polygon either way. -->
-  <!-- <script is:inline>window.GHOST_GEOCODER_PROXY = "https://<function-url>/";</script> -->
+  <!-- Address geocoder: DC's Master Address Repository via our proxy (deployed 2026-08-16, see
+       infra/geocode-proxy/README.md). Authoritative DC address matching, no third-party rate limit.
+       Falls back to OpenStreetMap Nominatim automatically if the proxy errors or finds no match.
+       Districts (ANC/SMD/cluster) come from client-side point-in-polygon either way. -->
+  <script is:inline>window.GHOST_GEOCODER_PROXY = "https://0kxgfnzlzk.execute-api.us-east-1.amazonaws.com/";</script>
 
   <script is:inline src="/ghost-homes/app.js"></script>
 </Base>
