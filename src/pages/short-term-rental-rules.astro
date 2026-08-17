@@ -50,7 +50,7 @@ const glossary = [
 ];
 ---
 <Base
-  title="Short-Term Rental Rules"
+  title="DC Short-Term Rental Rules"
   description="The two DC short-term rental licenses, the 90-night cap, what counts as an exemption, and why B26-0647 is not law. Written for someone who has never heard of a hosted license.">
   <Header slot="header" />
 
@@ -60,7 +60,7 @@ const glossary = [
       <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
       <div class="ips-lead__grid">
         <div class="ips-lead__main">
-          <h1 class="ips-lead__h">Short-term rental <span class="ps-highlight">rules</span>.</h1>
+          <h1 class="ips-lead__h">DC Short-Term Rental <span class="ps-highlight">Rules</span>.</h1>
           <p class="ips-lead__blurb">Two licenses, one residency test, and a bill that keeps being reported as though it had already passed. Written for someone who has never heard of a hosted license.</p>
         </div>
         <aside class="ips-lead__rail">
@@ -229,21 +229,6 @@ const glossary = [
      a cross-cutting change to files another session is editing right now, so it
      stays a follow-up rather than being bundled into this port. */
   .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
-  .ips-lead__grid {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: clamp(1.4rem, 4vw, 3rem);
-    border-top: 1px solid var(--ps-line);
-    padding-top: 1.6rem;
-  }
-  .ips-lead__h {
-    font-family: var(--ps-font-display);
-    font-weight: 700;
-    font-size: clamp(2.3rem, 6.5vw, 4rem);
-    line-height: 1.04;
-    letter-spacing: -0.015em;
-    margin-bottom: 1rem;
-  }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .ips-back { margin: 0 0 0.75rem; font-size: 0.85rem; }
@@ -264,7 +249,7 @@ const glossary = [
   .str-note { color: var(--ps-ink-soft); font-size: 1.05rem; max-width: 72ch; margin: 0 0 1.4rem; }
   .str-h3 { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.25rem; margin: 1.8rem 0 0.6rem; }
 
-  .str-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1.2rem; }
+  .str-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr)); gap: 1.2rem; }
   .str-card { border: 1px solid var(--ps-line); border-left-width: 4px; border-radius: var(--ps-radius); padding: 1.2rem 1.3rem; background: var(--ps-surface); }
   /* --ps-info and --ps-caution are the two non-accent status tokens. Red is this
      site's verb and would read as an alarm on a page that is only explaining rules. */
@@ -287,7 +272,7 @@ const glossary = [
      and 5.31:1 in dark — both clear AA for small text, light only just. The obvious
      "fix" is --ps-accent-2, which reads 7.08:1 in light but only 3.85:1 in dark, i.e.
      it FAILS. That is the same 3.85 the site's own a11y pass found; accent-2 is a
-     hover/pressed colour, not a text-bearing one. Do not swap it. */
+     hover/pressed color, not a text-bearing one. Do not swap it. */
   .str-stamp { display: inline-block; background: var(--ps-accent); color: var(--ps-highlight-ink); font-family: var(--ps-font-record); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.28rem 0.6rem; border-radius: var(--ps-radius-sm); margin-bottom: 0.9rem; }
   .str-pending p { max-width: 76ch; margin: 0 0 0.9rem; font-size: 1.05rem; }
   .str-pending__lead { margin-bottom: 0.4rem !important; }
@@ -298,7 +283,7 @@ const glossary = [
   .str-steps { max-width: 74ch; padding-left: 1.25rem; margin: 0 0 1.2rem; }
   .str-steps li { margin-bottom: 0.6rem; font-size: 1.05rem; }
 
-  .str-contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1.2rem; margin-bottom: 0.5rem; }
+  .str-contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)); gap: 1.2rem; margin-bottom: 0.5rem; }
   .str-contact > div { border: 1px solid var(--ps-line); border-radius: var(--ps-radius); padding: 1.1rem 1.2rem; background: var(--ps-surface-2); }
   .str-contact__kick { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); margin: 0 0 0.2rem; }
   .str-contact__big { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.45rem; margin: 0.2rem 0 0.3rem; }
@@ -315,7 +300,6 @@ const glossary = [
   .str-src b { color: var(--ps-ink); }
 
   @media (max-width: 640px) {
-    .ips-lead__grid { grid-template-columns: 1fr; }
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
   }
 </style>

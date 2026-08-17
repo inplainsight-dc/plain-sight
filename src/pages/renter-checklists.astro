@@ -30,13 +30,13 @@ const checklists = [
     href: '/rentals/lease-check',
     title: 'Read your lease before you sign',
     time: '10 min',
-    desc: "Check the clauses in your lease and see which are illegal, which won't hold up, and which are just worth negotiating — with the ask to send back.",
+    desc: "Check the clauses in your lease and see which are illegal, which won’t hold up, and which are just worth negotiating — with the ask to send back.",
   },
   {
     href: '/rentals/move-in',
     title: 'Protect your deposit at move-in',
     time: '15 min',
-    desc: 'A move-in checklist for your state, a plain read of how your deposit has to come back, and a printable condition inventory that defeats an "as-is" charge.',
+    desc: 'A move-in checklist for your state, a plain read of how your deposit has to come back, and a printable condition inventory that defeats an “as-is” charge.',
   },
 ];
 ---
@@ -126,21 +126,6 @@ const checklists = [
      this page matches the hub exactly. Worth promoting to global.css one day; not while the
      site is a day old. */
   .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
-  .ips-lead__grid {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: clamp(1.4rem, 4vw, 3rem);
-    border-top: 1px solid var(--ps-line);
-    padding-top: 1.6rem;
-  }
-  .ips-lead__h {
-    font-family: var(--ps-font-display);
-    font-weight: 700;
-    font-size: clamp(2.3rem, 6.5vw, 4rem);
-    line-height: 1.04;
-    letter-spacing: -0.015em;
-    margin-bottom: 1rem;
-  }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
 
@@ -177,7 +162,6 @@ const checklists = [
   .ips-entry__cue { align-self: center; font-family: var(--ps-font-record); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-accent-text); white-space: nowrap; }
 
   @media (max-width: 640px) {
-    .ips-lead__grid { grid-template-columns: 1fr; }
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
     .ips-entry__row { grid-template-columns: auto 1fr; }
     .ips-entry__cue { grid-column: 2; margin-top: 0.4rem; }

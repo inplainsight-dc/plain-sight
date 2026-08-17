@@ -175,21 +175,6 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
   /* ---- LEAD (asymmetric front-page) ---- */
   .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
   .ips-dateline { display: block; margin-bottom: 1.2rem; }
-  .ips-lead__grid {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: clamp(1.4rem, 4vw, 3rem);
-    border-top: 1px solid var(--ps-line);
-    padding-top: 1.6rem;
-  }
-  .ips-lead__h {
-    font-family: var(--ps-font-display);
-    font-weight: 700;
-    font-size: clamp(2.3rem, 6.5vw, 4rem);
-    line-height: 1.04;
-    letter-spacing: -0.015em;
-    margin-bottom: 1rem;
-  }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .ips-byline { font-family: var(--ps-font-display); font-style: italic; font-size: 1.05rem; margin: 0.5rem 0 1rem; }
@@ -233,7 +218,6 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
   .ips-entry .ps-tags { margin-top: 0.6rem; }
 
   @media (max-width: 640px) {
-    .ips-lead__grid { grid-template-columns: 1fr; }
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
     .ips-entry__row { grid-template-columns: auto 1fr; }
     .ips-entry__cue { grid-column: 2; margin-top: 0.4rem; }
