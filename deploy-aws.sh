@@ -15,11 +15,13 @@ npm run build
 echo "→ Syncing dist/ to s3://${BUCKET} ..."
 # Hashed, content-addressed assets get a long immutable cache. HTML and the
 # live data JSON are excluded here so they don't inherit the year-long cache.
-# ghost-homes/* is excluded for the same reason as trash-data: the filenames are
-# NOT content-hashed, so a year-long immutable header would pin returning browsers
-# to the old snapshot until 2027 even after a redeploy + invalidation.
+# ghost-homes/* is excluded for the same reason as trash-data — those data filenames are NOT
+# content-hashed, so a year-long immutable header would pin returning browsers to the old
+# snapshot. The exception is ghost-homes/app.<hash>.js|css, which ARE fingerprinted: a change
+# there is a new filename, so it is safe to cache forever and it reaches readers immediately.
+# (Filters apply in order, so the later --include re-admits the hashed assets.)
 aws s3 sync dist/ "s3://${BUCKET}" --delete \
-  --exclude "*.html" --exclude "trash-data/*" --exclude "ghost-homes/*" \
+  --exclude "*.html" --exclude "trash-data/*" --exclude "ghost-homes/*" --include "ghost-homes/app.*" \
   --cache-control "public,max-age=31536000,immutable"
 # HTML: short cache so page updates show quickly.
 aws s3 sync dist/ "s3://${BUCKET}" \
@@ -30,10 +32,11 @@ aws s3 sync dist/ "s3://${BUCKET}" \
 aws s3 sync dist/ "s3://${BUCKET}" \
   --exclude "*" --include "trash-data/*" \
   --cache-control "public,max-age=60,must-revalidate"
-# Ghost Homes bundle (data.json, geojson, app.js/css): un-hashed names on a snapshot
-# cadence. A day at the edge, revalidated after, so a new snapshot reaches people.
+# Ghost Homes DATA (data.json, the geojsons, assets.json): un-hashed names on a snapshot
+# cadence. A day at the edge, revalidated after, so a new snapshot reaches people. The
+# fingerprinted app.* assets are excluded here — they took the immutable header above.
 aws s3 sync dist/ "s3://${BUCKET}" \
-  --exclude "*" --include "ghost-homes/*" \
+  --exclude "*" --include "ghost-homes/*" --exclude "ghost-homes/app.*" \
   --cache-control "public,max-age=86400,must-revalidate"
 
 echo "→ Invalidating CloudFront cache..."
