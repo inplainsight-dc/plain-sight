@@ -58,6 +58,34 @@ for (const f of [...dataFiles, ...assetFiles, manifestFile]) {
 fs.writeFileSync(bodyDest, fs.readFileSync(path.join(src, bodyFile)));
 n++;
 
+// Wave 5 R1 — /on-paper used to carry a hand-copied partial with no sync at
+// all, so after a new snapshot /ghost-homes would update while it kept serving the
+// old figures behind captions that state the snapshot date. Nothing would look
+// wrong. It rides this sync now because it comes from the same research node.
+//
+// Its payload is INLINED in the partial (unlike Ghost Homes, which fetches
+// data.json), so there is nothing else to copy and no cache-skew to manage.
+const lmFile = 'on-paper-body.html';
+const lmSrc = path.resolve(repo, '..', 'DC Short-Term Rentals and Housing', 'outputs', lmFile);
+const lmDest = path.join(repo, 'src', lmFile);
+if (fs.existsSync(lmSrc)) {
+  const body = fs.readFileSync(lmSrc, 'utf8');
+  // The partial is useless without its inlined payload; a truncated copy would
+  // render an empty panel that still looks like a page.
+  if (!body.includes('const D=') || !body.includes('lm-ladderbox')) {
+    console.error(`[sync-str-data] ${lmFile} is present but missing its payload or markup`);
+    process.exit(1);
+  }
+  fs.writeFileSync(lmDest, body);
+  n++;
+  console.log(`[sync-str-data] synced ${lmFile} (${body.length} bytes, payload inlined)`);
+} else if (fs.existsSync(lmDest)) {
+  console.log(`[sync-str-data] research node has no ${lmFile}; using committed copy`);
+} else {
+  console.error(`[sync-str-data] no ${lmFile} in the research node or the repo — cannot build /on-paper`);
+  process.exit(1);
+}
+
 // Drop superseded hashed assets, and the pre-fingerprinting app.js / app.css, so neither the
 // repo nor the bucket accumulates every past build.
 for (const f of fs.readdirSync(pubDest)) {
