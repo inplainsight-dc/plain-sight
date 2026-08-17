@@ -113,7 +113,7 @@ const today = new Date().toLocaleDateString('en-US', {
         <div id="mail-fallback" class="tt-fallback" hidden>
           <p class="tt-fallback__h ps-record">Email didn&rsquo;t open? No email on this device?</p>
           <p>Copy the report below and send it to <strong>trash@inplainsight-dc.org</strong> from any app, any time.</p>
-          <textarea id="fb-text" rows="7" readonly></textarea>
+          <textarea id="fb-text" rows="7" readonly aria-label="Your report text, ready to copy"></textarea>
           <button type="button" id="fb-copy" class="tt-minibtn">Copy report text</button>
         </div>
       </form>
@@ -415,15 +415,8 @@ const today = new Date().toLocaleDateString('en-US', {
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
 
-  .tt-rail__h { display: block; color: var(--ps-accent-text); margin-bottom: 0.6rem; }
-  .tt-rail__loading { color: var(--ps-ink-soft); }
-  .tt-rail__meta { display: block; margin-top: 0.6rem; color: var(--ps-ink-soft); line-height: 1.45; }
-  .tt-alert { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 0.7rem 0.85rem; margin-bottom: 0.6rem; background: var(--ps-surface-2); }
-  .tt-alert--high { border-left-color: var(--ps-accent-2); }
-  .tt-alert--ok { border-left-color: var(--ps-line); }
-  .tt-alert--inline { margin-top: 1rem; max-width: 60ch; }
-  .tt-alert__t { font-family: var(--ps-font-record); font-weight: 600; font-size: 0.92rem; margin: 0 0 0.25rem; }
-  .tt-alert__d { font-size: 0.95rem; color: var(--ps-ink-soft); margin: 0; }
+  /* The alert rail and the lookup result are written by the client JS above,
+     so their styles live in the is:global block below. */
 
   .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
   .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
@@ -445,7 +438,6 @@ const today = new Date().toLocaleDateString('en-US', {
     border: 1px solid var(--ps-line); border-radius: 6px; padding: 0.7rem 0.85rem;
   }
   .tt-lang { margin-top: 0.7rem; color: var(--ps-ink-soft); }
-  .tt-smallprint { display: block; margin-top: 1rem; color: var(--ps-ink-soft); line-height: 1.5; max-width: 60ch; }
   .tt-fallback { margin-top: 1.1rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 1rem 1.1rem; background: var(--ps-surface-2); }
   .tt-fallback__h { display: block; margin-bottom: 0.4rem; color: var(--ps-ink); }
   .tt-fallback p { font-size: 0.98rem; color: var(--ps-ink-soft); margin-bottom: 0.6rem; }
@@ -469,13 +461,9 @@ const today = new Date().toLocaleDateString('en-US', {
   .tt-minibtn:hover { color: var(--ps-ink); border-color: var(--ps-ink); }
   .tt-locstatus { margin-top: 0.45rem; color: var(--ps-ink-soft); line-height: 1.45; }
 
+  /* .tt-result is the static container and stays scoped; everything the JS
+     injects into it is styled in the is:global block below. */
   .tt-result { margin-top: 1.4rem; border-top: 1.5px solid var(--ps-ink); padding-top: 1.1rem; max-width: 40rem; }
-  .tt-result__addr { color: var(--ps-accent-2); margin-bottom: 0.7rem; }
-  .tt-result__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.9rem; margin: 0; }
-  .tt-result__grid dt { font-size: 0.78rem; color: var(--ps-ink-soft); margin-bottom: 0.15rem; }
-  .tt-result__grid dd { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.25rem; margin: 0; }
-  .tt-result__ok { margin-top: 1rem; color: var(--ps-ink-soft); }
-  .tt-err { color: var(--ps-accent-2); font-size: 1.02rem; }
 
   .tt-report { max-width: 40rem; }
   .tt-field { margin-bottom: 1.1rem; }
@@ -486,7 +474,9 @@ const today = new Date().toLocaleDateString('en-US', {
   .tt-formnote { display: block; margin-top: 0.7rem; color: var(--ps-ink-soft); line-height: 1.5; }
 
   .tt-callout { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.1rem 1.3rem; margin-top: 1.8rem; background: var(--ps-surface-2); max-width: 40rem; }
-  .tt-callout__h { display: block; margin-bottom: 0.5rem; color: var(--ps-accent-2); }
+  /* --ps-accent-text is the small-text red (AA in both themes); --ps-accent-2 is a
+     hover/pressed state color and fails 4.5:1 on the dark surface (3.1:1). */
+  .tt-callout__h { display: block; margin-bottom: 0.5rem; color: var(--ps-accent-text); }
   .tt-callout p:last-child { margin: 0; font-size: 1.02rem; }
 
   @media (max-width: 640px) {
@@ -494,4 +484,36 @@ const today = new Date().toLocaleDateString('en-US', {
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
     .tt-lookup__row { flex-direction: column; }
   }
+</style>
+
+<!-- Alert-rail and lookup-result styles (global): both containers are filled by
+     the client JS above via innerHTML, so those elements never receive Astro's
+     data-astro-cid attribute and a scoped rule can never match them. Same reason
+     as the register styles in records.astro. Namespaced by container id so
+     nothing leaks to other pages. -->
+<style is:global>
+  #alert-rail .tt-rail__h { display: block; color: var(--ps-accent-text); margin-bottom: 0.6rem; }
+  #alert-rail .tt-rail__loading { color: var(--ps-ink-soft); }
+  #alert-rail .tt-rail__meta { display: block; margin-top: 0.6rem; color: var(--ps-ink-soft); line-height: 1.45; }
+
+  #alert-rail .tt-alert,
+  #lookup-result .tt-alert { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: 6px; padding: 0.7rem 0.85rem; margin-bottom: 0.6rem; background: var(--ps-surface-2); }
+  #alert-rail .tt-alert--high,
+  #lookup-result .tt-alert--high { border-left-color: var(--ps-accent-2); }
+  #alert-rail .tt-alert--ok { border-left-color: var(--ps-line); }
+  #lookup-result .tt-alert--inline { margin-top: 1rem; max-width: 60ch; }
+  #alert-rail .tt-alert__t,
+  #lookup-result .tt-alert__t { font-family: var(--ps-font-record); font-weight: 600; font-size: 0.92rem; margin: 0 0 0.25rem; }
+  #alert-rail .tt-alert__d,
+  #lookup-result .tt-alert__d { font-size: 0.95rem; color: var(--ps-ink-soft); margin: 0; }
+
+  /* --ps-accent-text is the small-text red (AA in both themes); --ps-accent-2 is a
+     hover/pressed state color and fails 4.5:1 on the dark surface (3.1:1). */
+  #lookup-result .tt-result__addr { color: var(--ps-accent-text); margin-bottom: 0.7rem; }
+  #lookup-result .tt-result__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.9rem; margin: 0; }
+  #lookup-result .tt-result__grid dt { font-size: 0.78rem; color: var(--ps-ink-soft); margin-bottom: 0.15rem; }
+  #lookup-result .tt-result__grid dd { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.25rem; margin: 0; }
+  #lookup-result .tt-result__ok { margin-top: 1rem; color: var(--ps-ink-soft); }
+  #lookup-result .tt-err { color: var(--ps-accent-text); font-size: 1.02rem; }
+  #lookup-result .tt-smallprint { display: block; margin-top: 1rem; color: var(--ps-ink-soft); line-height: 1.5; max-width: 60ch; }
 </style>
