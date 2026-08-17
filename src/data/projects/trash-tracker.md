@@ -4,5 +4,5 @@ description: "Trash Tracker — check your DC trash and recycling pickup day, se
 tags: ["DPW", "Trash", "ANC 1E03", "Open data"]
 url: "/trash"
 status: "live"
-order: 2
+order: 3
 ---

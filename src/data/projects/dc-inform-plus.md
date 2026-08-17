@@ -4,5 +4,5 @@ description: "DC Inform+ — a plain-language window on the District's records-r
 tags: ["Records", "Retention", "Open data", "Oversight"]
 status: "live"
 url: "/records"
-order: 5
+order: 6
 ---

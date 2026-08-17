@@ -84,6 +84,12 @@ const CARDS = {
     sub: 'Plain-language tenant tools for DC, Maryland & Virginia.',
     path: '/rentals',
   },
+  'renter-checklists': {
+    eyebrow: 'IN PLAIN SIGHT · RENTER CHECKLISTS',
+    lines: ['Four things to check', 'before you sign.'],
+    sub: 'Free checklists for DC, Maryland & Virginia — no account, nothing leaves your browser.',
+    path: '/renter-checklists',
+  },
   'rentals-rights': {
     eyebrow: 'IN PLAIN SIGHT · RENTALS',
     lines: ['Your rights as', 'a renter.'],

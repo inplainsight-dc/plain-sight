@@ -16,6 +16,8 @@ import type { APIRoute } from 'astro';
 const ROUTES: { path: string; priority: number; changefreq: string }[] = [
   { path: '/',                     priority: 1.0, changefreq: 'weekly' },
   { path: '/rentals',              priority: 0.9, changefreq: 'monthly' },
+  // The no-account front door for the four checklists below. Added 2026-08-17.
+  { path: '/renter-checklists',    priority: 0.9, changefreq: 'monthly' },
   { path: '/rentals/rights',       priority: 0.9, changefreq: 'monthly' },
   { path: '/rentals/scam-check',   priority: 0.9, changefreq: 'monthly' },
   { path: '/rentals/lease-check',  priority: 0.9, changefreq: 'monthly' },
