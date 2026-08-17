@@ -82,7 +82,8 @@ function showCluster(i){
   const spans=ancSpan(i);
   renderResult({title:`In <b>${CL[i]}</b>, about <b>${core.toLocaleString()}</b> whole homes run as full-time short-term rentals — <b>${share}%</b> of local listings.`,
     place:`Neighborhood cluster · Ward ${CW[i]} · ANCs ${spans.join(", ")||"—"}`,
-    core,all,share,rent,est:CE[i],cidxForMap:i,flagged:D.cflag[i],scope:"this cluster",
+    core,all,share,rent,est:CE[i],cidxForMap:i,
+    flagged:Array.isArray(D.cflag)?D.cflag[i]:undefined,scope:"this cluster",
     extraFine:" Pick a specific address above to see your exact ANC and single-member district."});
   hood.value=i;
 }
@@ -140,8 +141,16 @@ async function geocode(){
     const[all,,core]=CS[ci],rent=CR[ci],share=all?Math.round(100*core/all):0;
     // R3: don't report a single-member district count when it's a small cell (<threshold) — fall back to cluster.
     const THR=D.small_cell||0;
-    let localCore=core,localAll=all,scope="your neighborhood cluster",localFlag=D.cflag[ci];
-    if(si>=0&&SS[si][2]>=THR){localCore=SS[si][2];localAll=SS[si][0];scope="your single-member district";localFlag=D.sflag[si];}
+    // data.json is NOT fingerprinted (it turns over on the snapshot cadence, where
+    // revalidating daily is right) while the code IS. So a returning reader can hold a
+    // cached payload from before this field existed. Reading it blind threw a TypeError
+    // that the catch below reported as "address lookup unavailable" — the whole front
+    // door, broken, for a reason that had nothing to do with geocoding. Degrade to
+    // "no licence figure" instead; renderResult already omits the card when undefined.
+    let localCore=core,localAll=all,scope="your neighborhood cluster";
+    let localFlag=Array.isArray(D.cflag)?D.cflag[ci]:undefined;
+    if(si>=0&&SS[si][2]>=THR){localCore=SS[si][2];localAll=SS[si][0];scope="your single-member district";
+      if(Array.isArray(D.sflag))localFlag=D.sflag[si];}
     const shareLocal=localAll?Math.round(100*localCore/localAll):0;
     renderResult({title:`Around <b>${q.replace(/</g,"&lt;")}</b>, about <b>${localCore.toLocaleString()}</b> whole homes run as full-time short-term rentals — <b>${shareLocal}%</b> of listings in ${scope}.`,
       place:`${ancId?("ANC <b>"+ancId+"</b>"):""}${smdId?(" · SMD <b>"+smdId+"</b>"):""}${ward?(" · Ward "+ward):""} · ${CL[ci]}`,
@@ -149,6 +158,10 @@ async function geocode(){
       extraFine:` Whole-cluster totals: ${core.toLocaleString()} of ${all.toLocaleString()} listings (${share}%).`});
     hood.value=ci;
   }catch(e){
+    // Wave 2 R4: a catch-all that renames every failure "lookup unavailable" hides the
+    // ones that are not. Report the same thing to the reader, but leave the real error
+    // where it can be found.
+    console.error("Ghost Homes front door failed:",e);
     geoMsg.textContent="Address lookup is unavailable right now — use the neighborhood list instead.";
   }
 }
