@@ -38,7 +38,12 @@
   --ps-shadow-lg: none;
 
   /* --- Layout ---------------------------------------------------------- */
-  --ps-maxw: 980px;
+  /* The frame scales with the window instead of freezing at a fixed slab.
+     Safe to widen because reading measure is capped separately in `ch` on the
+     prose blocks themselves (.ips-about, .ips-lead__blurb, .ips-entry__desc …),
+     so a wider frame gives the editorial grid room without ever producing an
+     over-long line of text. Below ~1200px this resolves to the historic 980px. */
+  --ps-maxw: clamp(980px, 82vw, 1280px);
   --ps-gap:  clamp(1rem, 2.5vw, 1.5rem);
 }
 
@@ -104,6 +109,44 @@ a:hover { color: var(--ps-ink); }
 }
 
 .ps-section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+
+/* --- The lead (front-page / page-top masthead block) --------------------
+   Promoted here from 13 byte-identical in-page copies so the desktop
+   proportions are defined once. Only the two rules that were provably
+   identical in every page were lifted; the rest of the .ips-* set still
+   diverges per page and is deliberately left in place.
+   NOTE: an in-page scoped copy (.ips-lead__grid[data-astro-cid-…]) outranks
+   these, so a page that keeps its own copy silently opts out of the fix. */
+.ips-lead__grid {
+  display: grid;
+  /* The rail is given a bounded band and the headline takes the rest, so extra
+     window width goes to the display type rather than inflating a mostly empty
+     column. Was `1.6fr 1fr`, which grew the void faster than the headline. */
+  grid-template-columns: minmax(0, 1fr) clamp(14rem, 24%, 19rem);
+  gap: clamp(1.4rem, 4vw, 3rem);
+  border-top: 1px solid var(--ps-line);
+  padding-top: 1.6rem;
+}
+.ips-lead__h {
+  font-family: var(--ps-font-display);
+  font-weight: 700;
+  /* The cap was 4rem, reached at 985px — so the headline stopped responding
+     entirely on every desktop window. The vw term is unchanged, so nothing
+     below ~1170px moves; only the ceiling lifts. */
+  font-size: clamp(2.3rem, 6.5vw, 4.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  margin-bottom: 1rem;
+  /* Evens the lines instead of leaving a one-word widow on the last one, which
+     a headline this large makes very visible. Ignored by browsers that don't
+     support it, so there is no fallback to write. */
+  text-wrap: balance;
+}
+/* The lead stacks on phones. 12 pages set this at 640px; /records overrides it
+   at 720px in its own scoped block, which outranks this. */
+@media (max-width: 640px) {
+  .ips-lead__grid { grid-template-columns: 1fr; }
+}
 
 /* --- The signature: a highlighter swipe behind text --------------------- */
 .ps-highlight {
@@ -270,7 +313,9 @@ a:hover { color: var(--ps-ink); }
 .ps-projects__title { font-size: clamp(1.7rem, 4vw, 2.3rem); }
 .ps-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* min() floor: a bare 280px track overflows a 320px viewport once the
+     container's padding is counted (WCAG 1.4.10 reflow). */
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: var(--ps-gap);
 }
 

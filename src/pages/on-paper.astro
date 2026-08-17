@@ -67,21 +67,6 @@ const today = new Date().toLocaleDateString('en-US', {
   /* Layout classes shared with the other tool pages; carried in-page as all the
      existing pages do. Promoting the ips-* set to global.css is a follow-up. */
   .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
-  .ips-lead__grid {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: clamp(1.4rem, 4vw, 3rem);
-    border-top: 1px solid var(--ps-line);
-    padding-top: 1.6rem;
-  }
-  .ips-lead__h {
-    font-family: var(--ps-font-display);
-    font-weight: 700;
-    font-size: clamp(2.3rem, 6.5vw, 4rem);
-    line-height: 1.04;
-    letter-spacing: -0.015em;
-    margin-bottom: 1rem;
-  }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .ips-back { margin: 0 0 0.75rem; font-size: 0.85rem; }
@@ -92,7 +77,6 @@ const today = new Date().toLocaleDateString('en-US', {
   .lm-rail__note { color: var(--ps-ink-soft); font-size: 0.95rem; margin: 0; }
 
   @media (max-width: 640px) {
-    .ips-lead__grid { grid-template-columns: 1fr; }
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
   }
 </style>

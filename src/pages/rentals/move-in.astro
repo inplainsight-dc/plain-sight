@@ -397,8 +397,6 @@ const inspectionTag = {
   .ips-back { margin-bottom: 1.2rem; }
   .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
   .ips-back a:hover { color: var(--ps-ink); }
-  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
-  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 48ch; }
   .ips-lead__note { display: block; margin-top: 0.9rem; color: var(--ps-ink-soft); }
   .ips-lead__note strong { color: var(--ps-accent-text); }
@@ -451,7 +449,7 @@ const inspectionTag = {
   .mv-fact--wide { grid-column: 1 / -1; }
   .mv-fact dt { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ps-ink-soft); margin-bottom: 0.35rem; }
   .mv-fact dd { margin: 0; font-size: 1.04rem; line-height: 1.5; color: var(--ps-ink); }
-  .mv-facts__src { margin-top: 1.2rem; padding-top: 0.9rem; border-top: 1px dotted var(--ps-line); color: var(--ps-ink-soft); line-height: 1.6; }
+  .mv-facts__src { margin-top: 1.2rem; padding-top: 0.9rem; border-top: 1px dotted var(--ps-line); color: var(--ps-ink-soft); line-height: 1.6; max-width: 72ch; }
   .mv-facts__src a { color: var(--ps-ink-soft); }
   .mv-facts__src a:hover { color: var(--ps-ink); }
 
@@ -460,7 +458,7 @@ const inspectionTag = {
   .mv-phase__h { display: flex; align-items: baseline; gap: 0.7rem; font-family: var(--ps-font-display); font-weight: 700; font-size: 1.3rem; margin-bottom: 0.9rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--ps-line); }
   .mv-phase__no { font-size: 0.85rem; color: var(--ps-accent-text); }
   .mv-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
-  .mv-item { }
+  .mv-item { max-width: 72ch; }
   .mv-check { display: flex; gap: 0.7rem; align-items: flex-start; cursor: pointer; border: 1px solid var(--ps-line); border-radius: 6px; padding: 0.85rem 1rem; background: var(--ps-surface-2); transition: border-color 0.12s ease; }
   .mv-check:hover { border-color: var(--ps-ink-soft); }
   .mv-box { flex: none; width: 1.2rem; height: 1.2rem; margin-top: 0.15rem; accent-color: var(--ps-ink); cursor: pointer; }
@@ -475,7 +473,7 @@ const inspectionTag = {
   .mv-read__bar { height: 7px; border-radius: 999px; background: var(--ps-line); overflow: hidden; margin-bottom: 0.9rem; }
   .mv-read__fill { display: block; height: 100%; width: 0; background: var(--ps-ink); transition: width 0.25s ease; }
   .mv-read__line { font-family: var(--ps-font-display); font-size: 1.12rem; line-height: 1.45; color: var(--ps-ink); }
-  .mv-read__caveat { display: block; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dotted var(--ps-line); color: var(--ps-ink-soft); line-height: 1.5; }
+  .mv-read__caveat { display: block; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dotted var(--ps-line); color: var(--ps-ink-soft); line-height: 1.5; max-width: 72ch; }
 
   /* §03 inventory */
   .mv-inv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1rem; margin-bottom: 1.6rem; }
@@ -493,7 +491,7 @@ const inspectionTag = {
   .mv-field input { font-family: var(--ps-font-body); font-size: 1rem; padding: 0.4rem 0.5rem; border: 0; border-bottom: 1px solid var(--ps-ink-soft); background: transparent; color: var(--ps-ink); }
   .mv-field input:focus { outline: none; border-bottom-color: var(--ps-accent-text); }
   .mv-field--sm { }
-  .mv-inv-note { margin-top: 0.4rem; color: var(--ps-ink-soft); line-height: 1.55; }
+  .mv-inv-note { margin-top: 0.4rem; color: var(--ps-ink-soft); line-height: 1.55; max-width: 72ch; }
 
   .mv-inv-table { width: 100%; border-collapse: collapse; margin-bottom: 1.4rem; }
   .mv-inv-table caption { text-align: left; font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; padding: 0.5rem 0; border-bottom: 1px solid var(--ps-ink); margin-bottom: 0.2rem; }
@@ -527,7 +525,6 @@ const inspectionTag = {
   .rk-found { margin-top: 1.4rem; color: var(--ps-ink-soft); max-width: 66ch; line-height: 1.5; }
 
   @media (max-width: 640px) {
-    .ips-lead__grid { grid-template-columns: 1fr; }
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
     .mv-facts__grid { grid-template-columns: 1fr; }
     .mv-inv-fields { grid-template-columns: 1fr; }

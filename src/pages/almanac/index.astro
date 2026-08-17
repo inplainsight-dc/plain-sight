@@ -212,8 +212,6 @@ const rest = avenues.filter((a) => a !== featured);
   .ips-back { margin-bottom: 1.2rem; }
   .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
   .ips-back a:hover { color: var(--ps-ink); }
-  .ips-lead__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); border-top: 1px solid var(--ps-line); padding-top: 1.6rem; }
-  .ips-lead__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.3rem, 6.5vw, 4rem); line-height: 1.04; letter-spacing: -0.015em; margin-bottom: 1rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 52ch; }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
 
@@ -238,21 +236,21 @@ const rest = avenues.filter((a) => a !== featured);
   /* Avenue cards */
   .al-avenue { border: 1px solid var(--ps-line); border-radius: 8px; padding: 1.2rem 1.35rem; background: var(--ps-surface); }
   .al-avenue--feat { border-left: 3px solid var(--ps-accent); background: var(--ps-surface-2); margin-bottom: 1.4rem; }
-  .al-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1rem; }
+  .al-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr)); gap: 1rem; }
   .al-avenue__head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
   .al-avenue__title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.3rem; }
   .al-tag { font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.12rem 0.5rem; border-radius: 999px; border: 1px solid var(--ps-line); color: var(--ps-ink-soft); white-space: nowrap; }
   .al-tag[data-d="native"] { border-color: var(--ps-accent); color: var(--ps-accent-text); }
   .al-tag--feat { background: var(--ps-ink); color: var(--ps-paper); border-color: var(--ps-ink); }
   .al-avenue__lead { font-size: 1.08rem; color: var(--ps-ink); margin-bottom: 0.5rem; }
-  .al-avenue__what { color: var(--ps-ink-soft); font-size: 1rem; margin-bottom: 0.7rem; }
+  .al-avenue__what { color: var(--ps-ink-soft); font-size: 1rem; margin-bottom: 0.7rem; max-width: 72ch; }
   .al-avenue__note { color: var(--ps-ink-soft); font-size: 0.98rem; margin-bottom: 0.7rem; }
   .al-avenue__auth { color: var(--ps-ink-soft); margin-top: 0.4rem; }
   .al-avenue__auth a { color: var(--ps-ink); }
 
   .al-soon { border-left: 2px solid var(--ps-accent); background: color-mix(in srgb, var(--ps-accent) 6%, transparent); padding: 0.7rem 0.9rem; border-radius: 0 6px 6px 0; margin: 0.4rem 0 0.7rem; }
   .al-soon > .ps-record { display: inline-block; color: var(--ps-accent-text); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.25rem; }
-  .al-soon p { margin: 0; color: var(--ps-ink-soft); font-size: 1rem; }
+  .al-soon p { margin: 0; color: var(--ps-ink-soft); font-size: 1rem; max-width: 72ch; }
   .al-soon__flag { color: var(--ps-accent-text); font-style: italic; }
 
   .al-tools { list-style: none; margin: 0.2rem 0 0.4rem; padding: 0; display: grid; gap: 0.55rem; }
@@ -275,7 +273,6 @@ const rest = avenues.filter((a) => a !== featured);
   .al-feedback__btn:hover { background: var(--ps-ink); color: var(--ps-paper); }
 
   @media (max-width: 640px) {
-    .ips-lead__grid { grid-template-columns: 1fr; }
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
     .al-level { grid-template-columns: 1fr; gap: 0.2rem; }
   }
