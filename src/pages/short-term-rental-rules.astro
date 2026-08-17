@@ -1,0 +1,321 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// The plain-language layer for DC's short-term rental rules — Phase 6 t2 of the
+// DC Short-Term Rentals research node. It exists for two reasons.
+//
+// One: the license categories are genuinely confusing, and every figure on
+// /ghost-homes assumes a reader knows what a "hosted license" is.
+//
+// Two, and more useful: B26-0647 keeps being reported as though it had already
+// passed. It has not. A reader who acts on the "renters can now operate" change
+// is acting on a proposal. Saying so plainly is the highest-value thing here.
+//
+// Every legal statement was verified against DLCP's own guidance page and the
+// Mayor's transmittal release on 17 August 2026 — not from memory, and not from
+// the research node's charter summary, which was correct but incomplete (it did
+// not carry the natural-persons-only rule or the guest cap).
+//
+// Deliberately NOT here: compliance advice. The charter is explicit that hosts
+// seeking guidance and investors seeking yield are not the audience, and this
+// page should not accidentally serve them.
+//
+// Not in sitemap.xml yet, on purpose — same convention as /almanac. It goes in
+// when the ported page has passed its wave.
+
+const VERIFIED = '17 August 2026';
+const HOTLINE = '(202) 221-8550';
+const BILL_URL = 'https://lims.dccouncil.gov/Legislation/B26-0647';
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+
+// Kept as data so the wording and its source date stay together.
+const proposed = [
+  ['Renters could operate one', 'Would let tenants run a short-term rental at their primary residence, except where the unit is in the Rent Stabilization Program or the lease forbids it. This is the change most often reported as though it had already happened. It has not.'],
+  ['The two licenses would merge', 'Would remove the distinction between the short-term rental and vacation rental licenses and run both under one.'],
+  ['A special-event license', 'Would create a license letting residents rent space during events the Mayor designates, without being present.'],
+  ['Primary residence redefined', 'Would drop the reference to the Homestead Deduction and restate the residency test directly.'],
+  ['Second properties could be licensed', 'Would let District residents license a second property they own, capped at 90 cumulative nights a year while unoccupied. This is the change with the most direct bearing on housing supply.'],
+];
+
+const glossary = [
+  ['Hosted', 'You are on the property while the guest is there. The license with no annual night limit.'],
+  ['Unhosted, or vacation rental', 'You are away. Capped at 90 nights a year, cumulative.'],
+  ['Primary residence', 'The home you actually live in. Required for either license.'],
+  ['Whole unit', 'A self-contained dwelling rented out in its entirety, rather than a spare room in an occupied home. A rented spare room is not a home taken off the market; a whole unit rented out year-round is.'],
+];
+---
+<Base
+  title="Short-Term Rental Rules"
+  description="The two DC short-term rental licenses, the 90-night cap, what counts as an exemption, and why B26-0647 is not law. Written for someone who has never heard of a hosted license.">
+  <Header slot="header" />
+
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; WASHINGTON, DC</p>
+      <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Short-term rental <span class="ps-highlight">rules</span>.</h1>
+          <p class="ips-lead__blurb">Two licenses, one residency test, and a bill that keeps being reported as though it had already passed. Written for someone who has never heard of a hosted license.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <div class="str-rail">
+            <p class="str-rail__h ps-record">The short version</p>
+            <p class="str-rail__n">Where you live.</p>
+            <p class="str-rail__note">You may rent out the home you actually live in. Not a second home, not an investment property &mdash; and a company cannot hold the license, only a person can.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="ips-sec" id="licenses">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">The two licenses today</h2>
+        <span class="ips-sec-rule"></span>
+        <span class="ps-record">In force now</span>
+      </div>
+      <p class="str-note">Both require the property to be your primary residence, and both cap any single stay at 30 continuous nights or fewer. Beyond a 30-night stay it stops being a short-term rental and other rules apply. Which license you need turns on one thing: whether you are there.</p>
+
+      <div class="str-cards">
+        <div class="str-card str-card--here">
+          <p class="str-card__kick ps-record">You are there</p>
+          <h3 class="str-card__h">Short-term rental license</h3>
+          <p class="str-card__sub">Often called the <b>hosted</b> license.</p>
+          <ul class="str-card__list">
+            <li>You are present on the property during the stay.</li>
+            <li><b>No limit</b> on the number of nights in a year.</li>
+            <li>Each stay: 30 continuous nights or fewer.</li>
+            <li>Up to eight guests, or two per bedroom, whichever is greater.</li>
+          </ul>
+        </div>
+        <div class="str-card str-card--away">
+          <p class="str-card__kick ps-record">You are away</p>
+          <h3 class="str-card__h">Vacation rental license</h3>
+          <p class="str-card__sub">Often called the <b>unhosted</b> license.</p>
+          <ul class="str-card__list">
+            <li>You are not present &mdash; the guest has the place to themselves.</li>
+            <li><b>90 nights a year, cumulative.</b> This is the cap that matters most.</li>
+            <li>Each stay: 30 continuous nights or fewer.</li>
+            <li>Still has to be your primary residence.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="str-both">
+        <h3 class="str-both__h">True of both</h3>
+        <ul>
+          <li><b>It has to be where you live.</b> Not a second home, not an investment property.</li>
+          <li><b>Only a person can hold the license.</b> An LLC or a corporation cannot be a host.</li>
+          <li><b>A whole home rented out year-round does not fit either license.</b> If nobody lives there and it is available most of the year, neither category covers it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <section class="ips-sec" id="exemption">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">What &ldquo;exempt&rdquo; actually means</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p>There is an exemption, and it is narrower than the word suggests. It is an exemption from the <b>90-night cap on unhosted rentals</b> &mdash; not from licensing itself.</p>
+      </div>
+      <ol class="str-steps">
+        <li>Your employer, or your spouse&rsquo;s or domestic partner&rsquo;s employer, requires you to work outside the District for more than 90 days in the year.</li>
+        <li>You have to leave the District for more than 90 days for treatment of a serious health condition, your own or a family member&rsquo;s.</li>
+      </ol>
+      <p class="str-note">So an exemption is a reason the 90-night ceiling does not bind you. It is not a reason you do not need a license, and it is not a general opt-out. Nothing in the public record shows which listings hold one.</p>
+    </div>
+  </section>
+
+  <section class="ips-sec" id="bill">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">What would change if B26-0647 passed</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <div class="str-pending">
+        <span class="str-stamp">Pending &mdash; not law</span>
+        <p><b>None of what follows is in force.</b> The Short-Term Rental Regulation Amendment Act of 2026 was introduced on 13 March 2026 at the Mayor&rsquo;s request and referred to the Committee on Public Works and Operations on 31 March 2026. Checked on {VERIFIED}, it remained in committee. It has not been voted on and it is not the law.</p>
+        <p>This matters because several trade publications have reported parts of it as already effective. If you have read that renters can now run a short-term rental in the District, you have read about a proposal.</p>
+        <p class="str-pending__lead"><b>What the bill proposes:</b></p>
+        <ol class="str-proposed">
+          {proposed.map(([t, d]) => (<li><b>{t}.</b> {d}</li>))}
+        </ol>
+        <p class="str-pending__last"><b>Check it yourself rather than trusting this page to stay current.</b> The Council&rsquo;s legislation system carries the live status: <a href={BILL_URL} rel="noopener">B26-0647 on lims.dccouncil.gov</a>. Until the bill passes, the rules in &sect; 01 are the ones that apply.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ips-sec" id="complain">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">If something on your block looks wrong</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <p class="str-note">The route is the agency, not the listing and not the host. DLCP licenses short-term rentals and enforces the rules.</p>
+      <div class="str-contact">
+        <div>
+          <p class="str-contact__kick ps-record">Short-term rental hotline</p>
+          <p class="str-contact__big"><a href="tel:+12022218550">{HOTLINE}</a></p>
+          <p class="str-contact__note">Run by DLCP for short-term rental complaints.</p>
+        </div>
+        <div>
+          <p class="str-contact__kick ps-record">Check a license yourself</p>
+          <p class="str-contact__big"><a href="https://boss.dc.gov" rel="noopener">boss.dc.gov</a></p>
+          <p class="str-contact__note">Look up whether an address holds a current license.</p>
+        </div>
+      </div>
+      <h3 class="str-h3">What helps a complaint</h3>
+      <ol class="str-steps">
+        <li>The address, as precisely as you can give it.</li>
+        <li>What you have observed &mdash; guests turning over, no resident present, how long it has been going on.</li>
+        <li>The listing, if you can find it, and any license number shown on it.</li>
+      </ol>
+      <p class="str-warn"><b>Please do not contact hosts or guests directly.</b> Nothing on this page is a basis for approaching anyone. The complaint route exists so that somebody with the authority to check the records does the checking.</p>
+    </div>
+  </section>
+
+  <section class="ips-sec" id="words">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 05</span>
+        <h2 class="ips-sec-title">The words, briefly</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <dl class="str-terms">
+        {glossary.map(([t, d]) => (<><dt>{t}</dt><dd>{d}</dd></>))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="ips-sec" id="sources">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 06</span>
+        <h2 class="ips-sec-title">Where this comes from</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p class="str-src">DLCP, <i>Operating a Short-Term Rental in the District of Columbia</i> &middot; Short-Term Rental Regulation Act of 2018, D.C. Law 22-307 (effective 25 April 2019, applicable from 1 October 2019) &middot; B26-0647, Short-Term Rental Regulation Amendment Act of 2026, introduced 13 March 2026, referred to the Committee on Public Works and Operations 31 March 2026 &mdash; <b>pending, not law</b> &middot; Office of the Mayor, release of 13 March 2026. Statements on this page were checked against those sources on {VERIFIED}.</p>
+        <p class="str-src">This page explains the rules. It is <b>not legal advice</b>, and it is <b>not compliance guidance</b> for operating a short-term rental. If you need to know how the rules apply to your own situation, ask DLCP or a lawyer.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  /* Layout classes shared with the other tool pages. Carried here rather than in
+     global.css because that is what all six existing pages do — promoting them is
+     a cross-cutting change to files another session is editing right now, so it
+     stays a follow-up rather than being bundled into this port. */
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-lead__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: clamp(1.4rem, 4vw, 3rem);
+    border-top: 1px solid var(--ps-line);
+    padding-top: 1.6rem;
+  }
+  .ips-lead__h {
+    font-family: var(--ps-font-display);
+    font-weight: 700;
+    font-size: clamp(2.3rem, 6.5vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    margin-bottom: 1rem;
+  }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+  .ips-back { margin: 0 0 0.75rem; font-size: 0.85rem; }
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  .str-rail__h { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); margin: 0 0 0.3rem; }
+  .str-rail__n { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.7rem; line-height: 1.1; margin: 0 0 0.5rem; }
+  .str-rail__note { color: var(--ps-ink-soft); font-size: 0.95rem; margin: 0; }
+
+  .str-note { color: var(--ps-ink-soft); font-size: 1.05rem; max-width: 72ch; margin: 0 0 1.4rem; }
+  .str-h3 { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.25rem; margin: 1.8rem 0 0.6rem; }
+
+  .str-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1.2rem; }
+  .str-card { border: 1px solid var(--ps-line); border-left-width: 4px; border-radius: var(--ps-radius); padding: 1.2rem 1.3rem; background: var(--ps-surface); }
+  /* --ps-info and --ps-caution are the two non-accent status tokens. Red is this
+     site's verb and would read as an alarm on a page that is only explaining rules. */
+  .str-card--here { border-left-color: var(--ps-info); }
+  .str-card--away { border-left-color: var(--ps-caution); }
+  .str-card__kick { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); margin: 0 0 0.35rem; }
+  .str-card__h { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.3rem; margin: 0 0 0.2rem; }
+  .str-card__sub { color: var(--ps-ink-soft); font-size: 0.95rem; margin: 0; }
+  .str-card__list { margin: 0.9rem 0 0; padding-left: 1.15rem; }
+  .str-card__list li { margin-bottom: 0.45rem; font-size: 1rem; }
+
+  .str-both { border: 1px solid var(--ps-ink); border-radius: var(--ps-radius); padding: 1.2rem 1.3rem; margin-top: 1.2rem; background: var(--ps-surface-2); }
+  .str-both__h { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; margin: 0 0 0.7rem; }
+  .str-both ul { margin: 0; padding-left: 1.15rem; }
+  .str-both li { margin-bottom: 0.55rem; font-size: 1.02rem; max-width: 74ch; }
+  .str-both li:last-child { margin-bottom: 0; }
+
+  .str-pending { border: 2px solid var(--ps-accent); border-radius: var(--ps-radius); padding: 1.4rem 1.5rem; background: var(--ps-surface); }
+  /* Stamp fill is --ps-accent and must stay there. White on accent is 4.52:1 in light
+     and 5.31:1 in dark — both clear AA for small text, light only just. The obvious
+     "fix" is --ps-accent-2, which reads 7.08:1 in light but only 3.85:1 in dark, i.e.
+     it FAILS. That is the same 3.85 the site's own a11y pass found; accent-2 is a
+     hover/pressed colour, not a text-bearing one. Do not swap it. */
+  .str-stamp { display: inline-block; background: var(--ps-accent); color: var(--ps-highlight-ink); font-family: var(--ps-font-record); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.28rem 0.6rem; border-radius: var(--ps-radius-sm); margin-bottom: 0.9rem; }
+  .str-pending p { max-width: 76ch; margin: 0 0 0.9rem; font-size: 1.05rem; }
+  .str-pending__lead { margin-bottom: 0.4rem !important; }
+  .str-pending__last { margin-bottom: 0 !important; }
+  .str-proposed { max-width: 76ch; padding-left: 1.25rem; margin: 0 0 1rem; }
+  .str-proposed li { margin-bottom: 0.6rem; font-size: 1rem; }
+
+  .str-steps { max-width: 74ch; padding-left: 1.25rem; margin: 0 0 1.2rem; }
+  .str-steps li { margin-bottom: 0.6rem; font-size: 1.05rem; }
+
+  .str-contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1.2rem; margin-bottom: 0.5rem; }
+  .str-contact > div { border: 1px solid var(--ps-line); border-radius: var(--ps-radius); padding: 1.1rem 1.2rem; background: var(--ps-surface-2); }
+  .str-contact__kick { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink-soft); margin: 0 0 0.2rem; }
+  .str-contact__big { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.45rem; margin: 0.2rem 0 0.3rem; }
+  .str-contact__note { color: var(--ps-ink-soft); font-size: 0.92rem; margin: 0; }
+
+  .str-warn { border-top: 1px solid var(--ps-line); padding-top: 0.9rem; margin: 1.4rem 0 0; max-width: 76ch; font-size: 1rem; color: var(--ps-ink-soft); }
+  .str-warn b { color: var(--ps-ink); }
+
+  .str-terms { margin: 0; max-width: 74ch; }
+  .str-terms dt { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.1rem; margin-top: 1.1rem; }
+  .str-terms dd { margin: 0.25rem 0 0; color: var(--ps-ink-soft); font-size: 1.02rem; }
+
+  .str-src { font-size: 0.95rem !important; color: var(--ps-ink-soft); }
+  .str-src b { color: var(--ps-ink); }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
+  }
+</style>
