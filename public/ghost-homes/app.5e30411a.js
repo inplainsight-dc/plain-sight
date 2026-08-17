@@ -55,10 +55,11 @@ function renderResult(o){
       <div class="rc"><div class="n">${o.core.toLocaleString()}</div><div class="l">whole homes run as full-time STRs</div></div>
       <div class="rc"><div class="n">${o.share}%</div><div class="l">of the ${o.all.toLocaleString()} listings here</div></div>
       <div class="rc"><div class="n ink">${o.rent?("$"+o.rent.toLocaleString()+(o.est?"*":"")):"—"}</div><div class="l">avg rent${b?" · "+b+" band":""}</div></div>
+      ${o.flagged===undefined?"":`<div class="rc"><div class="n">${o.flagged<0?"&lt;5":o.flagged.toLocaleString()}</div><div class="l">of those, the license shown doesn't match a current record</div></div>`}
     </div>
     <div class="sharebar" role="img" aria-label="${o.share}% of listings are full-time whole-unit short-term rentals"><span style="width:${o.share}%"></span></div>
     <p class="note" style="margin:0">This is ${market}${o.est?" <i>*rent estimated from adjacent neighborhoods.</i>":""}</p>
-    <p class="fine">Whole homes let in full, most of the year — not spare rooms. An upper bound until listings are matched to license records (one home can appear twice). No host is identified.${o.extraFine||""}</p>`;
+    <p class="fine">Whole homes let in full, most of the year — not spare rooms. Licenses are now matched against the DC business license register: the fourth figure counts homes whose displayed license has lapsed with no active license at that address, is a license of another kind, or matches no record at all. That identifies homes worth checking — it is <b>not</b> a finding that anyone has broken a rule, and there are lawful explanations for every category. Still an upper bound: one home can appear twice. No host is identified, and figures under 5 are shown as &lt;5 so a single home cannot be singled out.${o.extraFine||""}</p>`;
   box.hidden=false;
   drawDoorMap(o.cidxForMap);
 }
@@ -81,7 +82,7 @@ function showCluster(i){
   const spans=ancSpan(i);
   renderResult({title:`In <b>${CL[i]}</b>, about <b>${core.toLocaleString()}</b> whole homes run as full-time short-term rentals — <b>${share}%</b> of local listings.`,
     place:`Neighborhood cluster · Ward ${CW[i]} · ANCs ${spans.join(", ")||"—"}`,
-    core,all,share,rent,est:CE[i],cidxForMap:i,
+    core,all,share,rent,est:CE[i],cidxForMap:i,flagged:D.cflag[i],scope:"this cluster",
     extraFine:" Pick a specific address above to see your exact ANC and single-member district."});
   hood.value=i;
 }
@@ -139,12 +140,12 @@ async function geocode(){
     const[all,,core]=CS[ci],rent=CR[ci],share=all?Math.round(100*core/all):0;
     // R3: don't report a single-member district count when it's a small cell (<threshold) — fall back to cluster.
     const THR=D.small_cell||0;
-    let localCore=core,localAll=all,scope="your neighborhood cluster";
-    if(si>=0&&SS[si][2]>=THR){localCore=SS[si][2];localAll=SS[si][0];scope="your single-member district";}
+    let localCore=core,localAll=all,scope="your neighborhood cluster",localFlag=D.cflag[ci];
+    if(si>=0&&SS[si][2]>=THR){localCore=SS[si][2];localAll=SS[si][0];scope="your single-member district";localFlag=D.sflag[si];}
     const shareLocal=localAll?Math.round(100*localCore/localAll):0;
     renderResult({title:`Around <b>${q.replace(/</g,"&lt;")}</b>, about <b>${localCore.toLocaleString()}</b> whole homes run as full-time short-term rentals — <b>${shareLocal}%</b> of listings in ${scope}.`,
       place:`${ancId?("ANC <b>"+ancId+"</b>"):""}${smdId?(" · SMD <b>"+smdId+"</b>"):""}${ward?(" · Ward "+ward):""} · ${CL[ci]}`,
-      core:localCore,all:localAll,share:shareLocal,rent,est:CE[ci],cidxForMap:ci,
+      core:localCore,all:localAll,share:shareLocal,rent,est:CE[ci],cidxForMap:ci,flagged:localFlag,scope,
       extraFine:` Whole-cluster totals: ${core.toLocaleString()} of ${all.toLocaleString()} listings (${share}%).`});
     hood.value=ci;
   }catch(e){
