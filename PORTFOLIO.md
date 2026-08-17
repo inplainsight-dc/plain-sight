@@ -16,6 +16,18 @@ alphabetically and got hard to find. This map replaces the lost `100…` prefix.
 lives inside this repo except the hub and Trash Tracker — and that's on purpose**
 (see "Why they're not all nested here" at the bottom).
 
+## Before scoping a new tool — read the landscape map first
+
+**DC already has a lot of good civic tooling, and the map of it lives in another project's folder.** `100 IPS Electify/STRATEGY/HOME_RULE_STUDY_2026-07-23.md` is a teardown of [home-rule.org](https://home-rule.org/) — a curated "directory by neighbors" of 26 independent DC civic tools — with the full catalog and the disclaimer and curation patterns worth borrowing.
+
+**The rule that follows:** if a proposed IPS tool is shaped like *"here is a public dataset, made explorable,"* **check the catalog before scoping.** Start with [home-rule.org](https://home-rule.org/) and [districtjosh.com](https://districtjosh.com), which between them cover a lot of DC's open data well. In Plain Sight's own ground is the layer above the data — what a rule *means for you* and *what to do next* — and that's where the rentals cluster sits.
+
+**⚠ The study is dated 2026-07-23 and its one-line entries have aged.** Refresh before relying on any single row; the catalog's *shape* still holds.
+
+_Detail on what's already built, and the per-tool checks run against it, stays in the study and the session handoffs rather than here._
+
+---
+
 ## The map
 
 Paths are relative to `~/Projects/` (aka `~/Documents/Claude/Projects/`).
