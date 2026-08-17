@@ -88,6 +88,14 @@ This is a visual regression, not an AA failure — the unstyled fallback inherit
 
 **Handed to a separate session, in flight as of this write-up.** That session also found the same defect affects the *alert rail* (`.tt-rail__h`, `.tt-alert*`, `.tt-smallprint` — all written by client JS too), which this audit had missed. **`src/pages/trash.astro` is therefore deliberately NOT part of the commit that carries this audit** — at the time of committing, the working copy had those rules removed from the scoped block but not yet re-added globally, leaving the rail unstyled. Findings #1 and #4 above (the `--ps-accent-text` swap and the textarea `aria-label`) are verified and present in that same working copy, and ship with that session's commit rather than this one. Re-verify both after it lands.
 
+### Resolved — 2026-08-17
+
+Fixed; write-up in `handoffs/HANDOFF_2026-08-17_trash-injected-style-fix.md`. Final scope was wider again than either note above: probing every element inside both JS-filled containers found **16 of the 17 `.tt-*` rules dead**, not two — the whole alert rail *and* the whole result block (`.tt-result__grid` with its `dt`/`dd`, `.tt-result__ok`, `.tt-smallprint`). Only `.tt-result`, the static container, was styled.
+
+Repaired with a `<style is:global>` block namespaced by container id (`#alert-rail`, `#lookup-result`), matching the convention already used for the register at `records.astro:542`. **The trap was measured rather than assumed:** forcing `--ps-accent-2` back onto `.tt-err` in dark reads **3.85:1**; `--ps-accent-text` reads **5.95:1**. `/trash` re-verified with the injected UI populated — a real lookup plus all three error paths — at **0 failures in both themes**, and the production bundle confirmed to emit the corrected token.
+
+The intermediate "rules removed, no global block" state flagged above was a stale dev server, not a mid-edit save: the server on 4321 had died and kept serving a half-updated page. **Check the server is alive before believing the DOM.**
+
 ---
 
 _On-mission note, same as August: the baseline across all three pages is strong. The hub needed nothing, `/trash` needed four lines, and `/records` needs one palette value. This is finishing work, not a rebuild._
