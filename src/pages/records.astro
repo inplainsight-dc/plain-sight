@@ -570,7 +570,7 @@ const FIELD_INFO = {
   .rr .schedule-h { font-family: var(--ps-font-display); font-size: 1.15rem; font-weight: 600; margin: 1.6rem 0 0.5rem; color: var(--ps-ink); display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
   .rr .schedule-h small { font-family: var(--ps-font-record); font-weight: 500; color: var(--ps-ink-soft); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }
   .rr .comp { font-family: var(--ps-font-record); font-weight: 600; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.12rem 0.5rem; border-radius: 999px; }
-  .rr .comp.full { background: var(--ps-mark); color: var(--ps-accent-text); }
+  .rr .comp.full { background: var(--ps-mark); color: var(--ps-accent-text-mark); }
   .rr .comp.sel { background: var(--ps-surface-2); color: var(--ps-ink-soft); border: 1px solid var(--ps-line); }
 
   /* register rows */
@@ -588,8 +588,11 @@ const FIELD_INFO = {
   .rr .t-permanent { background: transparent; border: 1px solid var(--ps-ink); color: var(--ps-ink); }
   .rr .t-archives { background: transparent; border: 1px solid var(--ps-accent); color: var(--ps-accent-text); }
   .rr .t-transfer { background: transparent; border: 1px solid var(--ps-line); color: var(--ps-ink-soft); }
-  .rr .t-personal { background: var(--ps-mark); color: var(--ps-accent-text); }
+  .rr .t-personal { background: var(--ps-mark); color: var(--ps-accent-text-mark); }
   .rr .t-sensitive { background: var(--ps-accent); color: #fff; }
+  /* In dark, --ps-accent brightens to #FF4A60 and white-on-it drops to 3.28:1.
+     Flip to the dark ink, matching .ps-badge--live in global.css. */
+  [data-theme='dark'] .rr .t-sensitive { color: var(--ps-paper); }
   .rr .t-legal { background: var(--ps-ink); color: var(--ps-paper); }
   .rr .rbody { padding: 0.2rem 1rem 1.1rem; border-top: 1px solid var(--ps-line); }
   .rr .rbody dl { margin: 0.75rem 0 0; display: grid; grid-template-columns: auto 1fr; gap: 0.55rem 1.1rem; font-size: 0.9rem; }
@@ -601,8 +604,9 @@ const FIELD_INFO = {
   .rr .permalink:hover { color: var(--ps-ink); }
 
   /* INFO popover */
-  .rr .info { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--ps-mark); color: var(--ps-accent-text); font-size: 0.62rem; font-weight: 800; cursor: help; font-family: var(--ps-font-body); position: relative; flex: 0 0 auto; }
+  .rr .info { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--ps-mark); color: var(--ps-accent-text-mark); font-size: 0.62rem; font-weight: 800; cursor: help; font-family: var(--ps-font-body); position: relative; flex: 0 0 auto; }
   .rr .info:hover, .rr .info:focus { background: var(--ps-accent); color: #fff; outline: none; }
+  [data-theme='dark'] .rr .info:hover, [data-theme='dark'] .rr .info:focus { color: var(--ps-paper); }
   .rr .info .pop { display: none; position: absolute; left: 50%; top: 22px; transform: translateX(-50%); width: 250px; background: var(--ps-ink); color: var(--ps-paper); font-weight: 400; font-size: 0.78rem; line-height: 1.5; letter-spacing: 0; text-transform: none; padding: 0.7rem 0.8rem; border-radius: var(--ps-radius); z-index: 30; }
   .rr .info.open .pop { display: block; }
   .rr .info .pop::after { content: ''; position: absolute; left: 50%; top: -6px; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background: var(--ps-ink); }
