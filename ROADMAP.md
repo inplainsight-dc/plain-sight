@@ -64,7 +64,7 @@ _The tools are built and live but were effectively invisible. This phase is abou
 |------|--------|-------|
 | **AA baseline on the four rental tools** | ✅ done 2026-08-12 | 8/8 page-theme combos at 0 contrast fails. Skip-link focus, `aria-live`, decorative-icon `aria-hidden`, and **theme-aware category-color tokens** (`--ps-accent-text` / `--ps-caution` / `--ps-good` / `--ps-info`) — see `A11Y_2026-08-12_rentals-audit.md`. Now a standing account-level ship-gate rule. |
 | **`prefers-contrast: more` enhancement** | ⬜ deferred | The silent "tailored-on-request" layer (no visible toggle). Baseline-for-all is done; this is the above-baseline bonus. |
-| **AA sweep of hub + trash + records** | ⬜ not started | The token system is global, so the hub inherits it; a focused both-theme sweep of the non-rental pages would confirm. |
+| **AA sweep of hub + trash + records** | ✅ done 2026-08-17 | **6/6 page-theme combos at 0 contrast failures** — write-up in `A11Y_2026-08-17_hub-trash-records-audit.md`. The hub needed nothing (it does inherit the token system, as predicted). `/trash`: a hover/pressed color used as text, plus an unlabeled `readonly` textarea. `/records`: 314/312 failures, all one root cause — `--ps-accent-text` on `--ps-mark`, a background the August token matrix never covered — closed by a **fifth theme-aware token, `--ps-accent-text-mark`** (`#B0122B` light / `#FF7D8B` dark), one new hex. Every live page has now been swept in both themes. |
 
 ---
 

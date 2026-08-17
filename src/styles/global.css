@@ -17,6 +17,7 @@
   --ps-accent:        #E81B39;  /* DC RED — the one accent (from the flag): fills, flag, large display */
   --ps-accent-2:      #B0122B;  /* deep red: hover / pressed             */
   --ps-accent-text:   #C71430;  /* red for SMALL text — passes AA on cream (5.5:1). Keeps #E81B39 for the flag/fills */
+  --ps-accent-text-mark: #B0122B; /* red for SMALL text sitting ON --ps-mark — AA on the red tint (5.1:1). --ps-accent-text only reaches 4.25:1 there */
   --ps-caution:       #856200;  /* amber "caution" text/edge — AA on cream (5.3:1) */
   --ps-good:          #2A7247;  /* green "protection / OK" text/edge — AA on cream + alt surface (5.1:1) */
   --ps-info:          #3b6ea5;  /* blue "negotiable / info" text/edge — AA on cream (5.0:1) */
@@ -51,6 +52,7 @@
   --ps-accent:        #FF4A60;  /* DC red, brightened for dark */
   --ps-accent-2:      #E81B39;
   --ps-accent-text:   #FF6072;  /* red for SMALL text on dark — passes AA (4.8:1) */
+  --ps-accent-text-mark: #FF7D8B; /* red for SMALL text ON --ps-mark in dark — AA on the red tint (4.9:1) */
   --ps-caution:       #C9982E;  /* amber brightened for dark — AA on dark surface (5.3:1) */
   --ps-good:          #4CAF6E;  /* green brightened for dark — AA on dark surface (5.1:1) */
   --ps-info:          #6B9BDB;  /* blue brightened for dark — AA on dark surface (4.9:1) */
