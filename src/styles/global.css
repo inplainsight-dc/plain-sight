@@ -312,6 +312,9 @@ a.ps-card:hover {
 .ps-badge--live     { background: var(--ps-accent);   color: #fff; }
 .ps-badge--building { background: var(--ps-highlight); color: var(--ps-highlight-ink); }
 .ps-badge--planned  { background: var(--ps-surface-2); color: var(--ps-ink-soft); border: 1px solid var(--ps-line); }
+/* The accent brightens to #FF4A60 on dark, and white on that is only 3.28:1 — below AA for
+   badge-sized text. (On light it is 4.52:1 and fine.) Dark ink on the same red gives 5.31:1. */
+[data-theme='dark'] .ps-badge--live { color: var(--ps-paper); }
 
 .ps-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.2rem; }
 .ps-tag {

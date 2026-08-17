@@ -4,5 +4,5 @@ description: "Ghost Homes — whole homes held off DC's housing market as full-t
 tags: ["Housing", "Short-term rentals", "ANC", "Open data"]
 url: "/ghost-homes"
 status: "live"
-order: 3
+order: 4
 ---

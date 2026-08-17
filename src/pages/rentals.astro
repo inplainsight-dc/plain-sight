@@ -47,6 +47,7 @@ const skills = [
             <span class="rk-download__meta ps-record">v{version} &middot; ~100 KB &middot; .plugin</span>
           </a>
           <p class="rk-note ps-record">Runs in Claude Cowork on a paid Claude plan. New to this? The step-by-step is below.</p>
+          <p class="rk-alt">No paid plan? <a href="/renter-checklists">Renter Checklists &rarr;</a> covers the same ground free, with no account and no AI.</p>
         </aside>
       </div>
     </div>
@@ -148,13 +149,8 @@ const skills = [
 
       <div class="rk-callout" id="no-plan">
         <p class="rk-callout__h ps-record">No paid plan? You are exactly who this next part is for.</p>
-        <p>A plugin needs a paid Claude account, which not everyone has or wants, and trusting an AI tool with housing details is a reasonable thing to be careful about. So there are now no-account, no-AI versions of the same help &mdash; nothing you type on them leaves your browser:</p>
-        <ul class="rk-callout__links">
-          <li><a href="/rentals/rights"><strong>Know your rights: renting in DC, MD &amp; VA &rarr;</strong></a> &mdash; the deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with.</li>
-          <li><a href="/rentals/scam-check"><strong>Is this rental a scam? &rarr;</strong></a> &mdash; a 60-second check before you send money: the tells, the safe way to pay, and how to verify a landlord without touring.</li>
-          <li><a href="/rentals/lease-check"><strong>Read your lease before you sign &rarr;</strong></a> &mdash; check the clauses in your lease and see which are illegal, which won&rsquo;t hold up, and which are just worth negotiating &mdash; with the ask to send back.</li>
-          <li><a href="/rentals/move-in"><strong>Protect your deposit at move-in &rarr;</strong></a> &mdash; a move-in checklist for your state, a plain read of how your deposit has to come back, and a printable condition inventory that defeats an &ldquo;as-is&rdquo; charge.</li>
-        </ul>
+        <p>A plugin needs a paid Claude account, which not everyone has or wants, and trusting an AI tool with housing details is a reasonable thing to be careful about. So the same help exists as four free checklists &mdash; no account, no AI, nothing you type leaves your browser:</p>
+        <p class="rk-callout__cta"><a href="/renter-checklists"><strong>Renter Checklists &rarr;</strong></a> &mdash; know your rights, spot a rental scam, read your lease before you sign, and protect your deposit at move-in. DC, Maryland and Virginia.</p>
       </div>
     </div>
   </section>
@@ -202,6 +198,9 @@ const skills = [
   .rk-download__label { display: block; font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; }
   .rk-download__meta { display: block; margin-top: 0.25rem; opacity: 0.85; }
   .rk-note { display: block; margin-top: 0.8rem; color: var(--ps-ink-soft); line-height: 1.4; }
+  /* The no-paid-plan route, offered at the top rather than only in the install section. */
+  .rk-alt { margin: 0.8rem 0 0; padding-top: 0.8rem; border-top: 1px solid var(--ps-line);
+    font-size: 0.85rem; color: var(--ps-ink-soft); line-height: 1.45; }
 
   .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
   .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
@@ -218,7 +217,7 @@ const skills = [
   .ips-index { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); }
   .ips-entry { border-bottom: 1px solid var(--ps-line); }
   .ips-entry__row { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; align-items: start; padding: 1.1rem 0.2rem; color: var(--ps-ink); }
-  .ips-entry__no { padding-top: 0.35rem; font-size: 0.85rem; color: var(--ps-accent-2); }
+  .ips-entry__no { padding-top: 0.35rem; font-size: 0.85rem; color: var(--ps-accent-text); }
   .ips-entry__top { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
   .ips-entry__title { font-family: var(--ps-font-record); font-weight: 600; font-size: 1.15rem; line-height: 1.12; }
   .ips-entry__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.3rem 0 0; max-width: 64ch; }
@@ -226,7 +225,7 @@ const skills = [
 
   /* Prerequisites callout */
   .rk-prereq { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent-2); border-radius: 6px; padding: 1.1rem 1.3rem; margin-bottom: 1.8rem; background: var(--ps-surface-2); max-width: 70ch; }
-  .rk-prereq__h { display: block; margin-bottom: 0.6rem; color: var(--ps-accent-2); }
+  .rk-prereq__h { display: block; margin-bottom: 0.6rem; color: var(--ps-accent-text); }
   .rk-prereq ul { margin: 0 0 0.6rem; padding-left: 1.1rem; }
   .rk-prereq li { margin-bottom: 0.5rem; font-size: 1.04rem; }
   .rk-prereq__note { font-size: 0.98rem; color: var(--ps-ink-soft); margin: 0; }

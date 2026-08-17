@@ -1,0 +1,221 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// The no-account counterpart to /rentals. These four checklists used to live only in a callout
+// buried inside the plugin page's install section — which meant the people they were written for
+// (no paid Claude plan) had to read three sections about a product they can't use before finding
+// them. This page is their front door; the tools themselves stay at their original /rentals/*
+// URLs so no shared or indexed link breaks.
+
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+
+const checklists = [
+  {
+    href: '/rentals/rights',
+    title: 'Know your rights',
+    time: '5 min',
+    desc: "The deposit cap for your state, what a landlord can legally ask for, and calm, sourced lines to respond with when something feels off.",
+  },
+  {
+    href: '/rentals/scam-check',
+    title: 'Is this rental a scam?',
+    time: '60 sec',
+    desc: 'A quick check before you send money: the tells, the safe way to pay, and how to verify a landlord without touring.',
+  },
+  {
+    href: '/rentals/lease-check',
+    title: 'Read your lease before you sign',
+    time: '10 min',
+    desc: "Check the clauses in your lease and see which are illegal, which won't hold up, and which are just worth negotiating — with the ask to send back.",
+  },
+  {
+    href: '/rentals/move-in',
+    title: 'Protect your deposit at move-in',
+    time: '15 min',
+    desc: 'A move-in checklist for your state, a plain read of how your deposit has to come back, and a printable condition inventory that defeats an "as-is" charge.',
+  },
+];
+---
+<Base
+  title="Renter Checklists"
+  ogImage="/og/renter-checklists.png"
+  description="Four free checklists for renting in DC, Maryland and Virginia. No account, no AI, no paid plan — nothing you type leaves your browser.">
+  <Header slot="header" />
+
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; DC &middot; MARYLAND &middot; VIRGINIA</p>
+      <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">Renter <span class="ps-highlight">Checklists</span>.</h1>
+          <p class="ips-lead__blurb">Four things worth checking before you pay a deposit, sign a lease, or hand over your ID &mdash; written in plain language for DC, Maryland and Virginia.</p>
+        </div>
+        <aside class="ips-lead__rail">
+          <div class="rc-rail">
+            <p class="rc-rail__h ps-record">What you need</p>
+            <p class="rc-rail__n">Nothing.</p>
+            <p class="rc-rail__note">No account, no sign-up, no AI, no paid plan. Nothing you type on these pages leaves your browser &mdash; there is no server to send it to.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="ips-sec" id="checklists">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">The checklists</h2>
+        <span class="ips-sec-rule"></span>
+        <span class="ps-record">{checklists.length} tools</span>
+      </div>
+
+      <ol class="ips-index">
+        {checklists.map((c, i) => (
+          <li class="ips-entry">
+            <a class="ips-entry__row" href={c.href}>
+              <span class="ips-entry__no ps-record">{String(i + 1).padStart(2, '0')}</span>
+              <div class="ips-entry__body">
+                <div class="ips-entry__top">
+                  <h3 class="ips-entry__title">{c.title}</h3>
+                  {/* A neutral tag, not ps-badge--live: the accent red carries status on this
+                      site, and these are time estimates, not statuses. */}
+                  <span class="rc-time ps-record">{c.time}</span>
+                </div>
+                <p class="ips-entry__desc">{c.desc}</p>
+              </div>
+              <span class="ips-entry__cue">Open &rarr;</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <section class="ips-sec" id="about">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">The fine print</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p><strong>These are checklists, not legal advice.</strong> They tell you what the law in your jurisdiction says and where it says it, so you can ask a better question &mdash; of a landlord, a housing counselor, or a lawyer. They can&rsquo;t tell you how your particular situation will go.</p>
+        <p><strong>Every figure carries a date.</strong> Deposit caps and notice periods change. Each page shows what it is current as of, and all three jurisdictions read from one shared, sourced tenant-law reference, so the answers don&rsquo;t drift apart between pages.</p>
+        <p><strong>Nothing you enter is collected.</strong> These pages run entirely in your browser. There is no account, no analytics on what you type, and no server receiving it &mdash; which is also why nothing you fill in is saved when you close the tab. Print or save before you go.</p>
+        <p class="rc-cross">Want this as an assistant that does the work with you &mdash; sweeping listings, drafting the outreach, building your application packet? That exists too, as <a href="/rentals">DC Rentals &rarr;</a>, though it needs a paid Claude plan. These checklists cover the same ground without one.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  /* The ips-* layout vocabulary is not in global.css — each page carries the rules it uses in
+     its own scoped block (see index.astro / rentals.astro). Copied verbatim from index.astro so
+     this page matches the hub exactly. Worth promoting to global.css one day; not while the
+     site is a day old. */
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  .ips-lead__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: clamp(1.4rem, 4vw, 3rem);
+    border-top: 1px solid var(--ps-line);
+    padding-top: 1.6rem;
+  }
+  .ips-lead__h {
+    font-family: var(--ps-font-display);
+    font-weight: 700;
+    font-size: clamp(2.3rem, 6.5vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    margin-bottom: 1rem;
+  }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.6rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  .ips-index { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); }
+  .ips-entry { border-bottom: 1px solid var(--ps-line); }
+  .ips-entry__row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.2rem;
+    align-items: start;
+    padding: 1.3rem 0.2rem;
+    text-decoration: none;
+    color: var(--ps-ink);
+    transition: background-color 0.15s ease, padding-left 0.15s ease;
+  }
+  a.ips-entry__row:hover { background: var(--ps-surface-2); padding-left: 0.8rem; }
+  .ips-entry__no { padding-top: 0.35rem; font-size: 0.85rem; }
+  .ips-entry__top { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+  .ips-entry__title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.4rem; line-height: 1.12; }
+  .ips-entry__desc { color: var(--ps-ink-soft); font-size: 1rem; margin: 0.35rem 0 0; max-width: 60ch; }
+  /* --ps-accent-text, not --ps-accent-2: this is small text, and accent-2 only reaches 3.85:1
+     on dark. accent-text is the token the a11y pass created for exactly this case. */
+  .ips-entry__cue { align-self: center; font-family: var(--ps-font-record); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-accent-text); white-space: nowrap; }
+
+  @media (max-width: 640px) {
+    .ips-lead__grid { grid-template-columns: 1fr; }
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
+    .ips-entry__row { grid-template-columns: auto 1fr; }
+    .ips-entry__cue { grid-column: 2; margin-top: 0.4rem; }
+  }
+
+  .ips-back { margin: 0 0 0.75rem; font-size: 0.85rem; }
+
+  .rc-time {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ps-ink-soft);
+    border: 1px solid var(--ps-line);
+    border-radius: 999px;
+    padding: 0.12rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .rc-rail {
+    background: var(--ps-surface-2);
+    border: 1px solid var(--ps-line);
+    border-left: 2px solid var(--ps-accent);
+    padding: 1.1rem 1.2rem;
+  }
+  .rc-rail__h { color: var(--ps-ink-soft); margin: 0 0 0.35rem; }
+  .rc-rail__n {
+    font-family: var(--ps-font-display);
+    font-size: clamp(1.6rem, 4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+  }
+  .rc-rail__note { font-size: 0.85rem; color: var(--ps-ink-soft); margin: 0; }
+
+  .rc-cross {
+    border-top: 1px solid var(--ps-line);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    color: var(--ps-ink-soft);
+  }
+</style>
