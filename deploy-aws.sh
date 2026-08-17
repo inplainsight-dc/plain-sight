@@ -9,6 +9,23 @@ set -euo pipefail
 BUCKET="${IPS_BUCKET:?Set IPS_BUCKET to your S3 bucket name, e.g. export IPS_BUCKET=inplainsight-dc}"
 DIST_ID="${IPS_CLOUDFRONT_ID:?Set IPS_CLOUDFRONT_ID to your CloudFront distribution id}"
 
+# This script builds from the WORKING TREE, not from HEAD — `npm run build` reads whatever is
+# on disk. So an uncommitted edit ships to production silently, past the ship gate, with
+# nothing looking wrong at any point. That is a real risk here: more than one session works in
+# this repo, so the dirty file may not even be yours.
+#
+# Refuse by default. Override with IPS_ALLOW_DIRTY=1 when you genuinely mean to deploy
+# uncommitted work (a hotfix you have not committed yet).
+if git rev-parse --git-dir >/dev/null 2>&1 && [ -n "$(git status --porcelain)" ]; then
+  echo "✗ Working tree is not clean — deploy builds from disk, so this would ship the changes below:"
+  git status --short | sed 's/^/    /'
+  echo ""
+  echo "  Commit (or stash) first, or re-run with IPS_ALLOW_DIRTY=1 to deploy them deliberately."
+  [ "${IPS_ALLOW_DIRTY:-0}" = "1" ] || exit 1
+  echo "  IPS_ALLOW_DIRTY=1 set — continuing with uncommitted changes."
+fi
+
+echo "→ Deploying $(git rev-parse --short HEAD 2>/dev/null || echo 'unknown') on branch $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
 echo "→ Building static site..."
 npm run build
 
