@@ -1,0 +1,264 @@
+<style>
+#lm h2{font-family:var(--ps-font-display);font-weight:700;font-size:clamp(1.4rem,3.4vw,1.9rem);
+ margin:0 0 .5rem}
+#lm h3{font-family:var(--ps-font-display);font-weight:700;font-size:1.15rem;margin:1.6rem 0 .5rem}
+#lm .lm-sec{padding-block:clamp(1.6rem,4vw,2.6rem);border-top:1px solid var(--ps-line)}
+#lm .lm-sec:first-child{border-top:0;padding-top:0}
+#lm .lm-note{color:var(--ps-ink-soft);font-size:1rem;max-width:78ch;margin:0 0 1.1rem}
+#lm .lm-rule{border:1px solid var(--ps-ink);border-radius:var(--ps-radius);
+ padding:1.1rem 1.2rem;background:var(--ps-surface-2);font-size:1.02rem;max_width:82ch}
+#lm .lm-ladder{display:grid;gap:.7rem}
+#lm .lm-rung{border:1px solid var(--ps-line);border-left-width:4px;border-radius:var(--ps-radius);
+ padding:.9rem 1.05rem;background:var(--ps-surface);display:grid;
+ grid-template-columns:minmax(0,1fr) auto;gap:.5rem 1.1rem;align-items:baseline}
+#lm .lm-rung.f{border-left-color:var(--ps-accent)}
+#lm .lm-rung.w{border-left-color:var(--ps-caution)}
+#lm .lm-rung.o{border-left-color:var(--ps-good)}
+#lm .lm-rung .t{font-family:var(--ps-font-display);font-weight:700;font-size:1.1rem}
+#lm .lm-rung .n{font-family:var(--ps-font-record);font-size:1.7rem;font-weight:600;
+ text-align:right;white-space:nowrap;line-height:1;color:var(--ps-accent-text)}
+#lm .lm-rung.o .n{color:var(--ps-ink)}
+#lm .lm-rung .pct{display:block;text-align:right;font-size:.78rem;color:var(--ps-ink-soft)}
+#lm .lm-rung .d{grid-column:1/-1;color:var(--ps-ink-soft);font-size:.94rem;max-width:80ch;margin:0}
+#lm .lm-scroll{overflow-x:auto}
+#lm .lm-scroll:focus-visible{outline:2px solid var(--ps-accent);outline-offset:2px}
+#lm table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:min(100%,26rem)}
+#lm caption{text-align:left;color:var(--ps-ink-soft);font-size:.85rem;padding-bottom:.5rem}
+#lm th,#lm td{padding:.5rem .55rem;border-bottom:1px solid var(--ps-line);text-align:right;
+ font-variant-numeric:tabular-nums}
+#lm th:first-child,#lm td:first-child{text-align:left;font-variant-numeric:normal}
+#lm thead th{font-family:var(--ps-font-record);font-size:.72rem;text-transform:uppercase;
+ letter-spacing:.06em;color:var(--ps-ink-soft);border-bottom:1.5px solid var(--ps-ink);
+ vertical-align:bottom}
+#lm td.f{color:var(--ps-accent-text);font-weight:600}
+#lm .sup{color:var(--ps-ink-soft);font-style:italic}
+#lm .bar{height:8px;border-radius:2px;background:var(--ps-accent);display:inline-block;
+ vertical-align:middle;margin-right:.35rem;min-width:2px}
+#lm .lm-limits li{margin-bottom:.7rem;max-width:80ch;color:var(--ps-ink-soft);font-size:.98rem}
+#lm .lm-limits b{color:var(--ps-ink)}
+#lm .lm-contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem;
+ margin-top:.8rem}
+#lm .lm-contact>div{border:1px solid var(--ps-line);border-radius:var(--ps-radius);
+ padding:1rem 1.1rem;background:var(--ps-surface-2)}
+#lm .lm-kick{font-family:var(--ps-font-record);font-size:.7rem;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--ps-ink-soft);margin:0 0 .15rem}
+#lm .lm-big{font-family:var(--ps-font-display);font-weight:700;font-size:1.35rem;margin:.15rem 0 .25rem}
+#lm .lm-warn{border-top:1px solid var(--ps-line);padding-top:.8rem;margin:1.2rem 0 0;
+ max-width:80ch;font-size:.98rem;color:var(--ps-ink-soft)}
+#lm .lm-warn b{color:var(--ps-ink)}
+#lm button{font:inherit;font-size:.92rem;padding:.5rem .9rem;border-radius:var(--ps-radius);
+ border:1px solid var(--ps-ink);background:var(--ps-surface);color:var(--ps-ink);cursor:pointer}
+#lm button:hover{background:var(--ps-surface-2)}
+#lm .lm-src{font-size:.88rem;color:var(--ps-ink-soft);max-width:84ch}
+@media(max-width:620px){
+ #lm .lm-rung{grid-template-columns:1fr}
+ #lm .lm-rung .n,#lm .lm-rung .pct{text-align:left}
+}
+</style>
+<div id="lm">
+
+<section class="lm-sec" aria-labelledby="lm-rule">
+<h2 id="lm-rule">What this page does and does not say</h2>
+<div class="lm-rule">
+License text is self-reported by the host and displayed on the listing. Matching it to
+the register establishes whether a record exists and what state it is in &mdash; nothing more.
+It is <b>never</b> a determination that any listing is unlawful, and no individual host is
+named. There are lawful explanations for every category below, including licenses issued
+after the snapshot was taken and records that do not reconcile for clerical reasons.
+This page exists to size a population an agency could audit, not to accuse anyone.
+New to the rules? <a href="/short-term-rental-rules">Start with what the law actually says</a>.
+</div>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-ladder">
+<h2 id="lm-ladder">The evidence ladder</h2>
+<p class="lm-note" id="lm-ladder-note"></p>
+<div class="lm-ladder" id="lm-ladderbox"></div>
+<p class="lm-note" style="margin-top:1rem">These are kept separate on purpose. Adding them
+into one total would put an uncheckable exemption claim next to a matched lapsed record
+and call them the same finding.</p>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-hosted">
+<h2 id="lm-hosted">The calendar test</h2>
+<p class="lm-note" id="lm-hosted-note"></p>
+<p class="lm-note"><b>This one still rests on displayed text.</b> The DLCP register records
+that a short-term rental license exists; it does not record whether it is the hosted or
+the unhosted kind. That half of the test comes from the listing, so it did not get
+stronger when the records were matched. Treat it as the weaker claim on the page.</p>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-ward">
+<h2 id="lm-ward">By ward</h2>
+<div class="lm-scroll" tabindex="0" role="region" aria-labelledby="lm-ward">
+<table id="lm-wardtbl"><caption>Whole units rented out as full-time short-term rentals, by
+ward and ladder position. Listings snapshot: 24 June 2026. Licenses as recorded
+14 August 2026.</caption>
+<thead><tr id="lm-wardhead"></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-anc">
+<h2 id="lm-anc">By Advisory Neighborhood Commission</h2>
+<p class="lm-note" id="lm-anc-note"></p>
+<div class="lm-scroll" tabindex="0" role="region" aria-labelledby="lm-anc">
+<table id="lm-anctbl"><caption>Listings snapshot: 24 June 2026. Licenses as recorded
+14 August 2026. Rows are in fixed alphabetical order and deliberately not sortable:
+ordering by a column containing suppressed cells would reveal their relative size.</caption>
+<thead><tr id="lm-anchead"></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-data">
+<h2 id="lm-data">Take the numbers with you</h2>
+<p class="lm-note">The two tables above as CSV, with the caveats in the header rows so they
+travel with the figures. Suppressed cells export as &ldquo;&lt;5&rdquo;, never as the
+underlying number.</p>
+<p><button type="button" id="lm-dl">Download the aggregate tables (CSV)</button></p>
+<p class="lm-note" id="lm-dlnote"></p>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-complain">
+<h2 id="lm-complain">If something on your block looks wrong</h2>
+<p class="lm-note">The route is the agency, not the listing and not the host. DLCP licenses
+short-term rentals and enforces the rules. <a href="/short-term-rental-rules#complain">What
+helps a complaint</a>.</p>
+<div class="lm-contact">
+ <div>
+  <p class="lm-kick">Short-term rental hotline</p>
+  <p class="lm-big"><a href="tel:+12022218550">(202) 221-8550</a></p>
+  <p class="lm-note" style="margin:0">Run by DLCP for short-term rental complaints.</p>
+ </div>
+ <div>
+  <p class="lm-kick">Check a license yourself</p>
+  <p class="lm-big"><a href="https://boss.dc.gov" rel="noopener">boss.dc.gov</a></p>
+  <p class="lm-note" style="margin:0">Look up whether an address holds a current license.</p>
+ </div>
+</div>
+<p class="lm-warn"><b>Please do not contact hosts or guests directly.</b> Nothing on this
+page is a basis for approaching anyone. Every figure here describes a record, not a
+person's conduct, and the complaint route exists so that somebody with the authority to
+check the records does the checking.</p>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-limits">
+<h2 id="lm-limits">What would knock this down</h2>
+<p class="lm-note">The four things a hostile reader would go after first, stated here
+rather than left to be found.</p>
+<ul class="lm-limits" id="lm-limitsbox"></ul>
+</section>
+
+<section class="lm-sec" aria-labelledby="lm-src">
+<h2 id="lm-src">Where this comes from</h2>
+<p class="lm-src" id="lm-sources"></p>
+<p class="lm-src">Airbnb only. Vrbo, Booking.com and corporate operators such as Sonder and
+Blueground are not in this snapshot, so every count here is a floor, not a ceiling.</p>
+</section>
+
+</div>
+<script>
+(function(){
+// Payload is INLINED, not fetched. Ghost Homes shipped a fingerprinted script that met a
+// separately-cached data file and threw; inlining makes code and data one artifact.
+const D={"core":2986,"accessory":246,"rungs":{"no_active":510,"wrong_kind":79,"no_record":147,"exempt":819,"active":1429,"no_text":2},"ladder":[["no_active","No active license at that address","The number on the listing matches a short-term rental license in the DLCP register whose record has lapsed, and no active license exists at that premise address under any other number."],["wrong_kind","A license of another kind","The number is a genuine DC business license \u2014 One Family Rental, Bed and Breakfast, Apartment, Hotel \u2014 none of which authorizes short-term rentals."],["no_record","No business license at all","A well-formed license number that matches no record in the DC business license register, of any category."],["exempt","An exemption claimed","The listing claims exemption instead of a number. No public register records short-term rental exemptions, so this cannot be checked either way."],["active","An active license on record","The number matches a short-term rental license that is in force, or whose address carries one under a current number."],["no_text","No license text at all","The listing displays no license field, or text carrying no number this project can read. Nothing was claimed, so there is nothing to check against the register \u2014 this is not counted as flagged."]],"ward_rows":[["Ward 1",52,6,20,59,235,0],["Ward 2",82,18,45,274,189,0],["Ward 3",20,1,1,17,68,0],["Ward 4",60,7,11,32,158,0],["Ward 5",111,32,21,113,288,1],["Ward 6",102,7,29,234,308,0],["Ward 7",53,5,14,40,127,1],["Ward 8",30,3,6,50,56,0]],"anc_rows":[["1A",63,11],["1B",96,13],["1C",62,5],["1D",49,11],["1E",102,38],["2A",39,-1],["2B",155,37],["2C",109,25],["2D",7,-1],["2E",81,9],["2F",77,24],["2G",140,44],["3/4G",10,-1],["3A",7,-1],["3B",11,-1],["3C",30,-1],["3D",17,6],["3E",23,6],["3F",15,-1],["4A",23,9],["4B",60,12],["4C",68,25],["4D",69,17],["4E",42,14],["5A",28,8],["5B",66,18],["5C",37,13],["5D",178,48],["5E",180,55],["5F",77,22],["6A",177,58],["6B",197,37],["6C",150,33],["6D",39,6],["6E",101,-1],["7B",47,14],["7C",41,10],["7D",101,29],["7E",22,12],["7F",29,7],["8A",58,13],["8B",16,-1],["8C",38,15],["8D",10,-1],["8E",11,5],["8F",28,-1]],"small_cell":5,"suppressed":-1,"hosted_open":1593,"hosted_total":2090,"hs_tested":1646,"hs_none":80,"excess":340,"snapshot":"24 June 2026","register":"14 August 2026","roll":"3 August 2026","built":"17 August 2026"}, SUP=D.suppressed, THR=D.small_cell;
+const $=id=>document.getElementById(id);
+const n=v=>v.toLocaleString();
+const esc=s=>String(s).replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+const TONE={no_active:"f",wrong_kind:"f",no_record:"f",exempt:"w",active:"o",no_text:"w"};
+const COLS=D.ladder.map(([k,t])=>[k,t]);
+
+$("lm-ladder-note").textContent =
+ `${n(D.core)} whole units are rented out as full-time short-term rentals in this snapshot `
+ +`(${n(D.accessory)} of them are basement or accessory units, counted here and reported `
+ +`separately elsewhere). Every listing sits on exactly one rung, so the rungs and both `
+ +`tables below add back to ${n(D.core)}.`;
+
+$("lm-ladderbox").innerHTML = D.ladder.map(([k,title,desc])=>{
+ const v=D.rungs[k]||0;
+ return `<div class="lm-rung ${TONE[k]}"><div class="t">${esc(title)}</div>`
+  +`<div><div class="n">${n(v)}</div><span class="pct">${(100*v/D.core).toFixed(1)}% of ${n(D.core)}</span></div>`
+  +`<p class="d">${esc(desc)}</p></div>`;}).join("");
+
+$("lm-hosted-note").innerHTML =
+ `Of ${n(D.hosted_total)} whole units displaying a <i>hosted</i> license, `
+ +`<b>${n(D.hosted_open)}</b> keep a calendar open 180 nights or more. A hosted license `
+ +`requires the host to be present; renting out a whole unit while absent requires the `
+ +`unhosted license, which is capped at 90 nights a year. Those two do not reconcile.`;
+
+function cell(v,flag){
+ if(v===SUP)return `<td class="sup" title="Fewer than ${THR}">&lt;${THR}</td>`;
+ return `<td${flag?' class="f"':''}>${n(v)}</td>`;}
+$("lm-wardhead").innerHTML='<th scope="col">Ward</th>'+COLS.map(([,t])=>`<th scope="col">${esc(t)}</th>`).join("");
+document.querySelector("#lm-wardtbl tbody").innerHTML=D.ward_rows.map(r=>
+ `<tr><th scope="row">${esc(r[0])}</th>`+r.slice(1).map((v,i)=>cell(v,TONE[COLS[i][0]]==="f")).join("")+"</tr>").join("");
+
+$("lm-anchead").innerHTML='<th scope="col">Commission area</th><th scope="col">Whole units, full-time</th><th scope="col">Flagged</th>';
+const maxFlag=Math.max(...D.anc_rows.map(r=>r[2]===SUP?0:r[2]),1);
+document.querySelector("#lm-anctbl tbody").innerHTML=D.anc_rows.map(r=>{
+ const [anc,total,flagged]=r;
+ const bar=flagged===SUP?"":`<span class="bar" style="width:${34*flagged/maxFlag}px"></span>`;
+ return `<tr><th scope="row">ANC ${esc(anc)}</th>`+cell(total)
+  +(flagged===SUP?cell(SUP):`<td class="f">${bar}${n(flagged)}</td>`)+"</tr>";}).join("");
+
+$("lm-anc-note").innerHTML =
+ `&ldquo;Flagged&rdquo; is the first three rungs added together &mdash; the record-backed ones. `
+ +`This table carries those two figures and no breakdown between them, deliberately: publishing `
+ +`the rungs alongside a total would let a reader subtract a suppressed cell back out. The `
+ +`breakdown is on the ward table, where every cell is large. Either figure shows as `
+ +`&ldquo;&lt;${THR}&rdquo; when it falls below ${THR}, and the real number is not in this page.`;
+
+$("lm-limitsbox").innerHTML=[
+ [`The primary-residence test came back against us.`,
+  `Both license categories require the property to be the host's primary residence. Of `
+  +`${n(D.hs_tested)} listings traceable to a parcel on the tax roll, only <b>${n(D.hs_none)}</b> `
+  +`&mdash; ${(100*D.hs_none/D.hs_tested).toFixed(1)}% &mdash; sit on a parcel with no homestead `
+  +`deduction. The licensed population is overwhelmingly not absentee owners. This is printed `
+  +`here because a page that hides its own contrary finding deserves to be taken apart.`],
+ [`&ldquo;Lapsed&rdquo; is easy to overstate by a third.`,
+  `DLCP issues a fresh license number on renewal and leaves the old record inactive, with no `
+  +`link between them. Every figure here discounts the cases where an active license exists at `
+  +`the same address under a different number. A count taken straight from the register's status `
+  +`field would be far higher and wrong.`],
+ [`The count is still an upper bound.`,
+  `${n(D.excess)} listings quote a license number that another listing also quotes. Some are the `
+  +`same home listed twice; some are one license stretched over more units than it should cover. `
+  +`The register cannot separate them, so neither figure is published as the count.`],
+ [`An exemption claim cannot be checked at all.`,
+  `No public register records short-term rental exemptions. The exemption rung is neither `
+  +`evidence of a problem nor evidence of compliance, and it is the second-largest group here.`],
+].map(([t,d])=>`<li><b>${t}</b> ${d}</li>`).join("");
+
+$("lm-sources").innerHTML =
+ `Inside Airbnb Washington D.C. snapshot, ${esc(D.snapshot)} &middot; DC Open Data &mdash; Basic `
+ +`Business Licenses (DLCP), refreshed ${esc(D.register)} &middot; DC Open Data &mdash; Integrated `
+ +`Tax System Public Extract (OCFO), extract ${esc(D.roll)} &middot; DC Short-Term Rental `
+ +`Regulation Act of 2018. Built ${esc(D.built)}.`;
+
+$("lm-dl").addEventListener("click",()=>{
+ const q=s=>`"${String(s).replace(/"/g,'""')}"`;
+ const c=v=>v===SUP?`<${THR}`:v;
+ const L=[];
+ L.push([q("DC whole-unit short-term rentals — license record match, aggregate tables")]);
+ L.push([q(`Listings snapshot ${D.snapshot}; licenses as recorded ${D.register}; tax roll ${D.roll}`)]);
+ L.push([q("Every figure describes a record, not a determination that any listing is unlawful.")]);
+ L.push([q(`Cells shown as <${THR} are suppressed; the underlying number is not in this file.`)]);
+ L.push([q("Airbnb only — every count is a floor, not a ceiling.")]);
+ L.push([]);
+ L.push(["Ward",...COLS.map(x=>q(x[1]))]);
+ D.ward_rows.forEach(r=>L.push([q(r[0]),...r.slice(1).map(c)]));
+ L.push([]);
+ L.push(["ANC",q("Whole units, full-time"),q("Flagged (first three rungs)")]);
+ D.anc_rows.forEach(r=>L.push([q("ANC "+r[0]),c(r[1]),c(r[2])]));
+ // Terminator built from char codes on purpose: writing the escape here put REAL
+  // CR/LF bytes into the template, and Python collapses those to one newline when
+  // it parses the file, which emitted a literal newline inside a JS string and
+  // threw SyntaxError - the whole panel rendered nothing.
+ const NL=String.fromCharCode(13)+String.fromCharCode(10);
+ const csv=L.map(r=>r.join(",")).join(NL);
+ const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+ const a=document.createElement("a");
+ a.href=url; a.download=`dc-str-license-match_${D.snapshot.replace(/ /g,"-")}.csv`;
+ document.body.appendChild(a); a.click(); a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ $("lm-dlnote").textContent="Downloaded. The caveats are in the first rows of the file.";
+});
+})();
+</script>
