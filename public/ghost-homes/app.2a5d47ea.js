@@ -55,7 +55,7 @@ function renderResult(o){
       <div class="rc"><div class="n">${o.core.toLocaleString()}</div><div class="l">whole homes run as full-time STRs</div></div>
       <div class="rc"><div class="n">${o.share}%</div><div class="l">of the ${o.all.toLocaleString()} listings here</div></div>
       <div class="rc"><div class="n ink">${o.rent?("$"+o.rent.toLocaleString()+(o.est?"*":"")):"—"}</div><div class="l">avg rent${b?" · "+b+" band":""}</div></div>
-      ${o.flagged===undefined?"":`<div class="rc"><div class="n">${o.flagged<0?"&lt;5":o.flagged.toLocaleString()}</div><div class="l">of those, the license shown doesn't match a current record</div></div>`}
+      ${o.flagged===undefined?"":`<div class="rc"><div class="n">${o.flagged<0?"&lt;5":o.flagged.toLocaleString()}</div><div class="l">of those, the license shown doesn’t match a current record</div></div>`}
     </div>
     <div class="sharebar" role="img" aria-label="${o.share}% of listings are full-time whole-unit short-term rentals"><span style="width:${o.share}%"></span></div>
     <p class="note" style="margin:0">This is ${market}${o.est?" <i>*rent estimated from adjacent neighborhoods.</i>":""}</p>
@@ -188,6 +188,24 @@ function initCityMap(){
   choroLayer=L.geoJSON(null).addTo(cityMap);
   drawChoro();
 }
+/* Wave 5 R2 — selected area, shared by the map and the breakdown table.
+   The <select> stays the accessible path (a Leaflet path is not keyboard-reachable),
+   so selecting on the map drives the same state the selector does, and the change is
+   announced rather than left silent. */
+let selArea=null; // {dim, label}
+function isSelected(dim,label){return !!selArea&&selArea.dim===dim&&selArea.label===label;}
+function selectArea(dim,label){
+  selArea={dim,label};
+  if(fBreak.value!==dim){fBreak.value=dim;}
+  refreshTable();
+  drawChoro();
+  const row=document.querySelector("#tbl tbody tr.sel");
+  if(row&&row.scrollIntoView)row.scrollIntoView({block:"center"});
+  const live=document.getElementById("selLive");
+  if(live)live.textContent=`Showing ${label} in the breakdown below.`;
+  writeHash();
+}
+
 function statFor(geo){ // returns {feats, stat, labels}
   if(geo==="anc")return{feats:NBa,stat:AS,labels:AN,name:"ANC"};
   return{feats:NBc,stat:CS,labels:CL,name:"cluster"};
@@ -203,8 +221,15 @@ function drawChoro(){
     const fillShare=metric==="count"?(core/maxCount):share;
     l.setStyle({color:cssVar("--ps-line"),weight:1,fillColor:"#E81B39",fillOpacity:ALPHA[binOf(fillShare>1?1:fillShare)]});
     l.bindTooltip(`<div class="choro-tooltip"><b>${labels[i]}</b><br>${core.toLocaleString()} full-time STRs · ${all?Math.round(100*share):0}% of ${all.toLocaleString()} listings</div>`,{sticky:true});
-    l.on("mouseover",()=>l.setStyle({weight:2,color:cssVar("--ps-ink")}));
-    l.on("mouseout",()=>l.setStyle({weight:1,color:cssVar("--ps-line")}));
+    l.on("mouseover",()=>{if(!isSelected(geo,labels[i]))l.setStyle({weight:2,color:cssVar("--ps-ink")});});
+    l.on("mouseout",()=>{if(!isSelected(geo,labels[i]))l.setStyle({weight:1,color:cssVar("--ps-line")});});
+    // Wave 5 R2: the layout promises that choosing an area changes what follows, and
+    // the click used to do nothing at all — tooltip on hover, and hover is not even
+    // discoverable on touch. A click now selects the area: the breakdown switches to
+    // that geography, its row is highlighted and scrolled to, and the shape is outlined
+    // so the link between map and table is visible rather than implied.
+    l.on("click",()=>selectArea(geo,labels[i]));
+    if(isSelected(geo,labels[i]))l.setStyle({weight:3,color:cssVar("--ps-ink")});
   });
   // Guard on validity rather than try/catch: fitBounds() on an EMPTY layer throws only
   // after Leaflet has written a NaN center, so swallowing the throw left the map broken and
@@ -268,7 +293,8 @@ function renderTable(){
     const share=suppressed?"—":(100*r[4]).toFixed(0)+"%";
     const ftCell=suppressed?`&lt;${THR}`:`<span class="bar" style="width:${44*r[3]/mx}px"></span> ${r[3]}`;
     const rentCell=showRent?`<td class="mono"${r[6]?' style="font-style:italic"':''}>${r[5]?"$"+r[5].toLocaleString():"—"}</td>`:"";
-    return `<tr><td>${r[0]}</td>${rentCell}<td class="mono">${r[1]}</td><td class="mono">${r[2]}</td>
+    const sel=selArea&&selArea.dim===fBreak.value&&r[0]===selArea.label;
+    return `<tr${sel?' class="sel" aria-current="true"':''}><td>${r[0]}</td>${rentCell}<td class="mono">${r[1]}</td><td class="mono">${r[2]}</td>
       <td class="mono">${ftCell}</td><td class="mono">${share}</td></tr>`;
   }).join("");
   document.getElementById("tblCap").textContent=
@@ -277,7 +303,9 @@ function renderTable(){
     (anySuppressed?` Cells with fewer than ${THR} full-time STRs are shown as “<${THR}” so an individual home can't be singled out.`:"");
 }
 function refreshTable(){tblRows=buildRows(fBreak.value);sortK=showRent?4:3;sortDir=-1;renderTable();}
-fBreak.addEventListener("change",()=>{refreshTable();writeHash();});
+fBreak.addEventListener("change",()=>{
+  if(selArea&&selArea.dim!==fBreak.value)selArea=null;  // a stale highlight is worse than none
+  refreshTable();drawChoro();writeHash();});
 refreshTable();
 
 /* download aggregate tables (P4) — de-identified, small SMD cells suppressed */
@@ -335,6 +363,28 @@ function readHash(){
 }
 fGeo.addEventListener("change",writeHash);
 hood.addEventListener("change",writeHash);
+
+/* NOTE: everything below the theme-toggle marker is DISCARDED when the Astro bundle
+   is extracted (see _js.split near the end of this file). Code that must ship to the
+   site therefore has to sit ABOVE it — this resize handler was written below it first
+   and silently never reached /ghost-homes. Same class as Wave 2 R2. */
+/* Wave 5 R3 — Leaflet caches container size, so a map sized in a narrow window keeps
+   that size when the window widens: gray gutters, tiles short of the edge, view not
+   re-fitted. invalidateSize() only ever ran on tab switch. Wave 2's R4 fixed a resize
+   THROWING and never added resize handling, so the crash went and the gap stayed.
+   Debounced because invalidateSize on every resize event is expensive, and because
+   this is exactly the code path where an uncaught error hid last time. */
+let rzT=null;
+addEventListener("resize",()=>{
+  clearTimeout(rzT);
+  rzT=setTimeout(()=>{
+    if(cityMap&&document.getElementById("p-city")&&!document.getElementById("p-city").hidden)
+      cityMap.invalidateSize();
+    if(doorMap&&document.getElementById("p-door")&&!document.getElementById("p-door").hidden)
+      doorMap.invalidateSize();
+  },160);
+});
+
 
 /* theme owned by the site (data-theme). Re-render map on change. */
 function applyTheme(){if(doorBase)doorBase.setUrl(tileUrl());if(cityInit)drawChoro();if(doorMap&&hood.value!=='')drawDoorMap(+hood.value);}
