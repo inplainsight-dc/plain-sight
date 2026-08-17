@@ -86,6 +86,26 @@ The tokens and motifs are constant; each format scales them.
 
 ---
 
+## Naming — every tool starts with "DC"
+
+**The rule:** every tool in the family is named `DC <Thing>`. DC Rentals, DC Trash Tracker, DC Laws, DC Records, DC Ghost Homes, DC Renter Checklists, DC Appointments Watch. No exceptions for tools with a strong idiomatic name of their own — "Ghost Homes" becomes "DC Ghost Homes," it does not get a pass for being evocative.
+
+**One name per tool, across all five places below.** The Index label, the page title and the h1 say the same thing. A shorter index label is not a separate decision to make per tool — if the card says `DC Trash` while the page says `DC Trash Tracker`, one of them is wrong.
+
+**Why.** The jurisdiction is the promise. Someone landing on one tool from a search result or a shared link should know in the first two words whose fine print this is, without reading a line of body copy. It also does the fork's work for it: the prefix is the most visible seam, so a Baltimore or Philadelphia fork renames along an obvious line instead of inventing a new naming scheme.
+
+**Where it has to be applied — all five, or the name is only half-changed:**
+
+1. The card title in `src/data/projects/<tool>.md` (`title:` — this is what the Index renders).
+2. The page `<title>` prop passed to `Base` — the browser tab and the search result.
+3. The page `<h1>`, keeping the `ps-highlight` span on the distinctive word, not on "DC" (`DC Ghost <span class="ps-highlight">Homes</span>`).
+4. The OG card eyebrow in `scripts/gen-og-cards.mjs` (`IN PLAIN SIGHT · DC GHOST HOMES`) — then regenerate the cards.
+5. Any cross-link label on another page that names the tool in running text.
+
+The frontmatter `description` should lead with the full name too where it names the tool at all.
+
+---
+
 ## Principles to preserve
 
 - **Everything traces to the flag** — red, three stars, two bars.
