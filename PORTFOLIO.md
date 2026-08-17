@@ -1,6 +1,6 @@
 # In Plain Sight — Portfolio Map
 
-_The one place that says **where every tool in the family actually lives on disk**, so you never have to hunt for them again. Last updated: 2026-08-14._
+_The one place that says **where every tool in the family actually lives on disk**, so you never have to hunt for them again. Last updated: 2026-08-17._
 
 ## Why this file exists
 
@@ -27,8 +27,10 @@ Paths are relative to `~/Projects/` (aka `~/Documents/Claude/Projects/`).
 | **DC Trash** | Trash Tracker | **inside `plain-sight/`** (`TRASH-TRACKER-PLAN.md`, `infra/`, `src/pages/trash.astro`) | 100 | personal | live | `/trash` |
 | **DC Laws** | DC Laws But Better | `DCMR but Better/` | 100 personal / 600 work | **split** | building | — |
 | **DC Records** | DC Inform+ | `000 DC Inform+/` (+ engine `constellation-core/`) | 000 | personal / **core** | live | `/records` |
+| **DC Ghost Homes** | (surface of DC Short-Term Rentals and Housing) | page + assets **inside `plain-sight/`**; data node in `DC Short-Term Rentals and Housing/` | 100 | personal | live | `/ghost-homes` |
 | _(no card yet)_ | IPS Civic Almanac (Electify) | `100 IPS Electify/` | 150 | personal | not yet carded | — |
 | _(no card yet)_ | DC Short-Term Rentals and Housing | `DC Short-Term Rentals and Housing/` | 100 | personal | research node (building) | — |
+| _(no card yet)_ | DC Appointments Watch | `DC Appointments Watch/` | 100 | personal | research node (building) | — |
 
 ### Notes per tool
 
@@ -37,7 +39,8 @@ Paths are relative to `~/Projects/` (aka `~/Documents/Claude/Projects/`).
 - **DC Laws** — `DCMR but Better/` is **split-owned**: the work instance also reads it (one common corpus, D1/D2). Do not treat it as personal-only.
 - **DC Records** — the `/records` page reads `constellation-core/` at build time. `constellation-core` is the **core** engine (Pippa-owned, one-way copies to work) — it is not an In Plain Sight product itself, it *feeds* one.
 - **Electify** — In Plain Sight family, but not yet a card on the hub. Its folder still carries a `100 ` prefix, which the registry flags as a naming-rule violation to be fixed later (rename bare, band is 150). Add a card here when it's ready to show.
-- **DC Short-Term Rentals and Housing** — the research node behind a future explorer card. Measures how much DC housing stock is held out of the residential market as short-term rental inventory. Built entirely on public data (Level 0). Not yet a card: the public explorer is Phase 6 and ships only after the DLCP license-record match (Phase 2) and behind a redteam + persona gate. Stood up 2026-08-14 from an In Plain Sight spin-off. Time-sensitive: the Inside Airbnb snapshot upstream replaces each capture, so the quarterly capture cadence (roadmap p1) is the first priority.
+- **DC Short-Term Rentals and Housing** — the research node behind a future explorer card. Measures how much DC housing stock is held out of the residential market as short-term rental inventory. Built entirely on public data (Level 0). Stood up 2026-08-14 from an In Plain Sight spin-off. **Its explorer shipped as the `DC Ghost Homes` card (`/ghost-homes`) on 2026-08-16**, ahead of the original Phase-6 plan and through its own gate (`REDTEAM_2026-08-16_ghost-homes-wave2-shipgate.md`), so the node now has *two* rows in this table: the research folder here and the surface in the hub. **Note for anyone reading the map to answer "who writes to `plain-sight`":** because the surface lives in the hub while the node lives in its own folder, sessions rooted in `DC Short-Term Rentals and Housing/` legitimately commit to the `plain-sight` repo — `cwd` does not predict which repo a session writes to, and neither `npm run family` nor the orient banner will flag it. Check `git log` before committing here. Time-sensitive: the Inside Airbnb snapshot upstream replaces each capture, so the quarterly capture cadence (roadmap p1) is the first priority.
+- **DC Appointments Watch** — the research node behind a future card: who actually runs each DC agency, board and commission, who is acting or interim, and where each nominee sits in the Council confirmation pipeline. Built to be standing before the January 2027 administration change, and built to fork (executive-nominates / legislature-confirms is near-universal). Level 0 throughout — DC Council LIMS (an open, unauthenticated JSON API, 6,328 confirmation resolutions back to 1989), D.C. Official Code § 1-523.01, MOTA, Mayor's Orders. Stood up 2026-08-17 from an In Plain Sight spin-off. **Two boundaries travel with it:** the agency taxonomy is read *by reference* from `constellation-core/data/agency-resolution/` (core-owned) with an overlay authored in-project — `oversight-hub` is **work-owned** and is never read from a personal build; and because this tool names real, living people, the person-naming redteam (roadmap p6-t1) runs *before* any surface is designed, not after.
 
 ## Why they're not all nested inside this repo
 
@@ -60,7 +63,9 @@ So the family stays scattered on disk, and **this file is the index** that makes
   {"display": "DC Laws",                 "folder": "DCMR but Better",            "owner": "split",    "status": "building", "band": "100/600"},
   {"display": "DC Records",              "folder": "000 DC Inform+",             "owner": "personal", "status": "live",     "band": "000", "engine": "constellation-core (core)"},
   {"display": "Electify",                "folder": "100 IPS Electify",           "owner": "personal", "status": "not-carded","band": "150"},
-  {"display": "STR & Housing",           "folder": "DC Short-Term Rentals and Housing", "owner": "personal", "status": "building", "band": "100"}
+  {"display": "STR & Housing",           "folder": "DC Short-Term Rentals and Housing", "owner": "personal", "status": "building", "band": "100"},
+  {"display": "DC Ghost Homes",          "folder": ".",   "match": "ghost-homes",        "owner": "personal", "status": "live",     "band": "100"},
+  {"display": "Appointments Watch",      "folder": "DC Appointments Watch",      "owner": "personal", "status": "building", "band": "100"}
 ]
 -->
 
