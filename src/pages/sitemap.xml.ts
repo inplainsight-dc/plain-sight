@@ -10,6 +10,10 @@ import type { APIRoute } from 'astro';
  * Deliberately EXCLUDED right now:
  *   /almanac  — Civic Almanac scaffold is live-but-unlinked/in-dev (see ROADMAP 1.2);
  *               it goes in here when it passes the persona + neutrality waves and gets carded.
+ *   /on-paper — live and gate-passed, but held out on purpose: whether "On Paper" is this page
+ *               or the name of a multi-domain tool is still open, and listing it here is what
+ *               makes the route expensive to move. See the naming decision in the STR node's
+ *               SPINOFF-SEED_on-paper_2026-08-17.md. Add it once that is settled either way.
  *
  * Zero dependencies — just the routes we know. `changefreq`/`priority` are hints only.
  */
@@ -27,6 +31,10 @@ const ROUTES: { path: string; priority: number; changefreq: string }[] = [
   // Added at launch 2026-08-16. Unlike /almanac, Ghost Homes has passed its redteam/persona
   // waves and the ship gate, so it is meant to be found.
   { path: '/ghost-homes',          priority: 0.9, changefreq: 'monthly' },
+  // Companion to Ghost Homes: what the STR rules actually say. Shipped 2026-08-17, held back
+  // from this list until it had been looked at live (the /almanac convention); confirmed live
+  // and gate-passed 2026-08-17, so it goes in.
+  { path: '/short-term-rental-rules', priority: 0.8, changefreq: 'monthly' },
 ];
 
 export const GET: APIRoute = ({ site }) => {
