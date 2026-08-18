@@ -113,6 +113,12 @@ function svg({ eyebrow, lines, sub, path }, name = '') {
 
 // --- The card set: one per live tool + the hub -----------------------------
 const CARDS = {
+  'appointments': {
+    eyebrow: 'IN PLAIN SIGHT · DC APPOINTMENTS WATCH',
+    lines: ['Whose seat is empty,', 'and for how long.'],
+    sub: 'DC board seats past their term, closing on the cap, or sitting empty.',
+    path: '/appointments/seats',
+  },
   'ghost-homes': {
     eyebrow: 'IN PLAIN SIGHT · DC GHOST HOMES',
     lines: ['Whole homes,', 'run as hotels.'],

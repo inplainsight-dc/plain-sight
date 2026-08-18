@@ -29,6 +29,7 @@ _The one place that says where the In Plain Sight **hub** is going and what's ne
 | 1.3 | **Fill the two placeholder cards** (`on-the-workbench`, `your-idea-here`) or confirm they stay as intentional invites | ⬜ | — | Either replaced with a real tool, or kept by decision |
 | 1.4 | **Naming-rule cleanup** — rename `100 IPS Electify` bare (band 150 lives in the tag), per registry note | ⬜ | coordinate with Meta Minder | Folder is bare; `naming.py` re-run; tag unchanged |
 | 1.5 | **Astro 5 → 7 upgrade** — clears the last 3 build-time security advisories (sharp/esbuild + 1 low) | ⬜ | — (no deadline; own session, on a branch) | `npm audit` shows 0 high; hub builds on Astro 7 and all 8 pages pass QA (light/dark, print, 0 third-party calls); shipped through the gate. Full plan: `ASTRO_UPGRADE_SCOPE.md` |
+| 1.6 | **DC Appointments Watch → live** — `/appointments` is built, WCAG AA verified and redteamed, sitting live-but-unlinked (the `/almanac` posture) | 🟡 built, deploy gated | Pippa's go + her verdicts on the redteam punch-list (D1–D5 in `REDTEAM_2026-08-17_appointments-preship.md`); D1 (the URL) is the one that is expensive to change later | Four changes made **together**: card set to `live` with `url: /appointments`, sitemap entry added, the `Disallow: /appointments` line removed from `robots.txt`, `deploy-aws.sh` run. Tracked as p6-t8 in the node's own roadmap |
 
 ---
 
