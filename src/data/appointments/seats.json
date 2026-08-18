@@ -1,0 +1,685 @@
+{
+  "schema": "ips-appointments-seats/1",
+  "captured": "2026-08-17",
+  "stale_after_days": 7,
+  "generated_note": "Dated to the CAPTURE, not the run. Every duration is measured against this date, so re-running tomorrow reproduces this file byte-for-byte — that is what --check tests.",
+  "source": {
+    "holder": "DC Mayor’s Office of Talent and Appointments (MOTA)",
+    "retrieved": "2026-08-17",
+    "views": [
+      {
+        "name": "method-of-appointment",
+        "qid": 49,
+        "rows": 174,
+        "sha256": "20341e0834afebe4661a64613dbf4204ccdca28394c613711c3b560cd3afdf22"
+      },
+      {
+        "name": "seats-ending-this-year",
+        "qid": 267,
+        "rows": 279,
+        "sha256": "03d1c1094c661f1b34c7e847a2a41efb5e2f04b86501ae39df740ec178b50dd1"
+      },
+      {
+        "name": "vacant-or-new-seats",
+        "qid": 304,
+        "rows": 175,
+        "sha256": "d1870dae5ecf50b01f3d49a5c8d9f7d88b1ba8dfb5b90bc49993296e33c84e4c"
+      },
+      {
+        "name": "alphabetical-boards",
+        "qid": 57,
+        "rows": 174,
+        "sha256": "3260f627138cfb1d4241e1641d6ffcc0d44695b17bdaf474d5daa98a208adfea"
+      }
+    ],
+    "manifest_retrieved": "2026-08-17"
+  },
+  "cap": {
+    "days": 180,
+    "text": "No person shall serve in a hold-over capacity for longer than 180 days after the expiration of the term to which he or she was appointed, in a position that is required by law to be filled by Mayoral appointment with the advice and consent of the Council including to positions on boards and commissions.",
+    "cite": "DC Official Code § 1-523.01(c)",
+    "cite_url": "https://code.dccouncil.gov/us/dc/council/code/sections/1-523.01"
+  },
+  "totals": {
+    "bodies": 174,
+    "public_member_seats": 1333,
+    "agency_appointee_seats": 547,
+    "vacancies": 276,
+    "bodies_with_a_vacancy": 87,
+    "past_term_all": 83,
+    "past_term_council_confirmed": 44,
+    "labeled_holdover": 5,
+    "vacancy_register_rows": 279
+  },
+  "over_cap": [
+    {
+      "body": "Board of Accountancy (BOA)",
+      "cluster": "Deputy Mayor for Planning and Economic Development (DMPED)",
+      "seat": "Consumer Member",
+      "status": "Active / filled seat",
+      "route": "Section 2(f)",
+      "term_end": "2026-01-14",
+      "days_past_term": 215,
+      "cap_date": "2026-07-13",
+      "days_to_cap": -35
+    },
+    {
+      "body": "Board of Professional Engineering (BOPE)",
+      "cluster": "Deputy Mayor for Planning and Economic Development (DMPED)",
+      "seat": "Licensed Engineer Member",
+      "status": "Active / filled seat",
+      "route": "Section 2(f)",
+      "term_end": "2026-01-19",
+      "days_past_term": 210,
+      "cap_date": "2026-07-18",
+      "days_to_cap": -30
+    },
+    {
+      "body": "Board of Professional Engineering (BOPE)",
+      "cluster": "Deputy Mayor for Planning and Economic Development (DMPED)",
+      "seat": "Land Surveyor Member",
+      "status": "Vacant / unoccupied seat",
+      "route": "Section 2(f)",
+      "term_end": "2026-01-19",
+      "days_past_term": 210,
+      "cap_date": "2026-07-18",
+      "days_to_cap": -30
+    },
+    {
+      "body": "Commission on Health Equity (COHE)",
+      "cluster": "Deputy Mayor for Health and Human Services (DMHHS)",
+      "seat": "Voting Member",
+      "status": "Active / filled seat",
+      "route": "Section 2(f)",
+      "term_end": "2026-02-01",
+      "days_past_term": 197,
+      "cap_date": "2026-07-31",
+      "days_to_cap": -17
+    },
+    {
+      "body": "Statewide Health Coordinating Council (SHCC)",
+      "cluster": "Deputy Mayor for Health and Human Services (DMHHS)",
+      "seat": "Representative of Incorporated Associations of Health Care Facilities",
+      "status": "Active / filled seat",
+      "route": "Section 2(f)",
+      "term_end": "2026-02-11",
+      "days_past_term": 187,
+      "cap_date": "2026-08-10",
+      "days_to_cap": -7
+    }
+  ],
+  "approaching_cap": [
+    {
+      "body": "Public Charter School Board (PCSB)",
+      "cluster": "Deputy Mayor for Education (DME)",
+      "seat": "Public Member",
+      "status": "Holdover member",
+      "route": "Section 2(e)",
+      "term_end": "2026-02-24",
+      "days_past_term": 174,
+      "cap_date": "2026-08-23",
+      "days_to_cap": 6
+    },
+    {
+      "body": "Board of Optometry (BOO)",
+      "cluster": "Deputy Mayor for Health and Human Services (DMHHS)",
+      "seat": "Optometrist licensed in the District",
+      "status": "Holdover member",
+      "route": "Section 2(f)",
+      "term_end": "2026-03-12",
+      "days_past_term": 158,
+      "cap_date": "2026-09-08",
+      "days_to_cap": 22
+    },
+    {
+      "body": "Commission on Asian and Pacific Islander Community Development (CAPICD)",
+      "cluster": "Executive Office of the Mayor (EOM)",
+      "seat": "Public Member",
+      "status": "Holdover member",
+      "route": "Section 2(f)",
+      "term_end": "2026-04-17",
+      "days_past_term": 122,
+      "cap_date": "2026-10-14",
+      "days_to_cap": 58
+    },
+    {
+      "body": "Commission on Asian and Pacific Islander Community Development (CAPICD)",
+      "cluster": "Executive Office of the Mayor (EOM)",
+      "seat": "Public Member",
+      "status": "Holdover member",
+      "route": "Section 2(f)",
+      "term_end": "2026-04-17",
+      "days_past_term": 122,
+      "cap_date": "2026-10-14",
+      "days_to_cap": 58
+    }
+  ],
+  "labeled_holdover": [
+    {
+      "body": "Public Charter School Board (PCSB)",
+      "cluster": "Deputy Mayor for Education (DME)",
+      "seat": "Public Member",
+      "status": "Holdover member",
+      "route": "Section 2(e)",
+      "term_end": "2026-02-24",
+      "days_past_term": 174,
+      "cap_date": "2026-08-23",
+      "days_to_cap": 6
+    },
+    {
+      "body": "Board of Optometry (BOO)",
+      "cluster": "Deputy Mayor for Health and Human Services (DMHHS)",
+      "seat": "Optometrist licensed in the District",
+      "status": "Holdover member",
+      "route": "Section 2(f)",
+      "term_end": "2026-03-12",
+      "days_past_term": 158,
+      "cap_date": "2026-09-08",
+      "days_to_cap": 22
+    },
+    {
+      "body": "Commission on Asian and Pacific Islander Community Development (CAPICD)",
+      "cluster": "Executive Office of the Mayor (EOM)",
+      "seat": "Public Member",
+      "status": "Holdover member",
+      "route": "Section 2(f)",
+      "term_end": "2026-04-17",
+      "days_past_term": 122,
+      "cap_date": "2026-10-14",
+      "days_to_cap": 58
+    },
+    {
+      "body": "Commission on Asian and Pacific Islander Community Development (CAPICD)",
+      "cluster": "Executive Office of the Mayor (EOM)",
+      "seat": "Public Member",
+      "status": "Holdover member",
+      "route": "Section 2(f)",
+      "term_end": "2026-04-17",
+      "days_past_term": 122,
+      "cap_date": "2026-10-14",
+      "days_to_cap": 58
+    },
+    {
+      "body": "Historic Preservation Review Board (HPRB)",
+      "cluster": "Deputy Mayor for Planning and Economic Development (DMPED)",
+      "seat": "Architectural Historian Member",
+      "status": "Holdover member",
+      "route": "Section 2(e)",
+      "term_end": "2026-07-21",
+      "days_past_term": 27,
+      "cap_date": "2027-01-17",
+      "days_to_cap": 153
+    }
+  ],
+  "past_term_by_status": {
+    "Active / filled seat": 25,
+    "Holdover member": 5,
+    "New member appointment in progress": 6,
+    "Reappointed member in progress": 4,
+    "Vacant / unoccupied seat": 4
+  },
+  "clock_points": [
+    {
+      "days": 215,
+      "status": "Active / filled seat",
+      "body": "Board of Accountancy (BOA)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 210,
+      "status": "Active / filled seat",
+      "body": "Board of Professional Engineering (BOPE)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 210,
+      "status": "Vacant / unoccupied seat",
+      "body": "Board of Professional Engineering (BOPE)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 197,
+      "status": "Active / filled seat",
+      "body": "Commission on Health Equity (COHE)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 187,
+      "status": "Active / filled seat",
+      "body": "Statewide Health Coordinating Council (SHCC)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 174,
+      "status": "Holdover member",
+      "body": "Public Charter School Board (PCSB)",
+      "route": "Section 2(e)"
+    },
+    {
+      "days": 169,
+      "status": "Active / filled seat",
+      "body": "Board of Funeral Directors (BOFD)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 169,
+      "status": "Active / filled seat",
+      "body": "Board of Funeral Directors (BOFD)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 167,
+      "status": "Active / filled seat",
+      "body": "Board of Social Work (BOSW)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 158,
+      "status": "Holdover member",
+      "body": "Board of Optometry (BOO)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 124,
+      "status": "Active / filled seat",
+      "body": "Commission on Fashion Arts and Events (CFAE)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 122,
+      "status": "Holdover member",
+      "body": "Commission on Asian and Pacific Islander Community Development (CAPICD)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 122,
+      "status": "Holdover member",
+      "body": "Commission on Asian and Pacific Islander Community Development (CAPICD)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "Reappointed member in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "Reappointed member in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "Reappointed member in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "Reappointed member in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "New member appointment in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "New member appointment in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "New member appointment in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "New member appointment in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "New member appointment in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 108,
+      "status": "New member appointment in progress",
+      "body": "Interagency Council on Homelessness (ICH)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Industrial Trades (BOIT)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Industrial Trades (BOIT)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Industrial Trades (BOIT)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Industrial Trades (BOIT)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Industrial Trades (BOIT)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Industrial Trades (BOIT)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Industrial Trades (BOIT)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 52,
+      "status": "Active / filled seat",
+      "body": "Board of Real Estate Appraisers (BOREA)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 47,
+      "status": "Active / filled seat",
+      "body": "Board of Ethics and Government Accountability (BEGA)",
+      "route": "Section 2(e)"
+    },
+    {
+      "days": 47,
+      "status": "Active / filled seat",
+      "body": "Board of Professional Counseling (BOPC)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 47,
+      "status": "Vacant / unoccupied seat",
+      "body": "Board of Professional Counseling (BOPC)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 30,
+      "status": "Active / filled seat",
+      "body": "Rental Housing Commission (RHC)",
+      "route": "Section 2(e)"
+    },
+    {
+      "days": 29,
+      "status": "Vacant / unoccupied seat",
+      "body": "Board of Acupuncture, Chiropractic, and Naturopathic Physicians (BOACNP)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 27,
+      "status": "Active / filled seat",
+      "body": "Board of Nursing (BON)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 27,
+      "status": "Holdover member",
+      "body": "Historic Preservation Review Board (HPRB)",
+      "route": "Section 2(e)"
+    },
+    {
+      "days": 17,
+      "status": "Active / filled seat",
+      "body": "Commission on Out of School Time Grants and Youth Outcomes (COSTGYO)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 14,
+      "status": "Active / filled seat",
+      "body": "Board of Medicine (BOM)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 14,
+      "status": "Active / filled seat",
+      "body": "Board of Medicine (BOM)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 14,
+      "status": "Vacant / unoccupied seat",
+      "body": "Board of Medicine (BOM)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 13,
+      "status": "Active / filled seat",
+      "body": "Commission on Re-Entry and Returning Citizen Affairs (CRRCA)",
+      "route": "Section 2(f)"
+    },
+    {
+      "days": 13,
+      "status": "Active / filled seat",
+      "body": "Commission on Re-Entry and Returning Citizen Affairs (CRRCA)",
+      "route": "Section 2(f)"
+    }
+  ],
+  "vacancy": {
+    "top_bodies": [
+      {
+        "body": "Statewide Independent Living Council (SILC)",
+        "route": "Mayor alone",
+        "vacant_seats": 15,
+        "public_member_seats": 25
+      },
+      {
+        "body": "State Rehabilitation Council (SRC)",
+        "route": "Mayor alone",
+        "vacant_seats": 10,
+        "public_member_seats": 21
+      },
+      {
+        "body": "Mayor's Interfaith Council (MIC)",
+        "route": "Mayor alone",
+        "vacant_seats": 10,
+        "public_member_seats": 11
+      },
+      {
+        "body": "Commission on Poverty (CP)",
+        "route": "Council confirms",
+        "vacant_seats": 8,
+        "public_member_seats": 19
+      },
+      {
+        "body": "Community Schools Advisory Committee (CSAC)",
+        "route": "Mayor alone",
+        "vacant_seats": 8,
+        "public_member_seats": 13
+      },
+      {
+        "body": "Perinatal and Infant Health Advisory Committee (PIHAC)",
+        "route": "Mayor alone",
+        "vacant_seats": 8,
+        "public_member_seats": 8
+      },
+      {
+        "body": "Homeland Security Commission",
+        "route": "Council confirms",
+        "vacant_seats": 7,
+        "public_member_seats": 7
+      },
+      {
+        "body": "Commission on the Martin Luther King, Jr. Holiday (CMLK)",
+        "route": "Mayor alone",
+        "vacant_seats": 7,
+        "public_member_seats": 15
+      },
+      {
+        "body": "Adult Career Pathways Task Force",
+        "route": "Mayor alone",
+        "vacant_seats": 6,
+        "public_member_seats": 6
+      },
+      {
+        "body": "Board of Rehabilitative Therapies (BORT)",
+        "route": "Council confirms",
+        "vacant_seats": 6,
+        "public_member_seats": 11
+      },
+      {
+        "body": "Child Fatality Review Committee (CFRC)",
+        "route": "Council confirms",
+        "vacant_seats": 6,
+        "public_member_seats": 11
+      },
+      {
+        "body": "Maternal Mortality Review Committee (MMRC)",
+        "route": "Council confirms",
+        "vacant_seats": 6,
+        "public_member_seats": 18
+      },
+      {
+        "body": "Violence Fatality Review Committee",
+        "route": "Council confirms",
+        "vacant_seats": 6,
+        "public_member_seats": 16
+      },
+      {
+        "body": "Youth Apprenticeship Advisory Committee (YAAC)",
+        "route": "Council confirms",
+        "vacant_seats": 5,
+        "public_member_seats": 9
+      },
+      {
+        "body": "Health Information Exchange Policy Board (HIE)",
+        "route": "Mayor alone",
+        "vacant_seats": 5,
+        "public_member_seats": 15
+      }
+    ],
+    "top_bodies_shown": 15,
+    "fully_vacant_bodies": [
+      {
+        "body": "Perinatal and Infant Health Advisory Committee (PIHAC)",
+        "route": "Mayor alone",
+        "vacant_seats": 8,
+        "public_member_seats": 8
+      },
+      {
+        "body": "Homeland Security Commission",
+        "route": "Council confirms",
+        "vacant_seats": 7,
+        "public_member_seats": 7
+      },
+      {
+        "body": "Adult Career Pathways Task Force",
+        "route": "Mayor alone",
+        "vacant_seats": 6,
+        "public_member_seats": 6
+      },
+      {
+        "body": "Condominium Association Advisory Council (CAAC)",
+        "route": "Mayor alone",
+        "vacant_seats": 4,
+        "public_member_seats": 4
+      }
+    ],
+    "requires_council_action": 130,
+    "mayor_alone": 149
+  },
+  "disagreement": {
+    "ending": {
+      "report_name": "Board seats ending this year (in real time)",
+      "qid": 267,
+      "rows": 279,
+      "vacant_seats": 276,
+      "carries_term_end_column": false
+    },
+    "vacnew": {
+      "report_name": "Current (in real time) vacant or new seats on boards and commissions",
+      "qid": 304,
+      "rows": 175,
+      "vacant_seats": 17,
+      "carries_term_end_column": true
+    },
+    "body_level_vacancy_column": 276,
+    "body_level_agrees_with": "seats-ending-this-year"
+  },
+  "findings": [
+    {
+      "id": "V1-report-titles-do-not-match-contents",
+      "severity": "high",
+      "claim": "MOTA's two seat-level reports carry titles that describe each other's contents.",
+      "counter_reading": "The report definitions are not published, so the swap is an inference from content. qid 304 could be some other filter (e.g. 'seats needing action this year') that happens to hold only current-year term ends. What is NOT an inference is that neither title describes what the export contains."
+    },
+    {
+      "id": "V2-vacancy-counts-disagree",
+      "severity": "high",
+      "claim": "Two MOTA views published as 'in real time' give vacant-seat counts that differ by 16.2x, and one of them agrees with MOTA's body-level column while the other does not.",
+      "counter_reading": "If V1 holds, these are two different populations and neither is wrong — qid 304 is a term-expiry view that happens to contain some vacant seats. The disagreement then belongs to the labels, not the data. Recorded either way, because both views are published as current vacancy information."
+    },
+    {
+      "id": "V3-past-term-seats-not-labeled-holdover",
+      "severity": "high",
+      "claim": "44 Council-confirmed seats are past their term end in MOTA's own data, 25 of them shown as 'Active / filled seat' rather than 'Holdover member'. Only 5 seats in the whole view carry the holdover label.",
+      "counter_reading": "'Term end' may be a stale field: a member reappointed to a new term whose row was never updated would look identical to a holdover. MOTA may also record the SEAT's term cycle rather than the incumbent's. Either reading means the published term end cannot be used to compute service length — which is itself the p5 finding."
+    },
+    {
+      "id": "V4-seats-past-the-180-day-cap",
+      "severity": "high",
+      "claim": "5 Council-confirmed seats are more than 180 days past their term end as of the 2026-08-17 capture; 4 of them are shown as occupied.",
+      "counter_reading": "(c) caps a PERSON's hold-over service, not a seat's vacancy: a seat listed vacant past term has no holdover to cap, and an occupied row is only a breach if the same person is still serving on the expired term — which the stale-field reading in V3 would explain away. This is recorded as exposure on the face of MOTA's own data, NOT as a finding that anyone has overstayed. It names no individual."
+    },
+    {
+      "id": "V5-holdover-seats-approaching-the-cap",
+      "severity": "medium",
+      "claim": "4 of the 5 seats MOTA itself labels 'Holdover member' reach the 180-day cap within 60 days of the 2026-08-17 capture.",
+      "counter_reading": "A cap date computed from a published term end inherits every doubt in V3 about that field. The dates are arithmetic on MOTA's numbers, not a legal conclusion."
+    },
+    {
+      "id": "V6-vacancy-load-sits-mostly-outside-council-confirmation",
+      "severity": "medium",
+      "claim": "149 of 279 seats in the vacancy register (53%) are Executive Appointment — fillable by Mayor's Order with no Council action. 130 require Council action.",
+      "counter_reading": "This split uses MOTA's own classification, which p4-t2 records as disputed for specific bodies (D1: three bodies the statute lists but MOTA calls Mayor's Order). Every disputed body moves seats from the left column to the right, so the Executive share is an upper bound on MOTA's own reading."
+    },
+    {
+      "id": "V8-bodies-with-no-public-members-at-all",
+      "severity": "medium",
+      "claim": "4 bodies have every one of their public-member seats vacant — 25 seats between them, and no public members at all.",
+      "counter_reading": "'Public Member Vacancies' counts only public members; a body may still have its DC-agency appointees seated and be able to meet. Several of these are advisory bodies whose enabling statute may not require a quorum of public members. Recorded as a state of the register, not as a claim that any body has stopped functioning."
+    },
+    {
+      "id": "V7-alphabetical-export-has-no-key-column",
+      "severity": "low",
+      "claim": "The 'Alphabetical list of all boards and commissions' export (qid 57) is unusable as data: 174 rows of counts with no body-name column.",
+      "counter_reading": "A Quickbase export quirk rather than a data problem; the same information is reachable from method-of-appointment, which is why nothing here depends on this view."
+    }
+  ],
+  "cautions": [
+    "MOTA holds ZERO agency heads. Every seat here is a board or commission seat, and every row in the term-end view is a 'Mayoral Appointee, Public Member'. Nothing in this file speaks to § 1-523.01(a) — the agency-head clock and the project's headline question.",
+    "Three grains are in play (body, and two different seat populations). A count from one view must never be added to a count from another. Every figure here names its view.",
+    "Durations are measured against the capture date, not today. A finding here describes 2026-08-17 and says nothing about the state of any seat since.",
+    "The advice-and-consent filter uses MOTA's OWN classification. p4-t2 records bodies where the statute disagrees with it, so the (c) population is MOTA's version of itself.",
+    "No individual is named anywhere in these views, and none may be inferred from them. A seat past its term end does not identify who sits in it. p6-t1 still runs before any surface built from this is shown to anyone."
+  ]
+}

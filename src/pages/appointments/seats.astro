@@ -1,0 +1,949 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { site } from '../../config/site';
+
+// Build-time import — baked into the page, no runtime fetch. The data is a
+// projection of the research node's generated analysis, synced by
+// scripts/sync-appointments-data.mjs (runs on `npm run build`).
+// NOTE: every duration below is measured against the CAPTURE date, never against
+// the reader's clock. That is why the capture date is stated three times on the page.
+import D from '../../data/appointments/seats.json';
+
+const n = (x: number) => x.toLocaleString('en-US');
+
+const CAP = D.cap.days;      // 180 days
+const AXIS_MAX = 240;        // shared day axis for both clock visuals
+const pos = (days: number) => Math.min(100, (days / AXIS_MAX) * 100);
+const CAP_POS = pos(CAP);    // where the cap line falls on that axis
+
+const capturedLong = new Date(`${D.captured}T00:00:00Z`).toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+});
+const dateShort = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+  });
+
+// --- The nine seats on the clock: past the cap first, then closing on it -----
+const gauge = [...D.over_cap, ...D.approaching_cap]
+  .sort((a, b) => b.days_past_term - a.days_past_term);
+
+// A seat past the cap with nobody in it is a different problem from a seat past
+// the cap with someone holding over — the cap governs a person's service. Counted
+// separately so the page never implies four is five.
+const overCapOccupied = D.over_cap.filter((s) => s.status !== 'Vacant / unoccupied seat');
+
+// --- Strip chart: one row per status, dots placed by days past term end ------
+// Duplicates are stacked (tier) so no seat hides behind another.
+const STATUS_ROWS = [
+  'Active / filled seat',
+  'Holdover member',
+  'New member appointment in progress',
+  'Reappointed member in progress',
+  'Vacant / unoccupied seat',
+];
+const strip = STATUS_ROWS.map((status) => {
+  const pts = D.clock_points
+    .filter((p) => p.status === status)
+    .sort((a, b) => b.days - a.days);
+  const tiers: Record<number, number> = {};
+  return {
+    status,
+    count: pts.length,
+    over: pts.filter((p) => p.days > CAP).length,
+    dots: pts.map((p) => {
+      tiers[p.days] = (tiers[p.days] ?? -1) + 1;
+      return { ...p, tier: tiers[p.days] };
+    }),
+  };
+});
+const stripOver = strip.reduce((s, r) => s + r.over, 0);
+const stripMaxTier = Math.max(...strip.map((r) => Math.max(...r.dots.map((d) => d.tier), 0)));
+
+// Which register statuses the past-the-cap seats actually carry. Stated as a flat fact
+// BEFORE the observation about it (decision D4, 2026-08-17), and derived rather than written
+// down, so the sentence cannot drift from the chart above it.
+const overCapByStatus = strip
+  .filter((r) => r.over > 0)
+  .map((r) => `${r.over} labeled &ldquo;${r.status}&rdquo;`);
+const holdoverRowOver = strip.find((r) => r.status === 'Holdover member')?.over ?? 0;
+
+// --- The citation block (decision D2) ---------------------------------------
+// Assembled from the same projection the figures come from, so a reader's citation cannot
+// disagree with the page. Short hashes only — the full ones are in the provenance table.
+const citation =
+  `In Plain Sight, “DC Appointments Watch — seat clock.” Data: ${D.source.holder}, ` +
+  `boards and commissions dashboard, reports ` +
+  D.source.views.filter((v) => v.qid === 267 || v.qid === 304).map((v) => v.qid).join(' and ') +
+  `; captured ${D.captured}. Retrieved from ${site.url}/appointments/seats. ` +
+  `Licensed CC BY 4.0. Every duration measured against the capture date, not the date of access.`;
+
+// --- Vacancy bars -----------------------------------------------------------
+const topMax = Math.max(...D.vacancy.top_bodies.map((b) => b.vacant_seats));
+const fullyVacantNames = new Set(D.vacancy.fully_vacant_bodies.map((b) => b.body));
+const emptySeatTotal = D.vacancy.fully_vacant_bodies.reduce((s, b) => s + b.vacant_seats, 0);
+const routeTotal = D.vacancy.requires_council_action + D.vacancy.mayor_alone;
+
+const pageDesc =
+  'Which DC board and commission seats have run past the end of their term, which are ' +
+  'closing on the 180-day cap, and which have nobody in them at all. Built from the ' +
+  'Mayor’s Office of Talent and Appointments’ own published register.';
+---
+
+<Base title="DC Appointments Watch" ogImage="/og/appointments.png" description={pageDesc}>
+  <Header slot="header" />
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="ips-star" viewBox="0 0 24 24"><polygon points="12,1 14.5,8.5 22,8.5 16,13 18,21 12,16.5 6,21 8,13 2,8.5 9.5,8.5"/></symbol>
+  </svg>
+
+  <!-- LEAD -->
+  <section class="ips-lead">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">Seat clock &nbsp;|&nbsp; Captured {capturedLong}</p>
+      <p class="ips-back"><a href="/">&larr; Back to In Plain Sight</a></p>
+      <div class="ips-lead__grid">
+        <div class="ips-lead__main">
+          <h1 class="ips-lead__h">DC Appointments <span class="ps-highlight">Watch</span>.</h1>
+          <p class="ips-lead__blurb">
+            Which of the District&rsquo;s board and commission seats have run past the end of
+            their term, which are closing on the 180-day cap, and which have nobody in them at
+            all. <b>Boards and commissions only</b> &mdash; not agency directors.
+          </p>
+          <div class="aw-chips">
+            <span class="aw-chip"><b>{n(D.totals.bodies)}</b> bodies</span>
+            <span class="aw-chip"><b>{n(D.totals.public_member_seats)}</b> public-member seats</span>
+            <span class="aw-chip"><b>{n(D.totals.vacancies)}</b> of them empty</span>
+            <span class="aw-chip">Free &middot; no login</span>
+          </div>
+          <p class="aw-independence">
+            Independent &mdash; not a DC government service. Built from the District&rsquo;s own
+            published register; claims no endorsement.
+          </p>
+        </div>
+        <aside class="ips-lead__rail">
+          <p class="ps-record">What this is</p>
+          <p class="aw-rail__body">
+            The Mayor appoints members to the District&rsquo;s boards and commissions; many of
+            those seats need the Council&rsquo;s consent. This page reads the executive&rsquo;s
+            own register &mdash; the <b>Mayor&rsquo;s Office of Talent and Appointments</b>
+            dashboard &mdash; and shows the clocks that register implies.
+          </p>
+          <p class="aw-rail__body">
+            <b>Seats, not people.</b> No individual is named anywhere on this page. It does name
+            seats &mdash; and where a body has only one seat of a kind, a determined reader could
+            find out from other public records who holds it. So nothing here is a statement about
+            any person, and it should not be made into one.
+          </p>
+        </aside>
+      </div>
+
+      <!-- Freshness. Rendered server-side for the no-JS case, upgraded on load. -->
+      <p id="freshness" class="aw-fresh" role="status">
+        Figures from the capture taken <b>{capturedLong}</b>. Every duration is measured against
+        the capture date, not today&rsquo;s date.
+      </p>
+    </div>
+  </section>
+
+  <!-- § 01 — THE THREE STATES -->
+  <section class="ips-sec" id="states">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">Three states a seat can be in</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <div class="aw-states">
+        <div class="aw-state aw-state--over">
+          <span class="aw-state__glyph" aria-hidden="true"><i></i><i></i><i></i></span>
+          <p class="ps-record aw-state__kicker">Past the 180-day cap</p>
+          <p class="aw-state__fig">{D.over_cap.length}</p>
+          <p class="aw-state__lab">seats more than {CAP} days past their term end</p>
+          <p class="aw-state__note">
+            {overCapOccupied.length} of them are shown as occupied. The law caps hold-over
+            service at {CAP} days for seats needing the Council&rsquo;s consent &mdash; and MOTA
+            labels <b>none</b> of these a holdover.
+          </p>
+        </div>
+
+        <div class="aw-state aw-state--near">
+          <span class="aw-state__glyph" aria-hidden="true"><i></i><i class="half"></i><i class="hollow"></i></span>
+          <p class="ps-record aw-state__kicker">Closing on the cap</p>
+          <p class="aw-state__fig">{D.approaching_cap.length}</p>
+          <p class="aw-state__lab">of the {D.labeled_holdover.length} seats MOTA <i>does</i> call holdovers reach the cap within 60 days</p>
+          <p class="aw-state__note">
+            The nearest falls on {dateShort(D.approaching_cap[0].cap_date)} &mdash;
+            {' '}{D.approaching_cap[0].days_to_cap} days after the capture, so it has almost
+            certainly passed by the time you read this. These are the seats where the clock runs
+            out first.
+          </p>
+        </div>
+
+        <div class="aw-state aw-state--empty">
+          <span class="aw-state__glyph" aria-hidden="true"><i class="hollow"></i><i class="hollow"></i><i class="hollow"></i></span>
+          <p class="ps-record aw-state__kicker">Nobody in the seat</p>
+          <p class="aw-state__fig">{n(D.totals.vacancies)}</p>
+          <p class="aw-state__lab">empty public-member seats across {D.totals.bodies_with_a_vacancy} bodies</p>
+          <p class="aw-state__note">
+            {D.vacancy.fully_vacant_bodies.length} bodies have <b>every</b> public-member seat
+            empty &mdash; {emptySeatTotal} seats between them, and no public members at all.
+            This is the figure MOTA&rsquo;s own body-level register gives; a second MOTA report
+            says {D.disagreement.vacnew.vacant_seats}. See <a href="#source-conflict">&sect; 04</a>.
+          </p>
+        </div>
+      </div>
+
+      <p class="aw-caveat" role="note">
+        <b>One caveat carries all three figures.</b> Everything here rests on the term-end date
+        MOTA publishes for each seat. If that field is kept current, a seat past its term end is
+        a seat past its term end. If it is <i>stale</i> &mdash; a member reappointed to a fresh
+        term whose row was never updated &mdash; the day counts are wrong. Both readings are a
+        finding: either the clock is running, or the District&rsquo;s published term dates cannot
+        be used to measure service at all. This page cannot tell you which, and does not pretend to.
+      </p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- § 02 — THE CLOCK, SEAT BY SEAT -->
+  <section class="ips-sec" id="clock">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 02</span>
+        <h2 class="ips-sec-title">The clock, seat by seat</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <p class="aw-intro">
+        The {gauge.length} seats closest to the line. Each bar is how far past its term end the
+        seat had run at the capture; the marked rule is the {CAP}-day cap set by
+        <a href={D.cap.cite_url} target="_blank" rel="noopener">{D.cap.cite}</a>. Bars that cross
+        it are hatched.
+      </p>
+
+      <div class="aw-scroll" role="region" tabindex="0" aria-label="Seats nearest the 180-day cap, with days past term end">
+        <table class="aw-table">
+          <caption>
+            Seats nearest the {CAP}-day hold-over cap, as of the {capturedLong} capture.
+            Sorted by days past term end. The term end and the status are MOTA&rsquo;s; the day
+            count and the cap date are calculated from them here ({CAP} days after the term end).
+            Bars are decorative &mdash; every value is written out.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Body and seat</th>
+              <th scope="col">Consent route</th>
+              <th scope="col">Term ended</th>
+              <th scope="col" class="aw-th-clock">Days past term end</th>
+              <th scope="col">Cap date</th>
+              <th scope="col">Status in the register</th>
+            </tr>
+          </thead>
+          <tbody>
+            {gauge.map((s) => (
+              <tr class={s.days_past_term > CAP ? 'aw-row--over' : 'aw-row--near'}>
+                <th scope="row">
+                  <span class="aw-body">{s.body}</span>
+                  <span class="aw-seat">{s.seat}</span>
+                  <span class="aw-cluster">{s.cluster}</span>
+                </th>
+                <td class="aw-num">{s.route}</td>
+                <td class="aw-num">{dateShort(s.term_end)}</td>
+                <td class="aw-clockcell">
+                  <span class="aw-track" aria-hidden="true">
+                    <span class="aw-capline" style={`left:${CAP_POS}%`}></span>
+                    <span
+                      class:list={['aw-bar', s.days_past_term > CAP && 'aw-bar--over']}
+                      style={`width:${pos(s.days_past_term)}%`}
+                    ></span>
+                  </span>
+                  <span class="aw-daysfig">{s.days_past_term} days</span>
+                </td>
+                <td class="aw-num">
+                  {dateShort(s.cap_date)}
+                  {s.days_to_cap < 0
+                    ? <span class="aw-over-ink"> &mdash; passed {Math.abs(s.days_to_cap)}d before capture</span>
+                    : <span class="aw-near-ink"> &mdash; {s.days_to_cap}d after capture</span>}
+                </td>
+                <td class="aw-num">{s.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p class="aw-foot">
+        One row is a <b>vacant</b> seat past the cap. The cap governs how long a person may keep
+        serving after their term ends, so an empty seat past the cap is not a hold-over problem
+        &mdash; it is a seat that has had nobody in it for longer than the law allows anyone to
+        stay. Different problem, same date.
+      </p>
+
+      <!-- The distribution: all Council-confirmed seats past term, by register status -->
+      <h3 class="aw-h3">Where the register puts the label, and where the clock puts the seat</h3>
+      <p class="aw-intro">
+        All {n(D.totals.past_term_council_confirmed)} Council-confirmed seats past their term end
+        at the capture, arranged by the status MOTA gives them. Filled marks are past the
+        {' '}{CAP}-day cap. Of the {stripOver} that are:
+        {' '}<b set:html={overCapByStatus.join(' and ')} />, and
+        {holdoverRowOver === 0
+          ? <> <b>none at all</b> labeled &ldquo;Holdover member.&rdquo;</>
+          : <> {holdoverRowOver} labeled &ldquo;Holdover member.&rdquo;</>}
+        {' '}They do not fall in the row you would expect.
+      </p>
+
+      <div class="aw-strip" role="img" aria-label={`Strip chart. ${n(D.totals.past_term_council_confirmed)} Council-confirmed seats past their term end, grouped by register status. ${stripOver} seats are past the ${CAP}-day cap, and none of them is in the Holdover member row. Full counts follow in the table below.`}>
+        {strip.map((row) => (
+          <div class="aw-striprow">
+            <p class="aw-striplab">
+              {row.status}
+              <span class="aw-stripcount">{row.count} {row.count === 1 ? 'seat' : 'seats'}{row.over > 0 ? ` · ${row.over} past the cap` : ''}</span>
+            </p>
+            <div class="aw-striptrack" style={`--tiers:${stripMaxTier + 1}`}>
+              <span class="aw-capline aw-capline--strip" style={`left:${CAP_POS}%`}></span>
+              {row.dots.map((d) => (
+                <span
+                  class:list={['aw-dot', d.days > CAP && 'aw-dot--over']}
+                  style={`left:${pos(d.days)}%; bottom:${d.tier * 13}px`}
+                ></span>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div class="aw-stripaxis" aria-hidden="true">
+          <span style="left:0%">0</span>
+          <span style="left:25%">60</span>
+          <span style="left:50%">120</span>
+          <span class="aw-stripaxis--cap" style={`left:${CAP_POS}%`}>{CAP} &mdash; the cap</span>
+          <span style="left:100%">240 days</span>
+        </div>
+      </div>
+
+      <details class="aw-details">
+        <summary>The same numbers as a table</summary>
+        <div class="aw-scroll aw-scroll--bare" role="region" tabindex="0" aria-label="Council-confirmed seats past term end, by register status">
+        <table class="aw-table aw-table--plain">
+          <caption>Council-confirmed seats past their term end at the {capturedLong} capture, by the status MOTA assigns.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Status in the register</th>
+              <th scope="col">Seats past term end</th>
+              <th scope="col">Of those, past the {CAP}-day cap</th>
+            </tr>
+          </thead>
+          <tbody>
+            {strip.map((row) => (
+              <tr>
+                <th scope="row">{row.status}</th>
+                <td class="aw-num">{row.count}</td>
+                <td class="aw-num">{row.over}</td>
+              </tr>
+            ))}
+            <tr class="aw-total">
+              <th scope="row">All Council-confirmed seats past term end</th>
+              <td class="aw-num">{n(D.totals.past_term_council_confirmed)}</td>
+              <td class="aw-num">{stripOver}</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="aw-foot">
+          {n(D.totals.past_term_all)} seats in the register are past their term end in total. The
+          {' '}{n(D.totals.past_term_council_confirmed)} counted here are the ones MOTA classifies
+          as needing the Council&rsquo;s consent, which is the population the {CAP}-day cap
+          applies to.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- § 03 — NOBODY IN THE SEAT -->
+  <section class="ips-sec" id="empty">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Nobody in the seat</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <h3 class="aw-h3">Bodies with no public members at all</h3>
+      <p class="aw-intro">
+        Four bodies have every one of their public-member seats empty. Each square is one seat.
+      </p>
+      <p class="aw-foot" style="margin-top:0; margin-bottom:1.2rem">
+        <b>These are public-member seats</b> &mdash; the seats the Mayor appoints. Bodies also
+        carry agency-designated seats, filled by whoever holds a particular job
+        ({n(D.totals.agency_appointee_seats)} of them across the register), which are counted
+        separately and are not shown here. So a body with every public-member seat empty is not
+        necessarily a body with nobody in the room. Whether it can still lawfully act depends on
+        its own quorum rule, which this page does not read.
+      </p>
+
+      <ul class="aw-fvlist">
+        {D.vacancy.fully_vacant_bodies.map((b) => (
+          <li class="aw-fv">
+            <p class="aw-fv__name">{b.body}</p>
+            <p class="aw-fv__seats" aria-hidden="true">
+              {Array.from({ length: b.public_member_seats }).map(() => <i></i>)}
+            </p>
+            <p class="aw-fv__meta">
+              <b>{b.vacant_seats} of {b.public_member_seats}</b> public-member seats empty
+              &middot; <span class="aw-route">{b.route}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
+
+      <h3 class="aw-h3">The bodies carrying the most empty seats</h3>
+      <p class="aw-intro">
+        The {D.vacancy.top_bodies_shown} largest, of {D.totals.bodies_with_a_vacancy} bodies with
+        at least one empty seat. Bodies where <i>every</i> seat is empty are marked.
+      </p>
+
+      <div class="aw-scroll" role="region" tabindex="0" aria-label="Bodies with the most empty public-member seats">
+        <table class="aw-table">
+          <caption>
+            Empty public-member seats by body &mdash; the {D.vacancy.top_bodies_shown} largest of
+            {' '}{D.totals.bodies_with_a_vacancy} bodies with a vacancy, at the {capturedLong} capture.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Body</th>
+              <th scope="col">Who fills the seat</th>
+              <th scope="col" class="aw-th-clock">Empty seats</th>
+            </tr>
+          </thead>
+          <tbody>
+            {D.vacancy.top_bodies.map((b) => (
+              <tr>
+                <th scope="row">
+                  <span class="aw-body">{b.body}</span>
+                  {fullyVacantNames.has(b.body) && (
+                    <span class="aw-flag">Every seat empty</span>
+                  )}
+                </th>
+                <td class="aw-num">{b.route}</td>
+                <td class="aw-clockcell">
+                  <span class="aw-track" aria-hidden="true">
+                    <span
+                      class:list={['aw-bar', 'aw-bar--empty', fullyVacantNames.has(b.body) && 'aw-bar--all']}
+                      style={`width:${(b.vacant_seats / topMax) * 100}%`}
+                    ></span>
+                  </span>
+                  <span class="aw-daysfig">{b.vacant_seats} of {b.public_member_seats}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="aw-h3">Who has to act</h3>
+      <p class="aw-intro">
+        A &ldquo;confirmation backlog&rdquo; would be the wrong story for most of this. Just over
+        half of the empty seats in the register need no Council action at all &mdash; the Mayor
+        can fill them by Mayor&rsquo;s Order alone.
+      </p>
+
+      <ul class="aw-routes">
+        <li>
+          <p class="aw-route__lab">Mayor alone, by Mayor&rsquo;s Order</p>
+          <span class="aw-track aw-track--wide" aria-hidden="true">
+            <span class="aw-bar aw-bar--empty" style={`width:${(D.vacancy.mayor_alone / routeTotal) * 100}%`}></span>
+          </span>
+          <p class="aw-route__fig">{n(D.vacancy.mayor_alone)} seats <span class="aw-route__pct">({Math.round((D.vacancy.mayor_alone / routeTotal) * 100)}%)</span></p>
+        </li>
+        <li>
+          <p class="aw-route__lab">Needs the Council&rsquo;s consent</p>
+          <span class="aw-track aw-track--wide" aria-hidden="true">
+            <span class="aw-bar aw-bar--council" style={`width:${(D.vacancy.requires_council_action / routeTotal) * 100}%`}></span>
+          </span>
+          <p class="aw-route__fig">{n(D.vacancy.requires_council_action)} seats <span class="aw-route__pct">({Math.round((D.vacancy.requires_council_action / routeTotal) * 100)}%)</span></p>
+        </li>
+      </ul>
+      <p class="aw-foot">Of {n(routeTotal)} seats in the vacancy register.</p>
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars" aria-hidden="true"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- § 04 — THE SOURCE DISAGREES WITH ITSELF -->
+  <section class="ips-sec" id="source-conflict">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">The register disagrees with itself</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <p class="aw-intro">
+        MOTA publishes two seat-level reports, both labeled &ldquo;in real time.&rdquo; They give
+        vacancy counts that differ by more than sixteen times. This is not a rounding
+        disagreement, and it is the reason this page states which report every figure came from.
+      </p>
+
+      <div class="aw-versus">
+        <div class="aw-vs">
+          <p class="ps-record">Report {D.disagreement.ending.qid}</p>
+          <p class="aw-vs__title">&ldquo;{D.disagreement.ending.report_name}&rdquo;</p>
+          <p class="aw-vs__fig">{n(D.disagreement.ending.vacant_seats)}</p>
+          <p class="aw-vs__lab">vacant seats, of {n(D.disagreement.ending.rows)} rows</p>
+          <p class="aw-vs__note">Carries no term-end column &mdash; despite the title.</p>
+        </div>
+        <p class="aw-vs__op" aria-hidden="true">&ne;</p>
+        <div class="aw-vs">
+          <p class="ps-record">Report {D.disagreement.vacnew.qid}</p>
+          <p class="aw-vs__title">&ldquo;{D.disagreement.vacnew.report_name}&rdquo;</p>
+          <p class="aw-vs__fig">{n(D.disagreement.vacnew.vacant_seats)}</p>
+          <p class="aw-vs__lab">vacant seats, of {n(D.disagreement.vacnew.rows)} rows</p>
+          <p class="aw-vs__note">Every row carries a term end, and all of them fall this year.</p>
+        </div>
+      </div>
+
+      <p class="aw-intro">
+        MOTA&rsquo;s own body-level count of empty public-member seats is
+        {' '}<b>{n(D.disagreement.body_level_vacancy_column)}</b> &mdash; which matches the report
+        titled &ldquo;seats ending this year&rdquo; exactly, and not the one titled &ldquo;vacant
+        or new seats.&rdquo; Read together, the two titles appear to be on the wrong reports: the
+        one named for term expiry is the vacancy register, and the one named for vacancies is the
+        term-expiry view. That reading is an <i>inference</i> &mdash; MOTA publishes no report
+        definitions, so it cannot be confirmed from outside. What is not an inference is that
+        neither title describes what its report contains.
+      </p>
+      <p class="aw-foot">
+        It matters because MOTA&rsquo;s own &ldquo;Boards With Vacancies&rdquo; page links the
+        first report. A reader who follows the other title sees {n(D.disagreement.vacnew.vacant_seats)}
+        {' '}vacancies where the District&rsquo;s own data says {n(D.disagreement.body_level_vacancy_column)}.
+      </p>
+    </div>
+  </section>
+
+  <!-- § 05 — HOW TO READ THIS -->
+  <section class="ips-sec" id="limits">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 05</span>
+        <h2 class="ips-sec-title">How to read this &mdash; and what it can&rsquo;t tell you</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <div class="aw-limits">
+        <div class="aw-limit">
+          <h3>This is boards and commissions only</h3>
+          <p>
+            MOTA&rsquo;s register holds <b>no agency heads</b> &mdash; not one Director,
+            Chancellor, Chief or Attorney General among its {n(D.totals.bodies)} bodies. So
+            nothing on this page speaks to who runs a DC agency, or for how long they have run it
+            unconfirmed. That is a different clock, in a different subsection of the law, and it
+            needs the Council&rsquo;s own legislative records to answer. It is not answered here.
+          </p>
+        </div>
+        <div class="aw-limit">
+          <h3>&ldquo;Past the cap&rdquo; is not an accusation</h3>
+          <p>
+            A seat past its term end describes a <b>process</b>, never a person. It does not mean
+            anyone is serving improperly, unlawfully, or without qualification &mdash; and where
+            a seat sits empty, the party that has not acted is whoever appoints or confirms. This
+            page names no individual and no individual can be derived from it.
+          </p>
+        </div>
+        <div class="aw-limit">
+          <h3>Every duration is frozen at the capture</h3>
+          <p>
+            The day counts describe {capturedLong} and nothing since. By the time you read this,
+            more seats have crossed their cap dates and some have been filled. The capture date is
+            on this page three times for that reason. A figure here is evidence about a day, not
+            a live readout.
+          </p>
+        </div>
+        <div class="aw-limit">
+          <h3>The consent routes are MOTA&rsquo;s own classification</h3>
+          <p>
+            Which seats need the Council&rsquo;s consent is taken from the register&rsquo;s own
+            field, which cites the statute directly. Comparing that field against the statute
+            itself turns up bodies where the two disagree. So the population the cap is applied to
+            here is <i>the executive&rsquo;s account of</i> which seats the cap covers.
+          </p>
+        </div>
+        <div class="aw-limit">
+          <h3>Three different counts, three different reports</h3>
+          <p>
+            {n(D.totals.bodies)} bodies, {n(D.totals.vacancies)} empty seats,
+            {' '}{n(D.totals.past_term_council_confirmed)} seats past term &mdash; these come from
+            different reports with different row populations. Each figure on this page names its
+            source. Adding one to another produces a number that means nothing.
+          </p>
+        </div>
+        <div class="aw-limit aw-limit--fix">
+          <h3>If one of these is your seat</h3>
+          <p>
+            You may be reading a row that describes a seat you hold. It says exactly one thing:
+            the register lists a term end that has passed. It does not say you are serving
+            improperly, that you should not be there, or anything at all about your work. Under
+            the District&rsquo;s own scheme a member may continue serving after a term ends, and
+            where an appointment or a confirmation is outstanding, the party that has not acted is
+            not you. If the register&rsquo;s date is wrong for your seat, the route below fixes it
+            here.
+          </p>
+        </div>
+        <div class="aw-limit aw-limit--fix">
+          <h3>Found an error? Tell us and it gets fixed</h3>
+          <p>
+            If a seat, a body, a date or a day count is wrong here, the correction route is
+            public and so is the fix:
+            {' '}<a href="https://github.com/inplainsight-dc/plain-sight/issues" target="_blank" rel="noopener">open an issue on GitHub</a>.
+            Say which body and seat, and what the register should say instead. Corrections to the
+            underlying register itself belong with MOTA, which controls it &mdash; but tell us
+            too, so this page stops repeating it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- § 06 — PROVENANCE -->
+  <section class="ips-sec" id="provenance">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 06</span>
+        <h2 class="ips-sec-title">Where this comes from</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <div class="aw-prov">
+        <div class="aw-provcard">
+          <h3>Source of record</h3>
+          <dl class="aw-dl">
+            <dt>Register</dt>
+            <dd>{D.source.holder} &mdash; the published boards and commissions dashboard.</dd>
+            <dt>Captured</dt>
+            <dd>{capturedLong}. Checksummed on the way to disk; the figures on this page are generated from that capture and cannot be edited by hand.</dd>
+            <dt>Governing law</dt>
+            <dd>
+              <a href={D.cap.cite_url} target="_blank" rel="noopener">{D.cap.cite}</a> &mdash;
+              the {CAP}-day hold-over cap for seats filled by Mayoral appointment with the advice
+              and consent of the Council.
+            </dd>
+            <dt>Maintained by</dt>
+            <dd><b>In Plain Sight</b>, an independent civic steward. This page cites the District&rsquo;s own published register; it does not claim the endorsement of MOTA, the Executive Office of the Mayor, the Council, or any DC agency.</dd>
+          </dl>
+        </div>
+        <div class="aw-provcard">
+          <h3>The exact reports read</h3>
+          <div class="aw-scroll aw-scroll--bare" role="region" tabindex="0" aria-label="Reports read for this page, with row counts and checksums">
+          <table class="aw-table aw-table--plain aw-table--tight">
+            <caption>Reports read for this page, with the row count and checksum recorded at capture.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Report</th>
+                <th scope="col">ID</th>
+                <th scope="col">Rows</th>
+                <th scope="col">Checksum (first 12)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {D.source.views.map((v) => (
+                <tr>
+                  <th scope="row">{v.name}</th>
+                  <td class="aw-num">{v.qid}</td>
+                  <td class="aw-num">{n(v.rows)}</td>
+                  <td class="aw-num aw-hash">{v.sha256.slice(0, 12)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
+          <p class="aw-provnote">
+            Report IDs are not stable identifiers &mdash; MOTA staff can renumber or unshare a
+            report at any time with no notice. The reports are also current-state only: they keep
+            no history, so a seat that moves from &ldquo;Holdover member&rdquo; to
+            &ldquo;Active&rdquo; erases the holdover. That is why the capture is dated and kept.
+          </p>
+        </div>
+      </div>
+
+      <div class="aw-cite">
+        <p class="ps-record ps-record--red">Citing this page</p>
+        <p class="aw-cite__why">
+          Assembled from the same data the figures above come from, so a citation cannot
+          disagree with the page it cites. The full checksums are in the table above.
+        </p>
+        <p class="aw-cite__text" id="citation">{citation}</p>
+        <p class="aw-cite__note">
+          If you are checking a specific figure before publishing it, quote the report ID and
+          the capture date with it &mdash; the two reports disagree with each other
+          (<a href="#source-conflict">&sect; 04</a>), so a figure without its source is
+          ambiguous rather than merely unsourced.
+        </p>
+      </div>
+
+      <div class="aw-license" role="note">
+        <p class="ps-record ps-record--red">Reuse</p>
+        <p>
+          The compilation, the plain-language framing, and this presentation are published by In
+          Plain Sight under a
+          {' '}<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0</a>
+          {' '}license &mdash; reuse it freely, including commercially; please credit In Plain
+          Sight. The underlying register is a public record of the District of Columbia.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<!-- Freshness. The page is static and its figures are frozen at the capture, so the one
+     honest dynamic element is how old that capture is. Server-rendered content already
+     states the date; this only adds the age, and shouts if the capture has gone stale. -->
+<script define:vars={{ captured: D.captured, staleAfter: D.stale_after_days, capturedLong }} is:inline>
+  (function () {
+    var el = document.getElementById('freshness');
+    if (!el) return;
+    var now = new Date();
+    var today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    var age = Math.round((today - Date.parse(captured + 'T00:00:00Z')) / 86400000);
+    if (!isFinite(age) || age < 0) return; // clock skew — leave the server text alone
+    var when = age === 0 ? 'today' : age === 1 ? 'yesterday' : age + ' days ago';
+
+    if (age > staleAfter) {
+      el.className = 'aw-fresh aw-fresh--stale';
+      el.innerHTML =
+        '<b>This page may be out of date.</b> Its figures come from a capture taken ' + when +
+        ' (' + capturedLong + '), and the register it reads changes daily. Seats listed as past ' +
+        'their term may since have been filled, and others may have crossed the cap. Treat every ' +
+        'figure below as evidence about ' + capturedLong + ', not as current state.';
+    } else {
+      el.innerHTML =
+        'Figures from the capture taken <b>' + capturedLong + '</b> (' + when + '). Every ' +
+        'duration is measured against the capture date, not today’s date.';
+    }
+  })();
+
+  // Copy button for the citation (decision D2). Created here rather than in the markup so a
+  // reader without JavaScript sees selectable text and no button, instead of a dead control.
+  (function () {
+    var cite = document.getElementById('citation');
+    if (!cite || !navigator.clipboard) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'aw-citebtn';
+    btn.textContent = 'Copy citation';
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(cite.textContent.trim()).then(function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy citation'; }, 2000);
+      });
+    });
+    cite.parentNode.insertBefore(btn, cite.nextSibling);
+  })();
+</script>
+
+<style>
+  /* --- Shared In Plain Sight page furniture (matches the other tool pages) --- */
+  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(1.4rem, 4vw, 2.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { margin-bottom: 1.2rem; }
+  .ips-back a { font-family: var(--ps-font-record); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ps-ink-soft); text-decoration: none; }
+  .ips-back a:hover { color: var(--ps-ink); }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+
+  .ips-sec { padding-block: clamp(2.2rem, 5vw, 3.4rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.4rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
+  .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* --- Lead extras --------------------------------------------------------- */
+  .aw-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.2rem; }
+  .aw-chip { font-family: var(--ps-font-record); font-size: 0.78rem; padding: 0.3rem 0.6rem; border: 1px solid var(--ps-line); border-radius: var(--ps-radius-sm); background: var(--ps-surface); color: var(--ps-ink-soft); }
+  .aw-chip b { color: var(--ps-ink); font-weight: 700; }
+  .aw-independence { margin-top: 0.9rem; font-size: 0.9rem; color: var(--ps-ink-soft); max-width: 52ch; }
+  .aw-rail__body { font-size: 0.98rem; color: var(--ps-ink-soft); margin-bottom: 0.7rem; }
+  .aw-rail__body:last-child { margin-bottom: 0; }
+  .aw-rail__body b { color: var(--ps-ink); }
+
+  /* Freshness banner — quiet when current, loud when not. */
+  .aw-fresh { margin-top: 1.6rem; padding: 0.7rem 0.9rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: var(--ps-radius); background: var(--ps-surface-2); font-size: 0.95rem; color: var(--ps-ink-soft); }
+  .aw-fresh b { color: var(--ps-ink); }
+  .aw-fresh--stale { border-left-color: var(--ps-accent); background: var(--ps-surface); color: var(--ps-ink); }
+  .aw-fresh--stale b { color: var(--ps-accent-text); }
+
+  /* --- § 01 The three states ---------------------------------------------- */
+  /* minmax floors use min(Npx, 100%) so a 320px-wide screen (or a zoomed one) cannot be forced
+     wider than its own viewport by the grid's minimum track. */
+  .aw-states { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: var(--ps-gap); }
+  .aw-state { border: 1px solid var(--ps-line); border-top-width: 4px; border-radius: var(--ps-radius); background: var(--ps-surface); padding: 1.2rem 1.3rem 1.4rem; }
+  .aw-state--over  { border-top-color: var(--ps-accent); }
+  .aw-state--near  { border-top-color: var(--ps-caution); }
+  .aw-state--empty { border-top-color: var(--ps-ink-soft); }
+
+  /* Shape cue, so the three states differ without relying on color. */
+  .aw-state__glyph { display: flex; gap: 3px; margin-bottom: 0.8rem; }
+  .aw-state__glyph i { width: 16px; height: 10px; display: block; }
+  .aw-state--over  .aw-state__glyph i { background: var(--ps-accent); }
+  .aw-state--near  .aw-state__glyph i { background: var(--ps-caution); }
+  .aw-state--empty .aw-state__glyph i { background: var(--ps-ink-soft); }
+  .aw-state__glyph i.half   { opacity: 0.45; }
+  .aw-state__glyph i.hollow { background: transparent !important; border: 2px solid var(--ps-ink-soft); }
+  .aw-state--near .aw-state__glyph i.hollow { border-color: var(--ps-caution); }
+
+  .aw-state__kicker { color: var(--ps-ink-soft); margin-bottom: 0.2rem; }
+  .aw-state--over  .aw-state__kicker { color: var(--ps-accent-text); }
+  .aw-state--near  .aw-state__kicker { color: var(--ps-caution); }
+  .aw-state__fig { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.8rem, 7vw, 3.8rem); line-height: 1; letter-spacing: -0.02em; }
+  .aw-state__lab { font-size: 1rem; color: var(--ps-ink); margin-top: 0.3rem; }
+  .aw-state__note { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--ps-line); font-size: 0.92rem; color: var(--ps-ink-soft); }
+  .aw-state__note b { color: var(--ps-ink); }
+
+  .aw-caveat { margin-top: 1.6rem; padding: 1rem 1.2rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-caution); border-radius: var(--ps-radius); background: var(--ps-surface); font-size: 1rem; color: var(--ps-ink-soft); max-width: 82ch; }
+  .aw-caveat b { color: var(--ps-ink); }
+
+  /* --- Section prose ------------------------------------------------------ */
+  .aw-intro { max-width: 74ch; color: var(--ps-ink-soft); font-size: 1.04rem; margin-bottom: 1.2rem; }
+  .aw-intro b { color: var(--ps-ink); }
+  .aw-foot { max-width: 76ch; color: var(--ps-ink-soft); font-size: 0.93rem; margin-top: 1rem; }
+  .aw-foot b { color: var(--ps-ink); }
+  .aw-h3 { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.25rem, 3vw, 1.6rem); margin: 2.4rem 0 0.7rem; }
+
+  /* --- Tables ------------------------------------------------------------- */
+  /* Wide content scrolls inside its own box; the page body never scrolls sideways. */
+  .aw-scroll { overflow-x: auto; border: 1px solid var(--ps-line); border-radius: var(--ps-radius); background: var(--ps-surface); }
+  .aw-scroll:focus-visible { outline: 3px solid var(--ps-accent); outline-offset: 2px; }
+  /* Nested inside a card or a <details> that already draws its own edge. Still scrolls —
+     any table can outgrow a phone, and the page body must never be what scrolls sideways. */
+  .aw-scroll--bare { border: 0; background: transparent; border-radius: 0; }
+  .aw-table { width: 100%; border-collapse: collapse; font-size: 0.93rem; min-width: 940px; }
+  .aw-table caption { text-align: left; padding: 0.8rem 1rem; font-size: 0.85rem; color: var(--ps-ink-soft); border-bottom: 1px solid var(--ps-line); }
+  .aw-table th, .aw-table td { text-align: left; padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--ps-line); vertical-align: top; }
+  .aw-table thead th { font-family: var(--ps-font-record); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ps-ink-soft); font-weight: 500; border-bottom: 1.5px solid var(--ps-ink); white-space: nowrap; }
+  .aw-table tbody tr:last-child th, .aw-table tbody tr:last-child td { border-bottom: 0; }
+  .aw-table tbody th { font-weight: 400; }
+  .aw-num { font-family: var(--ps-font-record); font-size: 0.85rem; color: var(--ps-ink-soft); white-space: nowrap; }
+  .aw-hash { letter-spacing: 0.02em; }
+  .aw-th-clock { min-width: 240px; }
+  .aw-body { display: block; font-weight: 600; color: var(--ps-ink); }
+  .aw-seat { display: block; font-size: 0.88rem; color: var(--ps-ink-soft); }
+  .aw-cluster { display: block; font-family: var(--ps-font-record); font-size: 0.72rem; letter-spacing: 0.04em; color: var(--ps-ink-soft); margin-top: 0.15rem; }
+  .aw-row--over > th { border-left: 3px solid var(--ps-accent); }
+  .aw-row--near > th { border-left: 3px solid var(--ps-caution); }
+  .aw-over-ink { color: var(--ps-accent-text); }
+  .aw-near-ink { color: var(--ps-caution); }
+  .aw-table--plain { min-width: 0; border: 1px solid var(--ps-line); border-radius: var(--ps-radius); background: var(--ps-surface); }
+  .aw-table--tight { font-size: 0.86rem; }
+  .aw-total th, .aw-total td { border-top: 1.5px solid var(--ps-ink); font-weight: 700; color: var(--ps-ink); }
+
+  /* --- The bar: decorative, always paired with the written value ----------- */
+  .aw-clockcell { min-width: 240px; }
+  .aw-track { position: relative; display: block; height: 12px; background: var(--ps-surface-2); border: 1px solid var(--ps-line); border-radius: 2px; overflow: hidden; }
+  .aw-track--wide { height: 16px; max-width: 520px; margin: 0.3rem 0; }
+  .aw-bar { position: absolute; inset-block: 0; left: 0; background: var(--ps-caution); }
+  /* Past the cap: red AND hatched, so the difference survives without color. */
+  .aw-bar--over { background: var(--ps-accent); background-image: repeating-linear-gradient(45deg, transparent 0 4px, rgba(255,255,255,0.55) 4px 7px); }
+  .aw-bar--empty { background: var(--ps-ink-soft); }
+  .aw-bar--council { background: var(--ps-ink); }
+  .aw-bar--all { background: var(--ps-accent); }
+  .aw-capline { position: absolute; inset-block: -2px; width: 0; border-left: 2px dashed var(--ps-accent); z-index: 2; }
+  .aw-daysfig { display: block; margin-top: 0.3rem; font-family: var(--ps-font-record); font-size: 0.85rem; color: var(--ps-ink); }
+
+  /* --- The strip chart ---------------------------------------------------- */
+  .aw-strip { border: 1px solid var(--ps-line); border-radius: var(--ps-radius); background: var(--ps-surface); padding: 1.1rem 1.2rem 0.4rem; }
+  .aw-striprow { display: grid; grid-template-columns: minmax(180px, 260px) 1fr; gap: 1.2rem; align-items: end; padding-block: 0.5rem; border-bottom: 1px solid var(--ps-line); }
+  .aw-striprow:last-of-type { border-bottom: 0; }
+  .aw-striplab { font-size: 0.9rem; color: var(--ps-ink); line-height: 1.35; }
+  .aw-stripcount { display: block; font-family: var(--ps-font-record); font-size: 0.74rem; letter-spacing: 0.04em; color: var(--ps-ink-soft); }
+  .aw-striptrack { position: relative; height: calc(14px + (var(--tiers) - 1) * 13px); min-height: 22px; border-bottom: 1px solid var(--ps-line); }
+  .aw-capline--strip { inset-block: 0 -1px; }
+  .aw-dot { position: absolute; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; border: 2px solid var(--ps-ink-soft); background: var(--ps-surface); }
+  /* Past the cap: solid + red. Hollow vs solid is the non-color channel. */
+  .aw-dot--over { background: var(--ps-accent); border-color: var(--ps-accent); }
+  .aw-stripaxis { position: relative; height: 2.6rem; margin-top: 0.2rem; }
+  .aw-stripaxis span { position: absolute; top: 0.3rem; transform: translateX(-50%); font-family: var(--ps-font-record); font-size: 0.72rem; color: var(--ps-ink-soft); white-space: nowrap; }
+  .aw-stripaxis span:first-child { transform: none; }
+  .aw-stripaxis span:last-child { transform: translateX(-100%); }
+  .aw-stripaxis--cap { color: var(--ps-accent-text) !important; font-weight: 600; }
+
+  .aw-details { margin-top: 1.4rem; }
+  .aw-details summary { font-family: var(--ps-font-record); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-ink); cursor: pointer; padding: 0.5rem 0; }
+  .aw-details summary:hover { color: var(--ps-accent-text); }
+  .aw-details > *:not(summary) { margin-top: 0.8rem; }
+
+  /* --- § 03 Fully vacant bodies ------------------------------------------- */
+  .aw-fvlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: var(--ps-gap); }
+  .aw-fv { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent); border-radius: var(--ps-radius); background: var(--ps-surface); padding: 1rem 1.1rem 1.1rem; }
+  .aw-fv__name { font-weight: 600; font-size: 1rem; line-height: 1.25; }
+  .aw-fv__seats { display: flex; flex-wrap: wrap; gap: 4px; margin: 0.8rem 0 0.7rem; }
+  .aw-fv__seats i { width: 15px; height: 15px; display: block; border: 2px solid var(--ps-accent); background: transparent; border-radius: 2px; }
+  .aw-fv__meta { font-family: var(--ps-font-record); font-size: 0.76rem; letter-spacing: 0.03em; color: var(--ps-ink-soft); }
+  .aw-fv__meta b { color: var(--ps-accent-text); }
+  .aw-route { white-space: nowrap; }
+  .aw-flag { display: inline-block; margin-top: 0.3rem; font-family: var(--ps-font-record); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-highlight-ink); background: var(--ps-highlight); padding: 0.16rem 0.45rem; border-radius: var(--ps-radius-sm); }
+
+  /* --- § 03 Who has to act ------------------------------------------------ */
+  .aw-routes { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.2rem; }
+  .aw-route__lab { font-size: 1rem; color: var(--ps-ink); }
+  .aw-route__fig { font-family: var(--ps-font-record); font-size: 0.9rem; color: var(--ps-ink); }
+  .aw-route__pct { color: var(--ps-ink-soft); }
+
+  /* --- § 04 The versus block ---------------------------------------------- */
+  .aw-versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; margin-bottom: 1.6rem; }
+  .aw-vs { border: 1px solid var(--ps-line); border-radius: var(--ps-radius); background: var(--ps-surface); padding: 1.1rem 1.2rem 1.2rem; }
+  .aw-vs__title { font-family: var(--ps-font-display); font-size: 1.08rem; line-height: 1.25; margin: 0.3rem 0 0.6rem; }
+  .aw-vs__fig { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(2.4rem, 6vw, 3.2rem); line-height: 1; color: var(--ps-accent-text); }
+  .aw-vs__lab { font-size: 0.95rem; color: var(--ps-ink); }
+  .aw-vs__note { margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--ps-line); font-size: 0.88rem; color: var(--ps-ink-soft); }
+  .aw-vs__op { font-family: var(--ps-font-display); font-size: 2.4rem; color: var(--ps-ink-soft); text-align: center; }
+
+  /* --- § 05 Limits -------------------------------------------------------- */
+  .aw-limits { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: var(--ps-gap); }
+  .aw-limit { border-top: 1.5px solid var(--ps-ink); padding-top: 0.9rem; }
+  .aw-limit h3 { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.15rem; margin-bottom: 0.4rem; }
+  .aw-limit p { font-size: 0.98rem; color: var(--ps-ink-soft); }
+  .aw-limit p b { color: var(--ps-ink); }
+  .aw-limit--fix { border-top-color: var(--ps-accent); }
+
+  /* --- § 06 Provenance ---------------------------------------------------- */
+  .aw-prov { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: var(--ps-gap); }
+  .aw-provcard { border: 1px solid var(--ps-line); border-radius: var(--ps-radius); background: var(--ps-surface); padding: 1.2rem 1.3rem 1.3rem; }
+  .aw-provcard h3 { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: 0.8rem; }
+  .aw-dl dt { font-family: var(--ps-font-record); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ps-accent-text); margin-top: 0.9rem; }
+  .aw-dl dt:first-child { margin-top: 0; }
+  .aw-dl dd { margin: 0.25rem 0 0; font-size: 0.96rem; color: var(--ps-ink-soft); }
+  .aw-dl dd b { color: var(--ps-ink); }
+  .aw-provnote { margin-top: 0.9rem; font-size: 0.9rem; color: var(--ps-ink-soft); }
+  /* The citation block (D2). Selectable as text; the copy button is created by script so
+     there is no dead control when JavaScript is off. */
+  .aw-cite { margin-top: 1.6rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-ink); border-radius: var(--ps-radius); background: var(--ps-surface); padding: 1rem 1.2rem 1.1rem; max-width: 84ch; }
+  .aw-cite__why { font-size: 0.9rem; color: var(--ps-ink-soft); margin: 0.3rem 0 0.7rem; }
+  .aw-cite__text { font-family: var(--ps-font-record); font-size: 0.86rem; line-height: 1.6; color: var(--ps-ink); background: var(--ps-surface-2); border: 1px solid var(--ps-line); border-radius: var(--ps-radius-sm); padding: 0.7rem 0.8rem; overflow-wrap: break-word; }
+  .aw-cite__note { font-size: 0.88rem; color: var(--ps-ink-soft); margin-top: 0.7rem; }
+  .aw-citebtn { margin-top: 0.7rem; font-family: var(--ps-font-record); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.45rem 0.8rem; border: 1px solid var(--ps-line); border-radius: var(--ps-radius-sm); background: var(--ps-surface); color: var(--ps-ink); cursor: pointer; }
+  .aw-citebtn:hover { border-color: var(--ps-accent); }
+
+  .aw-license { margin-top: 1.6rem; border-top: 1px solid var(--ps-line); padding-top: 1rem; max-width: 84ch; }
+  .aw-license p + p { margin-top: 0.5rem; font-size: 0.96rem; color: var(--ps-ink-soft); }
+
+  @media (max-width: 780px) {
+    .aw-versus { grid-template-columns: 1fr; }
+    .aw-vs__op { transform: rotate(90deg); }
+  }
+  @media (max-width: 640px) {
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
+    .aw-striprow { grid-template-columns: 1fr; gap: 0.3rem; }
+  }
+</style>

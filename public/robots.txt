@@ -5,5 +5,11 @@ Allow: /
 
 # Live-but-in-development (unlinked, not ready for search) — keep out of the index:
 Disallow: /almanac
+# DC Appointments Watch (seat clock): accessibility verified and redteamed, but two findings
+# came back DELIBERATE and a screen-reader pass has not run. Remove this line at the same
+# moment the hub card goes live and the sitemap entry is added — see
+# src/data/projects/dc-appointments-watch.md. Path set by decision D1, 2026-08-17: the seat
+# view lives one level down so /appointments stays free for a front door.
+Disallow: /appointments/seats
 
 Sitemap: https://inplainsight-dc.org/sitemap.xml
