@@ -85,3 +85,20 @@ public/favicon.svg
 
 See **DEPLOY.md** for hosting (S3 + CloudFront) and **FORKING.md** for the
 fork-it-for-your-city convention.
+
+## Who wrote this
+
+In Plain Sight is built and maintained by **Philippa Hawker**, who does the
+research, makes the design and editorial calls, and decides what ships.
+
+Much of the code is written with **Claude** (Anthropic's coding assistant), and
+the commit history says so — commits are recorded as authored by Philippa and
+committed by Claude, and carry a `Co-Authored-By: Claude` trailer. That is the
+literal division of labor: the tool wrote a lot of the lines, the decisions
+about what the tools claim, what they refuse to claim, what stays unpublished
+and what the accessibility floor is are hers.
+
+Reading the log another way would be a mistake in either direction. This is not
+a project a person typed alone, and it is not one an assistant produced on its
+own. If you fork it — please do, that is what `FORKING.md` is for — the same
+honesty is worth keeping.
