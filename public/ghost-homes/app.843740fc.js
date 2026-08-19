@@ -133,7 +133,7 @@ async function geocode(){
     // The address resolved, but it sits outside the 39 residential neighborhood clusters (the
     // federal core, the Mall and parkland are not clustered). Say that, rather than implying
     // the address was not found.
-    if(ci<0){geoMsg.textContent="That address sits outside DC's 39 residential neighborhood clusters — the federal core, the Mall and parkland aren't covered. Try a nearby residential address, or pick a neighborhood.";return;}
+    if(ci<0){geoMsg.textContent="That address sits outside DC’s 39 residential neighborhood clusters — the federal core, the Mall and parkland aren’t covered. Try a nearby residential address, or pick a neighborhood.";return;}
     const ai=locateIdx(lat,lon,NBa);await ensureSMD();const si=locateIdx(lat,lon,NBs);
     const ancId=ai>=0?AN[ai]:null,smdId=si>=0?SM[si]:null;
     const ward=ancId?ancId.replace(/[^0-9].*$/,""):(smdId?smdId[0]:"");
@@ -300,7 +300,7 @@ function renderTable(){
   document.getElementById("tblCap").textContent=
     `${tblRows.length} ${fBreak.value==="ward"?"wards":fBreak.value==="anc"?"ANCs":fBreak.value==="smd"?"single-member districts":"clusters"}. Click a heading to sort.`+
     (showRent?" Italic rent = estimated from adjacent neighborhoods.":"")+
-    (anySuppressed?` Cells with fewer than ${THR} full-time STRs are shown as “<${THR}” so an individual home can't be singled out.`:"");
+    (anySuppressed?` Cells with fewer than ${THR} full-time STRs are shown as “<${THR}” so an individual home can’t be singled out.`:"");
 }
 function refreshTable(){tblRows=buildRows(fBreak.value);sortK=showRent?4:3;sortDir=-1;renderTable();}
 fBreak.addEventListener("change",()=>{
