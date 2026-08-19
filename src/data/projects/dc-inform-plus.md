@@ -4,5 +4,5 @@ description: "DC Records — a plain-language window on the District’s records
 tags: ["Records", "Retention", "Open data", "Oversight"]
 status: "live"
 url: "/records"
-order: 6
+order: 8
 ---
