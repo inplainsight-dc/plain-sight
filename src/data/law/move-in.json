@@ -7,12 +7,12 @@
   "depositReturn": {
     "DC": {
       "name": "Washington DC",
-      "returnWindow": "In DC: 45 days after your tenancy ends, the landlord must either return your deposit or send you written notice they intend to keep part of it. If they send that notice, they then have 30 more days to deliver the itemized statement and any balance you're owed.",
-      "itemized": "A written, itemized statement of every repair or use the money went to, and what each one cost. Ordinary wear and tear can't be charged against your deposit.",
-      "interest": "If you rented for 12 months or more, your deposit earns interest at the bank's statement-savings rate (a low, ordinary savings rate), figured for each 6-month stretch of the tenancy.",
+      "returnWindow": "In DC: 45 days after your tenancy ends, the landlord must either return your deposit or send you written notice they intend to keep part of it. If they send that notice, they then have 30 more days to deliver the itemized statement and any balance you’re owed.",
+      "itemized": "A written, itemized statement of every repair or use the money went to, and what each one cost. Ordinary wear and tear can’t be charged against your deposit.",
+      "interest": "If you rented for 12 months or more, your deposit earns interest at the bank’s statement-savings rate (a low, ordinary savings rate), figured for each 6-month stretch of the tenancy.",
       "inspection": "no-statutory",
-      "inspectionNote": "Your own dated, photographed inventory is your record in DC — that's what this page helps you build. DC doesn't require a move-in inspection or give you a formal right to attend the move-out; but if the landlord chooses to inspect at move-out, they must give you at least 10 days' written notice of the date and time, so you can be there.",
-      "penalty": "If the landlord keeps your deposit in bad faith, you can recover three times the amount wrongly withheld. “Bad faith” is a dishonest or unreasonable refusal — an honest mistake about a deduction isn't enough.",
+      "inspectionNote": "Your own dated, photographed inventory is your record in DC — that’s what this page helps you build. DC doesn’t require a move-in inspection or give you a formal right to attend the move-out; but if the landlord chooses to inspect at move-out, they must give you at least 10 days’ written notice of the date and time, so you can be there.",
+      "penalty": "If the landlord keeps your deposit in bad faith, you can recover three times the amount wrongly withheld. “Bad faith” is a dishonest or unreasonable refusal — an honest mistake about a deduction isn’t enough.",
       "cites": [
         ["D.C. Code § 42-3502.17 — security deposits", "https://code.dccouncil.gov/us/dc/council/code/sections/42-3502.17"],
         ["14 DCMR §§ 308–311 — return window, interest, move-out inspection notice, bad-faith treble damages", "https://code.dccouncil.gov/us/dc/agencies/dcmr/14/3/309"]
@@ -24,8 +24,8 @@
       "itemized": "If they keep any of it, they must mail you a written, itemized list of the damages by first-class mail within those 45 days. Miss the deadline and they forfeit the right to keep a cent for damages (though unpaid rent is separate).",
       "interest": "A deposit of $50 or more held for at least 6 months earns simple interest — the greater of the one-year U.S. Treasury rate as of the first business day of the year or 1.5% a year — added month by month, not compounded.",
       "inspection": "on-request",
-      "inspectionNote": "You have two inspection rights, but both run on certified mail (the tracked service at the post office that gives you a dated receipt — a plain letter or email won't count). Within 15 days of moving in you can ask, by certified mail, to walk the unit with the landlord and get a written list of existing damage. To be at the move-out inspection, mail certified notice at least 15 days before you move; if they don't comply, they forfeit the right to keep the deposit for damages.",
-      "penalty": "If the landlord keeps your deposit without a reasonable basis, a court can award up to three times the withheld amount plus your attorney's fees.",
+      "inspectionNote": "You have two inspection rights, but both run on certified mail (the tracked service at the post office that gives you a dated receipt — a plain letter or email won’t count). Within 15 days of moving in you can ask, by certified mail, to walk the unit with the landlord and get a written list of existing damage. To be at the move-out inspection, mail certified notice at least 15 days before you move; if they don’t comply, they forfeit the right to keep the deposit for damages.",
+      "penalty": "If the landlord keeps your deposit without a reasonable basis, a court can award up to three times the withheld amount plus your attorney’s fees.",
       "cites": [
         ["Md. Code, Real Property § 8-203 — return, interest, move-out inspection, penalties", "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=grp&section=8-203"],
         ["Md. Code, Real Property § 8-203.1 — receipt & move-in inspection right", "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=grp&section=8-203.1"]
@@ -35,10 +35,10 @@
       "name": "Virginia",
       "returnWindow": "45 days after your tenancy ends (or after you actually move out, whichever is later), the landlord must give you a written, itemized statement of any deductions and return the balance.",
       "itemized": "The itemized statement is required. If the landlord takes a deduction during the tenancy, they must tell you in writing within 30 days of deciding on it — except for deductions set in the last 30 days before you leave, which can show up for the first time on that final statement.",
-      "interest": "Virginia doesn't require interest on your deposit — that requirement was repealed. Don't count on it, and treat any old lease form that promises it as out of date.",
+      "interest": "Virginia doesn’t require interest on your deposit — that requirement was repealed. Don’t count on it, and treat any old lease form that promises it as out of date.",
       "inspection": "strong",
-      "inspectionNote": "Virginia gives you the strongest move-in protection of the three. Within 5 days of moving in, the landlord must hand you a written report of the unit's condition. It's treated as correct unless you object in writing within 5 days — so read it against your own photos and object to anything it leaves out. At move-out, the landlord must tell you in writing of your right to be present, and the inspection happens within 72 hours of you handing back possession.",
-      "penalty": "If the landlord willfully fails to follow the deposit rules, a court orders the deposit returned plus actual damages and reasonable attorney's fees (offset by any rent you still owe).",
+      "inspectionNote": "Virginia gives you the strongest move-in protection of the three. Within 5 days of moving in, the landlord must hand you a written report of the unit’s condition. It’s treated as correct unless you object in writing within 5 days — so read it against your own photos and object to anything it leaves out. At move-out, the landlord must tell you in writing of your right to be present, and the inspection happens within 72 hours of you handing back possession.",
+      "penalty": "If the landlord willfully fails to follow the deposit rules, a court orders the deposit returned plus actual damages and reasonable attorney’s fees (offset by any rent you still owe).",
       "cites": [
         ["Va. Code § 55.1-1226 — security deposits, return, move-out inspection, penalties", "https://law.lis.virginia.gov/vacode/title55.1/chapter12/section55.1-1226/"],
         ["Va. Code § 55.1-1214 — move-in condition report (5-day rule)", "https://law.lis.virginia.gov/vacode/title55.1/chapter12/section55.1-1214/"]
@@ -50,36 +50,36 @@
     {
       "phase": "Before you take the keys",
       "items": [
-        { "item": "Get the signed lease and every addendum in your own files", "why": "You can't protect a deposit under terms you can't see. Keep your own copy, not just a promise of one." },
-        { "item": "Confirm the exact move-in cash in writing — deposit, first month, any last month — and how the deposit is held", "why": "A deposit is your money held in trust, not the landlord's to spend. Getting the number and the account in writing is the start of getting it back." },
-        { "item": "Ask whether there's a move-in condition report, and who fills it out", "why": "In Virginia the landlord must give you one within 5 days; in Maryland you can request a walkthrough; in DC there's none, so you make your own. Either way, you want a dated condition record before you unpack." }
+        { "item": "Get the signed lease and every addendum in your own files", "why": "You can’t protect a deposit under terms you can’t see. Keep your own copy, not just a promise of one." },
+        { "item": "Confirm the exact move-in cash in writing — deposit, first month, any last month — and how the deposit is held", "why": "A deposit is your money held in trust, not the landlord’s to spend. Getting the number and the account in writing is the start of getting it back." },
+        { "item": "Ask whether there’s a move-in condition report, and who fills it out", "why": "In Virginia the landlord must give you one within 5 days; in Maryland you can request a walkthrough; in DC there’s none, so you make your own. Either way, you want a dated condition record before you unpack." }
       ]
     },
     {
       "phase": "The day you get the keys — before you move anything in",
       "items": [
-        { "item": "Photograph and video every room while it's empty, with the date visible", "why": "An empty, dated set of photos is the single best defense against being charged at move-out for damage that was already there — your strongest evidence against the pre-existing-damage charge an “as-is” clause counts on." },
-        { "item": "Fill in the condition inventory below, room by room — note every mark, stain, scratch, and thing that doesn't work", "why": "Write down what the photos show. Small pre-existing flaws are exactly what gets charged to a deposit later if nobody recorded them on day one." },
-        { "item": "Both you and the landlord date and sign the inventory, and you keep a copy", "why": "A condition record both sides signed is far harder to dispute than one only you have. If they won't sign, email it to them the same day so it's timestamped." },
-        { "item": "Photograph the meters (gas, electric, water) and note the readings", "why": "It stops you paying for someone else's usage before you arrived, and fixes the date you took over." },
-        { "item": "Test what you can't easily photograph — every outlet, faucet, the heat, the AC, the smoke and CO detectors, the locks and every key", "why": "“Works” or “doesn't” belongs on the record now. A dead detector or a lock that wasn't re-keyed is a safety issue and a deposit issue at once." },
-        { "item": "VA only: read the landlord's move-in report against your own photos, and object in writing to anything it misses — within 5 days", "why": "In Virginia that report is treated as correct unless you object in writing within 5 days. Miss the window and its version of the condition becomes the baseline.", "jur": "VA" },
-        { "item": "MD only: if you want the joint walkthrough, mail your certified-mail request within 15 days of moving in", "why": "Maryland's move-in inspection right only triggers if you ask by certified mail within 15 days. Regular email or a text won't preserve it.", "jur": "MD" }
+        { "item": "Photograph and video every room while it’s empty, with the date visible", "why": "An empty, dated set of photos is the single best defense against being charged at move-out for damage that was already there — your strongest evidence against the pre-existing-damage charge an “as-is” clause counts on." },
+        { "item": "Fill in the condition inventory below, room by room — note every mark, stain, scratch, and thing that doesn’t work", "why": "Write down what the photos show. Small pre-existing flaws are exactly what gets charged to a deposit later if nobody recorded them on day one." },
+        { "item": "Both you and the landlord date and sign the inventory, and you keep a copy", "why": "A condition record both sides signed is far harder to dispute than one only you have. If they won’t sign, email it to them the same day so it’s timestamped." },
+        { "item": "Photograph the meters (gas, electric, water) and note the readings", "why": "It stops you paying for someone else’s usage before you arrived, and fixes the date you took over." },
+        { "item": "Test what you can’t easily photograph — every outlet, faucet, the heat, the AC, the smoke and CO detectors, the locks and every key", "why": "“Works” or “doesn’t” belongs on the record now. A dead detector or a lock that wasn’t re-keyed is a safety issue and a deposit issue at once." },
+        { "item": "VA only: read the landlord’s move-in report against your own photos, and object in writing to anything it misses — within 5 days", "why": "In Virginia that report is treated as correct unless you object in writing within 5 days. Miss the window and its version of the condition becomes the baseline.", "jur": "VA" },
+        { "item": "MD only: if you want the joint walkthrough, mail your certified-mail request within 15 days of moving in", "why": "Maryland’s move-in inspection right only triggers if you ask by certified mail within 15 days. Regular email or a text won’t preserve it.", "jur": "MD" }
       ]
     },
     {
       "phase": "Your first week",
       "items": [
-        { "item": "Put utilities in your name and save the start-date confirmations", "why": "It closes out the prior tenant's account and proves when your responsibility began." },
-        { "item": "Report anything broken in writing (email), even small things, and keep the thread", "why": "A repair you reported on day three isn't damage you caused. The written record is what separates the two at move-out." },
-        { "item": "Save the landlord's real contact details and the address for official notices", "why": "Deposit-return notices and inspection requests have deadlines and often must go to a specific address — in Maryland and at Virginia move-out, in writing or by certified mail." },
-        { "item": "File the signed inventory, the dated photos, and the meter readings somewhere you'll still have them in a year", "why": "You'll need them at move-out, which could be years away. The renter who kept the day-one record is the one who gets the deposit back." }
+        { "item": "Put utilities in your name and save the start-date confirmations", "why": "It closes out the prior tenant’s account and proves when your responsibility began." },
+        { "item": "Report anything broken in writing (email), even small things, and keep the thread", "why": "A repair you reported on day three isn’t damage you caused. The written record is what separates the two at move-out." },
+        { "item": "Save the landlord’s real contact details and the address for official notices", "why": "Deposit-return notices and inspection requests have deadlines and often must go to a specific address — in Maryland and at Virginia move-out, in writing or by certified mail." },
+        { "item": "File the signed inventory, the dated photos, and the meter readings somewhere you’ll still have them in a year", "why": "You’ll need them at move-out, which could be years away. The renter who kept the day-one record is the one who gets the deposit back." }
       ]
     }
   ],
 
   "inventory": {
-    "intro": "This is the record that protects your deposit: a dated, room-by-room record of the unit's condition on the day you moved in, before you brought anything in. Print it, walk the unit, mark every flaw you find, photograph each one, and have both you and the landlord sign and date it. Keep your copy. An “as-is” lease clause is far harder to enforce against a signed, dated condition record.",
+    "intro": "This is the record that protects your deposit: a dated, room-by-room record of the unit’s condition on the day you moved in, before you brought anything in. Print it, walk the unit, mark every flaw you find, photograph each one, and have both you and the landlord sign and date it. Keep your copy. An “as-is” lease clause is far harder to enforce against a signed, dated condition record.",
     "checkEvery": ["Walls & paint", "Floor / carpet", "Ceiling", "Windows, screens & locks", "Doors, locks & keys", "Outlets & light switches", "Lights & fixtures", "Heat / AC vents", "Smoke & CO detectors"],
     "rooms": [
       { "name": "Entry / hallway", "items": ["Front door, lock & deadbolt", "Keys received (how many)", "Floor & baseboards", "Closet & shelving", "Intercom / buzzer"] },
