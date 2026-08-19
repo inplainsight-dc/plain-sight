@@ -29,6 +29,17 @@ echo "→ Deploying $(git rev-parse --short HEAD 2>/dev/null || echo 'unknown') 
 echo "→ Building static site..."
 npm run build
 
+# DC Appointments Watch is held back from production, and this is the line that actually
+# holds it. The robots.txt Disallow and the url-less hub card are real, but a Disallow is a
+# request that only compliant crawlers read, and neither stops a person who has the URL. The
+# page is built into dist/ on every run, so without an exclude here a routine deploy publishes
+# it. Both excludes below (appointments/*, and og/appointments.png — the preview image OF the
+# gated page) are the control; the other two are the signposting.
+#
+# REMOVE BOTH at the same moment as the other go-live changes, not before: set the card to
+# "live" with a url, add the sitemap entry, drop the robots.txt Disallow. Gated on the node's
+# roadmap p6-t8 — a screen-reader pass has not run, and redteam findings F2 and F5 came back
+# DELIBERATE. See src/data/projects/dc-appointments-watch.md.
 echo "→ Syncing dist/ to s3://${BUCKET} ..."
 # Hashed, content-addressed assets get a long immutable cache. HTML and the
 # live data JSON are excluded here so they don't inherit the year-long cache.
@@ -38,11 +49,29 @@ echo "→ Syncing dist/ to s3://${BUCKET} ..."
 # there is a new filename, so it is safe to cache forever and it reaches readers immediately.
 # (Filters apply in order, so the later --include re-admits the hashed assets.)
 aws s3 sync dist/ "s3://${BUCKET}" --delete \
-  --exclude "*.html" --exclude "trash-data/*" --exclude "ghost-homes/*" --include "ghost-homes/app.*" \
+  --exclude "*.html" --exclude "trash-data/*" --exclude "ghost-homes/*" \
+  --exclude "og/appointments.png" \
+  --cache-control "public,max-age=31536000,immutable"
+# Ghost Homes CODE assets: fingerprinted, so immutable is right — but deliberately NOT in the
+# --delete pass above, and that is the whole point of splitting them out.
+#
+# The failure this closes: a code change gives app.<hash>.js a NEW name, so the same deploy
+# uploads the new one and --delete removes the old. HTML is cached at the edge for 300s and
+# the CloudFront invalidation lands after the sync, so for a few minutes a returning reader
+# holds HTML pointing at a file that has already been deleted — the explorer silently fails to
+# load while the page around it renders fine. Three sessions found this independently and it
+# had never left a commit message.
+#
+# Superseded assets now simply linger. They are a few KB each on a quarterly snapshot cadence,
+# they are unreachable once no HTML references them, and pruning them is a deliberate act
+# rather than a side effect of shipping. (2026-08-19: this deploy would have deleted
+# app.2a5d47ea.js while shipping app.843740fc.js.)
+aws s3 sync dist/ "s3://${BUCKET}" \
+  --exclude "*" --include "ghost-homes/app.*" \
   --cache-control "public,max-age=31536000,immutable"
 # HTML: short cache so page updates show quickly.
 aws s3 sync dist/ "s3://${BUCKET}" \
-  --exclude "*" --include "*.html" \
+  --exclude "*" --include "*.html" --exclude "appointments/*" \
   --cache-control "public,max-age=300"
 # Live data (alerts/reports): must update WITHOUT a redeploy, so short cache and
 # force revalidation. The one-year immutable header here caused stale DPW alerts.
