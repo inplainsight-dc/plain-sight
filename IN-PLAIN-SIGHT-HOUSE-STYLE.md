@@ -106,6 +106,56 @@ The frontmatter `description` should lead with the full name too where it names 
 
 ---
 
+## Punctuation & orthography
+
+**The rule:** reader-facing text uses the curly apostrophe `’` and curly quotes `“ ”`. Em dashes
+and curly quotes are *correct here* — this site's register is Personal, not the work or civic
+register that bans them. Stripping them would be the error.
+
+**Code comments keep straight apostrophes.** A `//` or `#` comment is not reader-facing. Do not
+normalize them, and do not count them as findings.
+
+**American spelling throughout**, including in generated data. UI copy is American English as the
+translation baseline (ROADMAP 2.5). British forms that keep reappearing: `neighbourhood`,
+`centre`, `modelled`, `licence`, `colour`, `whilst`, `programme`, `grey`, `judgement`.
+
+**Leave these alone — normalizing them introduces an error:**
+
+- `D.C. Code` / `D.C. Law` — the correct legal citation form. The "DC" house rule governs prose
+  and tool names, not citations.
+- `§§` — the correct plural of `§`, not a typo.
+- Verbatim register strings quoted from a source (e.g. the MOTA seat records). Fidelity to what
+  was published is the whole claim of those pages.
+
+### ⚠ Sweeping for this: authored pages are less than half the site
+
+**A sweep that reads `src/pages/` will pass while the site is visibly wrong.** Much of the reader
+text on this site is *generated* and arrives at build time from another folder. This blind spot
+has now produced three separate live defects:
+
+| Found | Where it rendered | Real source |
+|---|---|---|
+| 2026-08-17 | `/ghost-homes` panels | `build_public_explorer.py` (STR node) |
+| 2026-08-19 | `/rentals/move-in` — ~30 straight apostrophes | `law/move-in.json` (law brain) |
+| 2026-08-19 | `/on-paper` — 2 straight apostrophes | `build_accountability_view.py` (STR node) |
+| **still open** | `/almanac` — `neighbourhood`, 7 literal `--`, "out loud" | `almanac.json` (Electify node) |
+
+**Sweep the built output, not the source.** `dist/**/*.html` with `<script>`/`<style>` stripped is
+the only view that sees everything a reader sees. Then trace each hit back to its generator — a
+hand edit in this repo is destroyed by the next `npm run build`.
+
+**Two counting traps.** A raw `grep -c "'"` over a generated file counts JavaScript syntax in
+inlined payloads and will overstate the problem — `/on-paper` was reported as six and is two.
+And some pages build their reader text inside a `<script>`, so stripping scripts *understates* it.
+Measure against the rendered page (`document.body.innerText`) when the two disagree.
+
+**Before a blanket swap, categorise.** Apostrophes are contractions, possessives, plural
+possessives *and* single quotation marks. `move-in.json` was safe to swap wholesale only because
+all 37 were checked first and none was a quotation mark. Afterwards, diff the parsed structure —
+not the text — to prove nothing but punctuation moved.
+
+---
+
 ## Principles to preserve
 
 - **Everything traces to the flag** — red, three stars, two bars.
