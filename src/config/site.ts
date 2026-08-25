@@ -51,7 +51,7 @@ export const site = {
   // The API Gateway endpoint printed by infra/feedback-setup.sh. EMPTY = the
   // feedback button does not render at all, so the site never shows a form that
   // posts into nowhere. Fill it in after running that script, then rebuild.
-  feedbackEndpoint: '',
+  feedbackEndpoint: 'https://ouaejyqbxi.execute-api.us-east-1.amazonaws.com/',
 
   // --- About (warm, first-person; edit freely) ---------------------------
   //

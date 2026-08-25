@@ -23,6 +23,21 @@ NOT stored: IP address, user agent, referrer, any fingerprint, anything the brow
 Storage (private S3 bucket, env DATA_BUCKET):
   private/feedback.json  - the whole inbox. Read by `npm run feedback` from Pippa's
                            machine. Never served by this function.
+
+IF THIS FUNCTION 500s ON THE FIRST SUBMISSION, READ THIS FIRST.
+The execution role needs **s3:ListBucket on the bucket**, and it is not about listing.
+Without it, S3 answers a GetObject for a MISSING key with 403 AccessDenied instead of
+404 NoSuchKey — so the "the inbox does not exist yet" branch in _load_versioned never
+matches, and the very first POST fails with an Internal Server Error while validation and
+the honeypot both appear to work. Diagnosed live on 2026-08-25; the grant is in
+infra/feedback-setup.sh, which is gitignored like every infra/*.sh, hence this note here
+in the file that IS tracked.
+
+Do NOT "fix" that by catching AccessDenied here and treating it as an empty inbox. That
+turns a transient permissions problem into "the file looked empty, so I replaced the whole
+thing with one item" — which is the same class of bug the _load_versioned docstring below
+already warns about. The setup script also seeds an empty object so the missing-key branch
+is not on the normal path at all.
 """
 import json, os, re, time, uuid
 from datetime import datetime, timezone
