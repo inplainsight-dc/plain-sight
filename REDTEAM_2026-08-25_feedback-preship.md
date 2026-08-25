@@ -138,16 +138,32 @@ Three distinct problems, none of which the current design addresses:
    acknowledge**, which arrived because a site-wide component shipped, not because anyone chose it
    for that page. D3 was a decision *about exactly this*.
 
-**Proposed fixes — Pippa's call, and one of them is not mine to make:**
+**Sharpened 2026-08-25 by the same session, and it matters: problem 3 is NOT prospective.** The
+seat clock **as built today** carries two correction routes while its own § 05 says the route is
+GitHub. It contradicts itself the moment it goes live — that is a blocking item on 1.6 now, not a
+note for later. Problems 1 and 2 wait for the page to ship; problem 3 is already true in `dist/`.
 
-- **`p6-t1`, the person-naming redteam in the Appointments node, must now cover the intake channel
-  and not only the page.** That is the substantive change, and it belongs to that project.
-- Consider a per-page opt-out for the footer control, so a page that names people can decline it
-  rather than inherit it. The component already reads `site.feedbackEndpoint`; a page-level flag is
-  small.
-- If it stays, the panel needs a line for pages that name people: what happens to a report about a
-  person, and that it is not an investigation.
-- Reconcile with D3 either way — a page should not state one correction route while carrying another.
+**Three genuine options, and this is Pippa's decision — deliberately not built either way.** The
+per-page opt-out was offered and declined *for now*, on the correct grounds that the choice is open
+and none of these should arrive because a component shipped:
+
+1. **The page opts out and keeps GitHub.** Honors D3 as written. Needs a page-level flag on the
+   footer control — small, since the component already reads `site.feedbackEndpoint`.
+2. **The button stays and § 05 is rewritten** to name both routes and say what each is for. Keeps
+   the low-friction route for the people least likely to open a GitHub issue.
+3. **The button becomes the primary route**, which is arguably what D3's "email when ready" was
+   reaching for. The intake exists now and needs no mail routing on the domain.
+
+Those are three different pages. Whichever it is, it should be chosen.
+
+**Also, whichever way it goes:**
+
+- **`p6-t1`, the person-naming redteam in the Appointments node, must cover the intake channel and
+  not only the page.** That is the substantive change and it belongs to that project's gate.
+- If the control stays on a page that names people, the panel needs a line saying what happens to a
+  report **about a person** — and that it is not an investigation. **A report about a page is a bug
+  report; a report about a person is something else entirely, and the sender is currently told
+  nothing about which one they are filing.**
 
 **Recorded, not acted on.** Both halves are decisions rather than code, and the second belongs to
 another project's gate. Nothing about the shipped state is unsafe today: `/appointments/seats/`
