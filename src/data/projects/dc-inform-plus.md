@@ -1,8 +1,9 @@
 ---
 title: "DC Records"
-description: "DC Records — a plain-language window on the District’s records-retention rules: how long each kind of government record must be kept, and when it can be destroyed or sent to the Archives. Browsable, filterable, free to download, no login. The first tool graduating from a wider build that mirrors the UK’s LG Inform Plus for DC."
+description: "How long does DC have to keep a record before it can be destroyed? Every retention schedule in the District, searchable and free to download, no login."
 tags: ["Records", "Retention", "Open data", "Oversight"]
 status: "live"
 url: "/records"
-order: 8
+order: 4
+tier: "use"
 ---

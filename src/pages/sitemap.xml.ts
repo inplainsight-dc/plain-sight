@@ -19,6 +19,10 @@ import type { APIRoute } from 'astro';
  */
 const ROUTES: { path: string; priority: number; changefreq: string }[] = [
   { path: '/',                     priority: 1.0, changefreq: 'weekly' },
+  // Split off the home page 2026-08-25 (Phase 4 / D5). Indexable on purpose: it is
+  // where the provenance and no-tracking claims live, so it is the page that answers
+  // "who made this and why should I believe it" for someone arriving from search.
+  { path: '/about',                priority: 0.6, changefreq: 'yearly' },
   { path: '/rentals',              priority: 0.9, changefreq: 'monthly' },
   // The no-account front door for the four checklists below. Added 2026-08-17.
   { path: '/renter-checklists',    priority: 0.9, changefreq: 'monthly' },

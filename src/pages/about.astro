@@ -1,0 +1,93 @@
+---
+import { site } from '../config/site';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+
+/**
+ * /about — the full context, split off the home page by decision D5 (Phase 4).
+ *
+ * Section order is deliberate and is the point of the split: WHY this exists,
+ * then WHO builds it, then HOW. Copy lives in src/config/site.ts so a fork gets
+ * the structure and replaces only the words.
+ */
+const today = new Date().toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric',
+});
+const SECTIONS = [
+  { no: '01', title: 'Why this exists', body: site.about.why },
+  { no: '02', title: 'Who’s building it', body: site.about.who },
+  { no: '03', title: 'How it’s built', body: site.about.how },
+];
+---
+<Base
+  title="About"
+  description={`Why ${site.instanceName} exists, who builds it, and how. ${site.aboutLine}`}
+>
+  <Header slot="header" />
+
+  <section class="ips-lead ips-lead--about">
+    <div class="ps-container">
+      <p class="ps-record ps-record--red ips-dateline">{today.toUpperCase()} &nbsp;|&nbsp; {site.location}</p>
+      <p class="ps-record ips-back"><a href="/">&larr; Back to {site.name}</a></p>
+      <h1 class="ips-lead__h">About <span class="ps-highlight">In Plain Sight</span>.</h1>
+      <p class="ips-lead__blurb">{site.aboutLine}</p>
+    </div>
+  </section>
+
+  {SECTIONS.map((s) => (
+    <section class="ips-sec">
+      <div class="ps-container">
+        <div class="ips-sec-head">
+          <span class="ps-record ps-record--red">&sect; {s.no}</span>
+          <h2 class="ips-sec-title">{s.title}</h2>
+          <span class="ips-sec-rule"></span>
+        </div>
+        <div class="ips-about">{s.body.map((p) => <p>{p}</p>)}</div>
+      </div>
+    </section>
+  ))}
+
+  <section class="ips-sec" id="contact">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
+        <h2 class="ips-sec-title">Get in touch</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+      <div class="ips-about">
+        <p>If something here helps, breaks, or is wrong, I&rsquo;d genuinely like to know &mdash;
+        a correction is the most useful thing you can send me. Same if you want an
+        In&nbsp;Plain&nbsp;Sight for another city, or you have a document or dataset that ought
+        to be easier to use.</p>
+      </div>
+      {(site.links.github || site.links.linkedin || site.links.email) && (
+        <div class="ps-links ips-about__links">
+          {site.links.github && <a class="ps-link" href={site.links.github} target="_blank" rel="me noopener"><Icon name="github" /> GitHub</a>}
+          {site.links.linkedin && <a class="ps-link" href={site.links.linkedin} target="_blank" rel="me noopener"><Icon name="linkedin" /> LinkedIn</a>}
+          {site.links.email && <a class="ps-link" href={`mailto:${site.links.email}`}><Icon name="email" /> Email</a>}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</Base>
+
+<style>
+  .ips-lead--about { padding-block: clamp(2.2rem, 6vw, 3.6rem) clamp(1.4rem, 4vw, 2.4rem); }
+  .ips-dateline { display: block; margin-bottom: 0.5rem; }
+  .ips-back { display: block; margin-bottom: 1.2rem; }
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 52ch; }
+
+  .ips-sec { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.5rem, 3.6vw, 2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+
+  .ips-about { max-width: 64ch; }
+  .ips-about p { margin-bottom: 1rem; font-size: 1.12rem; }
+  .ips-about p:last-child { margin-bottom: 0; }
+  .ips-about__links { margin-top: 1.2rem; }
+</style>

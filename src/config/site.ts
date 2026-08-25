@@ -45,9 +45,40 @@ export const site = {
   },
 
   // --- About (warm, first-person; edit freely) ---------------------------
-  about: [
-    "Hi, I’m Philippa! I work in government oversight. I spend my days reading the dense, fine-print documents that quietly run a city.",
-    "In Plain Sight is where I share the tools I build to make that material usable. Not just laws and regulations, but procurement, programs, budgets, and the open data behind them. The rules that govern us should be readable by the people they govern.",
-    "Everything here is built for the District, in the open, and mostly for the joy of it. The tools are made to be forked, so other cities can build their own. If something helps, breaks, or you just want to say hi, I’d love to hear from you!",
-  ],
+  //
+  // Phase 4 / decision D5, 2026-08-25. This used to be three paragraphs sitting
+  // between the lead and the tools — 1.75 screens of scrolling on a phone before
+  // the first thing a reader could use. It is now one line on the home page and a
+  // standalone /about page.
+  //
+  // The ORDER on that page is the whole point: why this exists, then who builds it,
+  // then how. Credentials arrive as the answer to “why should I trust these numbers”,
+  // not as an introduction — an about page that opens with a résumé reads as
+  // “know my name before you look at my work”. Equally, do not shrink them: reading
+  // this material professionally is the reason a stranger should believe the figures,
+  // and burying it is the failure mode of this rewrite, not its goal.
+
+  // One line, on the home page, under the lead. Earns its place by compressing the
+  // trust claim; the link carries anyone who wants the rest.
+  aboutLine:
+    "Every tool here is free, needs no account, and traces back to a public record.",
+  aboutLinkText: "Why this exists, and who’s building it",
+
+  about: {
+    why: [
+      "The rules that govern us should be readable by the people they govern.",
+      "Mostly, they aren’t. The documents that decide how a city actually works — retention schedules, licensing rules, budget lines, procurement records, the regulations behind a permit — are public, and almost none of them are readable. Being technically available is not the same as being possible to use.",
+      "That gap is where In Plain Sight lives. Every tool here takes one dense, official thing and turns it into something you can answer a question with.",
+    ],
+    who: [
+      "Hi, I’m Philippa. I work in government oversight, and I spend my days reading the dense, fine-print documents that quietly run a city.",
+      "That is why these tools start from the source material rather than from somebody’s summary of it. Every figure on this site traces back to a public record, and each tool tells you which one and when it was last checked. Where a number is a signal rather than a finding, it says so plainly, on the page, not in a footnote.",
+      "In Plain Sight is where I share what I build. Not just laws and regulations, but procurement, programs, budgets, and the open data underneath them.",
+    ],
+    how: [
+      "Everything here is built for the District, in the open, and mostly for the joy of it.",
+      "The tools are free. Most need no account, no sign-in and no AI — what you type stays in your browser. There is no analytics and no tracking on this site, which is a deliberate trade: I would rather not know how many people visit than know who they are.",
+      "The code is public and the tools are built to be forked, so another city can stand up its own. And where someone has already made a corner of DC legible, I link to their work instead of rebuilding it.",
+    ],
+  },
 } as const;

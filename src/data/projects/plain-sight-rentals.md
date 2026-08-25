@@ -1,8 +1,9 @@
 ---
 title: "DC Rentals"
-description: "DC Rentals — a renter’s operating system for the DC, Maryland, and Virginia market. Personalized listing sweeps scored on your priorities, an application packet built before you tour, plain-language tenant-rights coaching keyed to your jurisdiction, and outreach drafted in your voice. The rental process favors owners; this evens it up."
+description: "Hunting for a place in the DMV? A full renter’s toolkit — listing sweeps scored on your priorities, an application packet built before you tour, and rights coaching keyed to your jurisdiction. Runs in Claude on a paid plan; the free checklists above cover the same ground."
 tags: ["Renters", "Tenant rights", "Housing", "DMV"]
 url: "/rentals"
 status: "live"
-order: 1
+order: 5
+tier: "use"
 ---

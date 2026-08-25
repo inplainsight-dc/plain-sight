@@ -14,6 +14,19 @@ const today = new Date().toLocaleDateString('en-US', {
   month: 'long', day: 'numeric', year: 'numeric',
 });
 const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming soon' };
+
+// Phase 4 / decision D2 — the index is banded, not a flat list of eleven equal rows.
+// A card's tier is explicit when set, and otherwise falls out of its status, so an
+// older card with no `tier:` still lands somewhere sensible.
+const tierOf = (p) => p.data.tier ?? (p.data.status === 'live' ? 'use' : 'soon');
+const BANDS = [
+  { key: 'use',  label: 'Use one now',   note: 'Put your address in and get an answer about your own block.' },
+  { key: 'read', label: 'Worth reading', note: 'Nothing to fill in — the rules, explained.' },
+  { key: 'soon', label: 'In the works',  note: 'Being built. No link yet.' },
+];
+const banded = BANDS
+  .map((b) => ({ ...b, items: projects.filter((p) => tierOf(p) === b.key) }))
+  .filter((b) => b.items.length > 0);
 ---
 <Base>
   <Header slot="header" />
@@ -31,6 +44,9 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">The fine print of DC government, <span class="ps-highlight">in plain sight</span>.</h1>
           <p class="ips-lead__blurb">{site.blurb}</p>
+          <p class="ips-lead__about">
+            {site.aboutLine} <a href="/about">{site.aboutLinkText} &rarr;</a>
+          </p>
         </div>
         <aside class="ips-lead__rail">
           <p class="ps-record">A public record of<br/>the District</p>
@@ -47,39 +63,24 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
     </div>
   </section>
 
-  <!-- ABOUT -->
-  <section class="ips-sec" id="about">
-    <div class="ps-container">
-      <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 01</span>
-        <h2 class="ips-sec-title">About</h2>
-        <span class="ips-sec-rule"></span>
-      </div>
-      <div class="ips-about">
-        {site.about.map((p) => <p>{p}</p>)}
-      </div>
-    </div>
-  </section>
-
-  <!-- stars divider -->
-  <div class="ips-stardiv" aria-hidden="true">
-    <span class="ps-stars" aria-hidden="true">
-      <svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg>
-    </span>
-  </div>
-
   <!-- PROJECTS (the index / docket) -->
   <section class="ips-sec" id="projects">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 02</span>
+        <span class="ps-record ps-record--red">&sect; 01</span>
         <h2 class="ips-sec-title">The Index</h2>
         <span class="ips-sec-rule"></span>
         <span class="ps-record">{projects.length} entries</span>
       </div>
 
+      {banded.map((band) => (
+      <div class="ips-band">
+        <div class="ips-band__head">
+          <h3 class="ips-band__label ps-record">{band.label}</h3>
+          <p class="ips-band__note">{band.note}</p>
+        </div>
       <ol class="ips-index">
-        {projects.map((p) => {
+        {band.items.map((p) => {
           const isLink = p.data.status === 'live' && !!p.data.url;
           const Row = isLink ? 'a' : 'div';
           return (
@@ -88,7 +89,7 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
                 <span class="ips-entry__no ps-record">{String(p.data.order).padStart(2, '0')}</span>
                 <div class="ips-entry__body">
                   <div class="ips-entry__top">
-                    <h3 class="ips-entry__title">{p.data.title}</h3>
+                    <h4 class="ips-entry__title">{p.data.title}</h4>
                     <span class:list={['ps-badge', `ps-badge--${p.data.status}`]}>{badgeLabel[p.data.status]}</span>
                   </div>
                   <p class="ips-entry__desc">{p.data.description}</p>
@@ -102,6 +103,8 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
           );
         })}
       </ol>
+      </div>
+      ))}
     </div>
   </section>
 
@@ -116,7 +119,7 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
   <section class="ips-sec" id="foundations">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 03</span>
+        <span class="ps-record ps-record--red">&sect; 02</span>
         <h2 class="ips-sec-title">Foundations</h2>
         <span class="ips-sec-rule"></span>
         <span class="ps-record">2 sources</span>
@@ -176,6 +179,8 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
   .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
   .ips-dateline { display: block; margin-bottom: 1.2rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
+  .ips-lead__about { margin-top: 0.9rem; max-width: 52ch; font-size: 1rem; color: var(--ps-ink-soft); }
+  .ips-lead__about a { white-space: nowrap; }
   .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
   .ips-byline { font-family: var(--ps-font-display); font-style: italic; font-size: 1.05rem; margin: 0.5rem 0 1rem; }
   .ips-lead__rail .ps-links { flex-direction: column; align-items: flex-start; }
@@ -193,6 +198,12 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
   /* ---- STARS DIVIDER ---- */
   .ips-stardiv { display: flex; justify-content: center; padding: 0.6rem 0; }
   .ips-stardiv .ps-stars svg { width: 14px; height: 14px; }
+
+  /* ---- INDEX BANDS (D2: use one now / worth reading / in the works) ---- */
+  .ips-band + .ips-band { margin-top: 2.2rem; }
+  .ips-band__head { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .ips-band__label { color: var(--ps-accent-text); font-size: 0.8rem; }
+  .ips-band__note { color: var(--ps-ink-soft); font-size: 0.95rem; margin: 0; }
 
   /* ---- INDEX / DOCKET ---- */
   .ips-index { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); }
