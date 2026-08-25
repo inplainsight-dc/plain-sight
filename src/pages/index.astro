@@ -5,6 +5,7 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
+import Doorstep from '../components/Doorstep.astro';
 
 const projects = (await getCollection('projects')).sort(
   (a, b) => a.data.order - b.data.order
@@ -44,9 +45,6 @@ const banded = BANDS
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">The fine print of DC government, <span class="ps-highlight">in plain sight</span>.</h1>
           <p class="ips-lead__blurb">{site.blurb}</p>
-          <p class="ips-lead__about">
-            {site.aboutLine} <a href="/about">{site.aboutLinkText} &rarr;</a>
-          </p>
         </div>
         <aside class="ips-lead__rail">
           <p class="ps-record">A public record of<br/>the District</p>
@@ -62,6 +60,18 @@ const banded = BANDS
       </div>
     </div>
   </section>
+
+  <!-- DOORSTEP (D1) — the first thing on this page a stranger can actually use. -->
+  <Doorstep />
+
+  <!-- The about line sits BELOW the doorstep, not above it: it is context, and the
+       ruling in D5 is that the usable thing comes first. Reads as a quiet footnote
+       to the address box, which is where a reader who wants it will look. -->
+  <div class="ps-container">
+    <p class="ips-lead__about">
+      {site.aboutLine} <a href="/about">{site.aboutLinkText} &rarr;</a>
+    </p>
+  </div>
 
   <!-- PROJECTS (the index / docket) -->
   <section class="ips-sec" id="projects">
@@ -176,7 +186,10 @@ const banded = BANDS
 
 <style>
   /* ---- LEAD (asymmetric front-page) ---- */
-  .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
+  /* Bottom padding is tight on purpose: the doorstep band now butts straight up against
+     the lead, so the masthead and the first usable control read as one unit rather than
+     as two sections with a gap between them. */
+  .ips-lead { padding-block: clamp(2rem, 6vw, 3.4rem) clamp(1rem, 2vw, 1.4rem); }
   .ips-dateline { display: block; margin-bottom: 1.2rem; }
   .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 46ch; }
   .ips-lead__about { margin-top: 0.9rem; max-width: 52ch; font-size: 1rem; color: var(--ps-ink-soft); }
@@ -228,8 +241,18 @@ const banded = BANDS
   .ips-entry.is-planned .ips-entry__title { color: var(--ps-ink-soft); }
   .ips-entry .ps-tags { margin-top: 0.6rem; }
 
+  .ips-lead__about { margin-block: 1rem 0; }
+
   @media (max-width: 640px) {
-    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1rem; }
+    .ips-lead__rail {
+      border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 0.7rem;
+      display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap;
+    }
+    /* Masthead flourish — it earns its place beside the headline on a wide screen and
+       costs a phone reader two lines between arriving and reaching the address box. */
+    .ips-lead__rail > .ps-record:first-child { display: none; }
+    .ips-lead__rail .ips-byline { margin: 0; }
+    .ips-lead__rail .ps-links { flex-direction: row; margin: 0; }
     .ips-entry__row { grid-template-columns: auto 1fr; }
     .ips-entry__cue { grid-column: 2; margin-top: 0.4rem; }
   }

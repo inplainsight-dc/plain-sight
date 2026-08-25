@@ -404,6 +404,29 @@ const today = new Date().toLocaleDateString('en-US', {
 })();
 </script>
 
+<!--
+  Doorstep hand-off (Phase 4 / D1). If someone typed their address into the box on
+  the home page, carry it here instead of asking twice. It arrives via sessionStorage,
+  never the URL — a home address has no business in a query string, browser history,
+  or a server log. Read once, then cleared, so a later visit to this page is blank.
+
+  Placed AFTER the main script above on purpose: that one binds the #lookup-form
+  submit handler, and dispatching the event before it binds would do nothing.
+-->
+<script is:inline>
+  (() => {
+    const KEY = 'ips-doorstep-address';
+    let addr = null;
+    try { addr = sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); } catch (e) { return; }
+    if (!addr) return;
+    const input = document.getElementById('addr');
+    const form = document.getElementById('lookup-form');
+    if (!input || !form) return;          // markup moved: fall back to an empty box
+    input.value = addr;
+    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  })();
+</script>
+
 <style>
   .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
   .ips-dateline { display: block; margin-bottom: 0.5rem; }

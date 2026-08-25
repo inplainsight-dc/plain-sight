@@ -53,6 +53,39 @@ const today = new Date().toLocaleDateString('en-US', {
   <script is:inline>window.GHOST_GEOCODER_PROXY = "https://0kxgfnzlzk.execute-api.us-east-1.amazonaws.com/";</script>
 
   <script is:inline src={`/ghost-homes/${assets.js}`}></script>
+
+  <!--
+    Doorstep hand-off (Phase 4 / D1). Same contract as /trash: the address arrives in
+    sessionStorage, never the URL, and is cleared on read.
+
+    THIS ONE IS DELIBERATELY DEFENSIVE. Unlike /trash, the #addr and #addrGo controls
+    are not in this file — app.js is a fingerprinted artifact built in the
+    "DC Short-Term Rentals and Housing" node and copied in, and it creates that markup
+    at runtime. So there is nothing to bind to at parse time, and a rebuild over there
+    could rename those ids without anything here noticing. Hence: poll briefly, and if
+    the controls never appear, do nothing at all. The failure mode is a reader typing
+    their address a second time — never a broken page.
+  -->
+  <script is:inline>
+    (() => {
+      const KEY = 'ips-doorstep-address';
+      let addr = null;
+      try { addr = sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); } catch (e) { return; }
+      if (!addr) return;
+      let tries = 0;
+      const tick = setInterval(() => {
+        const input = document.getElementById('addr');
+        const go = document.getElementById('addrGo');
+        if (input && go) {
+          clearInterval(tick);
+          input.value = addr;
+          go.click();
+        } else if (++tries > 30) {         // ~3s, then give up quietly
+          clearInterval(tick);
+        }
+      }, 100);
+    })();
+  </script>
 </Base>
 
 <style>

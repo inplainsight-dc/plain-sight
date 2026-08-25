@@ -1,0 +1,255 @@
+---
+/**
+ * The doorstep — one address box on the home page. Phase 4 / decision D1.
+ *
+ * WHY THIS IS A ROUTER, NOT AN ANALYST
+ * Ghost Homes answers the same question properly by point-in-polygon against the
+ * official 2023 boundaries it ships — 1.9 MB of geojson, `smd.geojson` alone being
+ * 1.0 MB. Loading that on the home page (29 KB today) to answer "which ANC am I in"
+ * would cost the phone-on-bad-signal reader this whole phase exists for. So the
+ * doorstep asks the geocode proxy, which returns ward/ANC/SMD from DC's Master
+ * Address Repository directly, and it only ever uses that to decide WHERE TO SEND
+ * YOU. Ghost Homes keeps its client-side PIP unchanged: that guarantee is right for
+ * a page making claims about specific properties, and overkill for a signpost. If
+ * MAR renames a field, this fails as "we couldn't place that address" — never as a
+ * confidently wrong district.
+ *
+ * PRIVACY
+ * The typed address goes to the proxy (an AWS Lambda that calls MAR server-side and
+ * adds the CORS headers MAR omits). It is not stored, and it is deliberately NOT put
+ * in the URL — the hand-off to /trash and /ghost-homes goes through sessionStorage,
+ * so a home address never lands in a query string, a server log, or browser history.
+ * The page says all of this where someone is about to type, not in a footer.
+ */
+import { site } from '../config/site';
+
+// Same endpoint /ghost-homes already uses. CORS is allow-listed to this origin and
+// the API throttles; see infra/geocode-proxy/README.md.
+const GEOCODER = 'https://0kxgfnzlzk.execute-api.us-east-1.amazonaws.com/';
+// The missed-collection report goes to one commissioner, so that half of DC Trash
+// Tracker is pilot-limited. The pickup-day lookup is citywide — it queries DPW's
+// own route layer — so most of what the doorstep offers works for every address.
+const TRASH_REPORT_SMD = '1E03';
+---
+<section class="ips-door" id="doorstep" aria-labelledby="doorstep-h">
+  <div class="ps-container">
+    <div class="ips-door__head">
+      <span class="ps-record ps-record--red">Start here</span>
+      <h2 class="ips-door__h" id="doorstep-h">Where in {site.jurisdiction} do you live?</h2>
+      <p class="ips-door__lede">One address, and you&rsquo;ll get your ward, ANC and single-member
+      district &mdash; plus the tools that can answer something about your own block.</p>
+    </div>
+
+    <form class="ips-door__form" id="doorForm" novalidate>
+      <label class="ps-record ips-door__label" for="doorAddr">Your address</label>
+      <div class="ips-door__row">
+        <input id="doorAddr" name="address" type="text" inputmode="text"
+               autocomplete="street-address" placeholder="e.g. 700 A St NE"
+               aria-describedby="doorPrivacy" />
+        <button class="ips-door__btn" type="submit" id="doorGo">Find</button>
+      </div>
+    </form>
+
+    <p class="ips-door__privacy ps-record" id="doorPrivacy">
+      Your address goes to DC&rsquo;s own address lookup to find your district. It is not stored,
+      and it is never put in the web address, so it stays out of your history and anyone&rsquo;s logs.
+    </p>
+
+    <div class="ips-door__result" id="doorResult" role="status" aria-live="polite" tabindex="-1"></div>
+
+    <noscript>
+      <p class="ips-door__noscript">This lookup needs JavaScript. You can go straight to
+      <a href="/ghost-homes">DC Ghost Homes</a> or <a href="/trash">DC Trash Tracker</a> and
+      enter your address there instead.</p>
+    </noscript>
+  </div>
+</section>
+
+<script is:inline define:vars={{ GEOCODER, TRASH_REPORT_SMD }}>
+  (() => {
+    const form = document.getElementById('doorForm');
+    const input = document.getElementById('doorAddr');
+    const btn = document.getElementById('doorGo');
+    const out = document.getElementById('doorResult');
+    if (!form || !input || !btn || !out) return;
+
+    const esc = (s) =>
+      String(s).replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+    // Hand the address to the destination tool WITHOUT putting it in the URL.
+    // sessionStorage dies with the tab and never reaches a server.
+    const HANDOFF = 'ips-doorstep-address';
+    const stash = (addr) => {
+      try { sessionStorage.setItem(HANDOFF, addr); } catch (e) { /* private mode: the tool just asks again */ }
+    };
+
+    const say = (html, isError) => {
+      out.className = 'ips-door__result' + (isError ? ' is-error' : ' is-answer');
+      out.innerHTML = html;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (!q) { say('<p>Type a DC street address to get started.</p>', true); input.focus(); return; }
+
+      btn.disabled = true;
+      const label = btn.textContent;
+      btn.textContent = 'Looking…';
+      say('<p>Looking up that address…</p>', false);
+
+      try {
+        const r = await fetch(GEOCODER + '?q=' + encodeURIComponent(q));
+        if (!r.ok) throw new Error('lookup failed');
+        const d = await r.json();
+
+        if (!d || d.match === null || !d.ward) {
+          say(
+            '<p><strong>We couldn&rsquo;t place that address.</strong> DC addresses need a quadrant &mdash; ' +
+            'try adding NW, NE, SW or SE. You can also go straight to ' +
+            '<a href="/ghost-homes">DC Ghost Homes</a> or <a href="/trash">DC Trash Tracker</a> ' +
+            'and search there.</p>',
+            true
+          );
+          return;
+        }
+
+        stash(d.address || q);
+        const smd = String(d.smd || '').replace(/^SMD\s*/i, '');
+        const reportable = smd === TRASH_REPORT_SMD;
+
+        say(
+          '<p class="ips-door__matched"><span class="ps-record">Matched</span> ' + esc(d.address || q) + '</p>' +
+          '<ul class="ips-door__districts">' +
+            '<li><span class="ps-record">Ward</span> ' + esc(String(d.ward).replace(/^Ward\s*/i, '')) + '</li>' +
+            '<li><span class="ps-record">ANC</span> ' + esc(String(d.anc || '—').replace(/^ANC\s*/i, '')) + '</li>' +
+            '<li><span class="ps-record">Single-member district</span> ' + esc(smd || '—') + '</li>' +
+          '</ul>' +
+          '<p class="ips-door__next ps-record">What you can look at now</p>' +
+          '<ul class="ips-door__routes">' +
+            '<li><a href="/ghost-homes">How many homes near you are full-time short-term rentals &rarr;</a></li>' +
+            '<li><a href="/trash">When your trash and recycling get picked up &rarr;</a></li>' +
+          '</ul>' +
+          (reportable
+            ? '<p class="ips-door__note">You&rsquo;re in the single-member district where you can also ' +
+              '<a href="/trash#report">report a missed collection</a> to your commissioner.</p>'
+            : '<p class="ips-door__note">Reporting a missed collection currently reaches a commissioner in ' +
+              'SMD ' + TRASH_REPORT_SMD + ' only &mdash; you&rsquo;re in ' + esc(smd || 'another district') + '. ' +
+              'The pickup-day lookup works citywide, and the reporting side is built to grow.</p>'),
+          false
+        );
+        out.focus();
+      } catch (err) {
+        say(
+          '<p><strong>The address lookup isn&rsquo;t answering right now.</strong> ' +
+          'You can still go to <a href="/ghost-homes">DC Ghost Homes</a> or ' +
+          '<a href="/trash">DC Trash Tracker</a> and search from there.</p>',
+          true
+        );
+      } finally {
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    });
+  })();
+</script>
+
+<!--
+  GLOBAL on purpose. Half of this component's markup (everything inside #doorResult)
+  is injected by the script above, so it never carries Astro's scoped-style data
+  attribute — a scoped block would style the shell and silently skip the answer.
+  Everything below is namespaced under .ips-door instead.
+-->
+<style is:global>
+  .ips-door {
+    padding-block: clamp(1.6rem, 4vw, 2.4rem);
+    border-block: 1.5px solid var(--ps-ink);
+    background: var(--ps-surface-2);
+  }
+  .ips-door__head { max-width: 60ch; }
+  .ips-door__h {
+    font-family: var(--ps-font-display);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    line-height: 1.1;
+    margin: 0.35rem 0 0.5rem;
+  }
+  .ips-door__lede { color: var(--ps-ink-soft); font-size: 1.05rem; margin: 0; }
+
+  .ips-door__form { margin-top: 1.1rem; }
+  .ips-door__label { display: block; margin-bottom: 0.35rem; }
+  .ips-door__row { display: flex; gap: 0.6rem; flex-wrap: wrap; max-width: 34rem; }
+  .ips-door__row input {
+    flex: 1 1 16rem;
+    min-width: 0;
+    padding: 0.7rem 0.8rem;
+    font: inherit;
+    color: var(--ps-ink);
+    background: var(--ps-surface);
+    border: 1.5px solid var(--ps-ink);
+    border-radius: var(--ps-radius);
+  }
+  .ips-door__btn {
+    padding: 0.7rem 1.4rem;
+    font-family: var(--ps-font-record);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ps-accent-fill-ink);
+    background: var(--ps-accent-fill);
+    border: 1.5px solid var(--ps-accent-fill);
+    border-radius: var(--ps-radius);
+    cursor: pointer;
+  }
+  .ips-door__btn:hover { background: var(--ps-accent-fill-hover); border-color: var(--ps-accent-fill-hover); }
+  .ips-door__btn[disabled] { opacity: 0.65; cursor: progress; }
+
+  .ips-door__privacy { margin-top: 0.6rem; max-width: 60ch; color: var(--ps-ink-soft); line-height: 1.6; text-transform: none; letter-spacing: 0; }
+
+  /* The live region is empty until it has something to say, so it must not leave a gap. */
+  .ips-door__result:empty { display: none; }
+  .ips-door__result {
+    margin-top: 1.1rem;
+    padding: 1rem 1.1rem;
+    background: var(--ps-surface);
+    border: 1px solid var(--ps-line);
+    border-left: 4px solid var(--ps-accent);
+    border-radius: var(--ps-radius);
+    max-width: 46rem;
+  }
+  .ips-door__result.is-error { border-left-color: var(--ps-caution); }
+  .ips-door__result p { margin: 0 0 0.6rem; }
+  .ips-door__result p:last-child { margin-bottom: 0; }
+  .ips-door__matched { font-family: var(--ps-font-display); font-size: 1.15rem; }
+  .ips-door__matched .ps-record { color: var(--ps-ink-soft); margin-right: 0.5rem; }
+
+  .ips-door__districts {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.6rem;
+    list-style: none; margin: 0 0 0.9rem; padding: 0.7rem 0;
+    border-block: 1px solid var(--ps-line);
+  }
+  .ips-door__districts li { font-size: 1.05rem; }
+  .ips-door__districts .ps-record { display: block; color: var(--ps-ink-soft); }
+
+  .ips-door__next { color: var(--ps-accent-text); margin-bottom: 0.4rem; }
+  .ips-door__routes { list-style: none; margin: 0 0 0.8rem; padding: 0; }
+  .ips-door__routes li + li { margin-top: 0.35rem; }
+  .ips-door__routes a { font-size: 1.05rem; }
+  .ips-door__note { color: var(--ps-ink-soft); font-size: 0.98rem; }
+  .ips-door__noscript { margin-top: 1rem; color: var(--ps-ink-soft); }
+
+  @media (max-width: 640px) {
+    /* On a 375x812 phone the address box landed 18px below the fold — close enough
+       that the reader sees the question and not the thing that answers it. These trims
+       buy that back. Measured, not guessed: see ROADMAP 4.3. */
+    .ips-door { padding-block: 1.1rem 1.4rem; }
+    .ips-door__h { font-size: 1.45rem; margin-bottom: 0.35rem; }
+    .ips-door__lede { font-size: 0.98rem; }
+    .ips-door__form { margin-top: 0.8rem; }
+  }
+
+  @media (max-width: 480px) {
+    .ips-door__row input, .ips-door__btn { flex: 1 1 100%; }
+  }
+</style>

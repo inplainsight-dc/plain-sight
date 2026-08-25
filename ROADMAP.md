@@ -83,7 +83,7 @@ ruled on 2026-08-25.
 |---|------|--------|-----------|-----------------|
 | 4.1 | **Copy diet + index re-rank** (D2, D3, D4, D6) — three tiers ("use one now" / "worth reading" / "in the works"), card descriptions rewritten as the question the reader arrived with, and `DC Rentals` demoted from 01 so the site stops leading with the one artifact that needs a paid Claude plan | ✅ done 2026-08-25 | — | `src/data/projects/*.md` re-ordered and rewritten; the free checklists sit above the plugin; every live card's description is a question a stranger would recognize as theirs. No infra change. **Measured:** the index now bands 5 / 1 / 5, `DC Rentals` sits at 05 under the free checklists at 02, and its description says up front that it needs a paid plan |
 | 4.2 | **About split** (D5) — one line on the home page, full context on a standalone `/about` | ✅ done 2026-08-25 | — | `/about` exists and **leads with why the tools exist, then who built them** — credentials as the answer to "why trust this", not as an introduction. The home page keeps one line + a link. **Measured on the home page: screens-to-first-card 1.75 → 1.13 on a 375×812 phone, 1.78 → 1.07 at 1280×800; 885 → 780 words.** Contrast verified in both themes (band label 5.51 light / 5.95 dark, band note 6.46 / 7.64 — all above 4.5:1). Fixed in passing: the header's `About` and `Projects` links were bare `#about` / `#projects` anchors, so on every page except the home page they were **dead** — now `/about` and `/#projects`. ⚠ Do not overcorrect: "I work in government oversight and read this material professionally" is the reason a stranger should believe the numbers, and burying it is the failure mode of this task, not its goal |
-| 4.3 | **The doorstep** (D1) — one address box on the home page. Type an address, the page becomes yours: ward, ANC, SMD, ghost homes on your block, trash day | ⬜ | 4.1 | An address on the home page routes to a real answer in one interaction. **Architecture decision: the doorstep is a router, not an analyst — it does NOT do point-in-polygon.** `dist/ghost-homes/` ships 1.9 MB of geojson (`smd.geojson` alone is 1.0 MB) against a 29 KB home page; importing that logic would take the front door to ~2 MB on the phone-at-a-community-board audience this phase exists for. The existing geocode proxy already returns ward/ANC/SMD from MAR directly (field-verified: `Ward 2 · ANC 2C · SMD 2C03`). Ghost Homes keeps client-side PIP **unchanged** — that guarantee is right for a page making claims about specific properties; the front door only needs to know where to send you, and a MAR field change there fails as "we couldn't place your address", not as a wrong ANC. Neighborhood is dropped from v1 (`cluster` comes back null and `clusters.geojson` is another 162 KB); Ghost Homes gives that detail after the click. Trash covers ANC 1E03 only, so most addresses return "not here yet" — framed as the outreach hook, not an apology |
+| 4.3 | **The doorstep** (D1) — one address box on the home page. Type an address, the page becomes yours: ward, ANC, SMD, ghost homes on your block, trash day | ✅ done 2026-08-25 | — | An address on the home page routes to a real answer in one interaction. **Architecture decision: the doorstep is a router, not an analyst — it does NOT do point-in-polygon.** `dist/ghost-homes/` ships 1.9 MB of geojson (`smd.geojson` alone is 1.0 MB) against a 29 KB home page; importing that logic would take the front door to ~2 MB on the phone-at-a-community-board audience this phase exists for. The existing geocode proxy already returns ward/ANC/SMD from MAR directly (field-verified: `Ward 2 · ANC 2C · SMD 2C03`). Ghost Homes keeps client-side PIP **unchanged** — that guarantee is right for a page making claims about specific properties; the front door only needs to know where to send you, and a MAR field change there fails as "we couldn't place your address", not as a wrong ANC. Neighborhood is dropped from v1 (`cluster` comes back null and `clusters.geojson` is another 162 KB); Ghost Homes gives that detail after the click. **Correction, made while building it:** this row previously said Trash covers ANC 1E03 only, so most addresses would return "not here yet". Wrong — `/trash`'s **pickup-day lookup is citywide**, querying DPW's own route layer from the browser. Only *reporting a missed collection* is pilot-limited, because that reaches one commissioner (SMD 1E03, not ANC 1E03). So the doorstep hands every DC address **two** working answers, and the coverage note applies to the reporting half alone |
 | 4.4 | **Visual interest without motion** (D9) — the home page reads like a homework assignment because it is eleven identical rows in one column at one weight | ⬜ | 4.3 (ships with it) | **The visual interest is the data, not decoration** — a display-size pull-stat, a static DC ward map that is also the thing you click, a featured card against smaller ones, and the AA-verified category tokens (`--ps-accent-text` / `--ps-caution` / `--ps-good` / `--ps-info`) coloring the tool families so the index scans as a chart. No animation: it would fight the AA baseline and buy nothing. The newspaper-of-record look is an asset and is not being touched |
 | 4.5 | **AA re-verify the hub** — 4.3 puts the first interactive control on the home page | ⬜ | 4.3, 4.4 | Labeled input, visible focus ring, `aria-live` on the results region, skip link still lands. Both themes, 0 contrast failures. The hub passed the 2026-08-17 sweep partly *because* it had no controls; that exemption ends here. Non-negotiable per the account-level ship-gate rule |
 | 4.6 | **Feedback button + endpoint** (D11, D12) | ⬜ | — (independent of 4.1–4.5) | Footer button — **not** a floating overlay, which fights both the aesthetic and the focus baseline. Panel carries: auto-filled page path, a category enum, a capped message, and an **optional** email labeled "only if you want an answer". Above submit, the line that keeps the site's trust posture honest: *"This is the one form on the site that sends something to me. It goes to a private file only I read. Everything else you type on In Plain Sight stays in your browser."* Backend `infra/feedback-lambda.py`, cloned from `trash-report-lambda.py`'s shape (honeypot, field caps, enum allowlist, optimistic-locked S3 writes) behind an API Gateway HTTP API — **not** a Function URL, which 403s on this account. **One deliberate divergence from the trash Lambda: no public GET.** Trash reports publish block-level because neighbors benefit; feedback is private, or it becomes a spam-as-vandalism surface that exposes people's words. Write-only into `private/feedback.json` in the existing bucket. No IP, no user-agent, no fingerprint stored |
@@ -91,7 +91,55 @@ ruled on 2026-08-25.
 | 4.8 | **Surfacing without a new ritual** (D13) | ⬜ | 4.7 | **Threshold-triggered, not calendar-triggered** — silent when the inbox is empty, so there is no weekly obligation that is usually a no-op. The count rides the session-start orientation that already happens in this repo ("3 pieces of feedback waiting") rather than becoming a cadence to remember. Honors the margin guard: absorb the toil, don't add a system |
 | 4.9 | **Ship gate** — the endpoint accepts public text | ⬜ | 4.5, 4.6 | Redteam pass before it is live: spam flood (throttle + honeypot + caps), storage-cost blowup, someone pasting PII into the box (cannot be prevented — warn at the point of typing and never publish), and promise-consistency with the site-wide "nothing you type leaves your browser". Private-only storage defuses abusive content, since none of it ever renders. Then AA re-verify, then deploy |
 
+### What 4.3 actually shipped, and what it measured
+
+`src/components/Doorstep.astro`, above the index. One call to the geocode proxy, then routing —
+no point-in-polygon, no geojson, so the home page stays light.
+
+**The hand-off is sessionStorage, never the URL.** A home address has no business in a query
+string, browser history, or a server log, so the address is stashed, read once by the destination
+page, and cleared. `/trash` picks it up and runs its lookup on arrival; `/ghost-homes` does too,
+but **defensively** — its `#addr` / `#addrGo` controls are built at runtime by `app.js`, a
+fingerprinted artifact from the *DC Short-Term Rentals and Housing* node, so that hand-off polls
+for ~3s and then gives up silently. The failure mode is a reader typing their address twice, never
+a broken page. **If that node renames those ids, nothing here will notice** — the coupling is
+documented in the page, and this is the line to check first if the hand-off ever stops working.
+
+| Measured on the home page | Before Phase 4 | Now |
+|---|---|---|
+| Screens to first *usable control*, 375×812 | ∞ (there wasn't one) | **0.93 — fully above the fold** |
+| Screens to first usable control, 1280×800 | ∞ | 0.99 (top edge visible) |
+| Screens to first card, 375×812 | 1.75 | 1.52 |
+
+Verified end-to-end against real proxy payloads: a normal address, an in-pilot address, and a
+no-match. `/trash` returned "Tuesday/Friday, recycling Tuesday, DPW route 102_2" from one click;
+`/ghost-homes` returned "about 11 whole homes, 27% of listings in your single-member district" and
+independently agreed with the proxy on ANC 1A · SMD 1A10 · Ward 1.
+
+**A11y (part of 4.5, done here rather than deferred):** labelled input, `role="status"` +
+`aria-live="polite"` on the answer, focus moved to the answer on success, a `<noscript>` route to
+both tools, and errors announced in the same live region. Contrast passes in both themes.
+**One real fix came out of it:** the submit button was white on `--ps-accent`, which is **4.52:1** —
+nominally AA and far too thin a margin for a primary action in small uppercase mono. Added
+`--ps-accent-fill` / `-ink` / `-hover` to `global.css` (7.08:1 light, 5.31:1 dark), the same move
+that produced `--ps-accent-text-mark`. **The feedback button in 4.6 should use these tokens too.**
+
 ### Open questions this phase has to answer
+
+- **The doorstep cannot be tested from localhost.** The geocode proxy's CORS allow-list is the two
+  production origins, so `astro dev` only ever exercises the error path — which is itself worth
+  knowing, since that path is now verified to be graceful. The happy path was proven by replaying
+  real captured proxy payloads plus a `curl` against the live endpoint. **Confirm it live on the
+  production origin as a 4.9 gate step**, and don't loosen the allow-list to make dev easier.
+- **`site.blurb` is the biggest remaining block above the address box** (six lines on a phone) and is
+  the one piece of copy the diet has not touched, because it is brand positioning rather than card
+  copy. Trimming its second sentence would put the box fully above the fold on a 1280×800 laptop as
+  well. **Pippa's call, not a build decision.**
+- **The masthead rail sits above the doorstep on a phone.** It was compacted from 147px to 55px
+  (the "A public record of the District" flourish is hidden below 640px, the byline and GitHub link
+  go inline) rather than reordered below the doorstep, because reordering means restructuring the
+  lead grid and moving the byline under the tool. If the box should be even higher, that is the
+  next lever.
 
 - **⚠ There is no working email on the domain.** `site.ts` has `email: ''` with a comment: the domain has no MX records, so `hello@inplainsight-dc.org` bounces, and it was removed 2026-08-03 so the site would not advertise a dead address. **4.6 offers an optional email "if you want an answer" — and there is currently nothing to answer *from*.** Either stand up mail routing on the domain first, or drop the reply affordance and say plainly that feedback is one-way. Replying from a personal address exposes it and is not an option. Decide before 4.6 ships, not after.
 - **The geocode proxy's ceiling was sized for Ghost Homes traffic**, not for the home page. It throttles at 5 req/s sustained / burst 10, behind a Lambda concurrency cap of **10** on this account's unproven-account posture. Moving it to the highest-traffic page on the site and *then* running outreach is how that ceiling gets found the hard way. Raise it deliberately before 3.4.

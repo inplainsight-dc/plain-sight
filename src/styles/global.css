@@ -24,6 +24,14 @@
   --ps-highlight:     #E81B39;  /* solid red: badges, fills              */
   --ps-highlight-ink: #ffffff;  /* text sitting on a solid red fill      */
   --ps-mark:          rgba(232, 27, 57, 0.20); /* translucent red swipe behind text */
+  /* Red used as a BUTTON FILL that carries text. --ps-accent is a fill colour for flags and
+     large display, and white on it lands at 4.52:1 — technically AA and far too thin a margin
+     for a primary action in small uppercase mono. This is the darker step, so white sits on it
+     at 7.1:1. Added 2026-08-25 for the Phase 4 doorstep; the same pattern as --ps-accent-text-mark,
+     which exists because a new background appeared that the token matrix did not cover. */
+  --ps-accent-fill:     #B0122B;
+  --ps-accent-fill-ink: #ffffff;
+  --ps-accent-fill-hover: #8E0F22;
 
   /* --- Type ------------------------------------------------------------ */
   /* Display ships in Newsreader (legal-record serif, no license). Redaction is a parked upgrade. */
@@ -64,6 +72,11 @@
   --ps-highlight:     #FF4A60;
   --ps-highlight-ink: #141a26;
   --ps-mark:          rgba(255, 74, 96, 0.22);
+  /* On dark the bright accent already carries the dark ink at 5.31:1, so the fill is the
+     accent itself and the ink flips. */
+  --ps-accent-fill:     #FF4A60;
+  --ps-accent-fill-ink: #141a26;
+  --ps-accent-fill-hover: #FF7D8B;
   --ps-shadow:    none;
   --ps-shadow-lg: none;
 }
