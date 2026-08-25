@@ -51,6 +51,9 @@ const esc = (s) =>
 // Calibrated against a known-clipped render: the Ghost Homes sub filled 1110px (x=90 to the
 // right edge) with ~68 of its characters at 36px → 1110 / (68 × 36) ≈ 0.4534.
 const SANS_RATIO = 0.455;
+// Same calibration for the serif headline: a known-good line ran ~800px with 20 characters
+// at 74px → 800 / (20 × 74) ≈ 0.54. Headlines are hand-broken, so this only warns.
+const SERIF_RATIO = 0.54;
 function fitLine(text, maxWidth, startSize, minSize = 26) {
   let size = startSize;
   while (size > minSize && text.length * size * SANS_RATIO > maxWidth) size -= 1;
@@ -78,6 +81,16 @@ function svg({ eyebrow, lines, sub, path }, name = '') {
   const headSize = lines.length > 1 ? 74 : 88;
   const headTop = lines.length > 1 ? 250 : 285;
   const headLine = headSize * 1.12;
+  const HEAD_MAX = W - X * 2;
+  for (const t of lines) {
+    const est = Math.round(t.length * headSize * SERIF_RATIO);
+    if (est > HEAD_MAX) {
+      console.warn(
+        `  ! ${name || path}: headline line "${t}" is ~${est}px wide, over the ${HEAD_MAX}px measure` +
+          ' — it will be CLIPPED. Break it differently or shorten it.',
+      );
+    }
+  }
   const headline = lines
     .map((t, i) => `<text x="${X}" y="${headTop + i * headLine}" font-family="${SERIF}" font-size="${headSize}" font-weight="700" fill="${C.ink}">${esc(t)}</text>`)
     .join('\n  ');
@@ -115,7 +128,11 @@ function svg({ eyebrow, lines, sub, path }, name = '') {
 const CARDS = {
   'appointments': {
     eyebrow: 'IN PLAIN SIGHT · DC APPOINTMENTS WATCH',
-    lines: ['Whose seat is empty,', 'and for how long.'],
+    // Wave 1, F-R1 (2026-08-25): was 'Whose seat is empty, and for how long.' — "whose" made a
+    // person the subject of the sentence in the one artifact that travels with no page context,
+    // which is the opposite of what every line on the page itself does. The subject is the
+    // governance element: the seat, on the board.
+    lines: ['Empty seats on DC boards,', 'and for how long.'],
     sub: 'DC board seats past their term, closing on the cap, or sitting empty.',
     path: '/appointments/seats',
   },

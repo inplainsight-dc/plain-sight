@@ -35,6 +35,26 @@ const gauge = [...D.over_cap, ...D.approaching_cap]
 // separately so the page never implies four is five.
 const overCapOccupied = D.over_cap.filter((s) => s.status !== 'Vacant / unoccupied seat');
 
+// Wave 1, F-N2. A body may hold several seats with one title, and MOTA publishes nothing
+// that tells them apart — so two rows can be identical in every column and still be two
+// real seats. Left undisambiguated, the honest duplicate reads as a printing error, and
+// hands a hostile reader a free line about inflated counts. Numbered only where it is
+// needed: a unique seat title gets no ordinal.
+// Computed ONCE per row into the row itself. A stateful helper called from the template
+// looked right and was not: the markup called it twice per row (once to test, once to
+// render) and printed "seat 4 of 2". Pure map, no counter to double-advance.
+const seatKey = (s) => `${s.body}\u0000${s.seat}`;
+const seatTitleCounts = gauge.reduce((acc, s) => {
+  acc[seatKey(s)] = (acc[seatKey(s)] ?? 0) + 1;
+  return acc;
+}, {});
+const seatSeen = {};
+const gaugeRows = gauge.map((s) => {
+  const k = seatKey(s);
+  seatSeen[k] = (seatSeen[k] ?? 0) + 1;
+  return { ...s, ordinal: seatTitleCounts[k] > 1 ? `seat ${seatSeen[k]} of ${seatTitleCounts[k]}` : null };
+});
+
 // --- Strip chart: one row per status, dots placed by days past term end ------
 // Duplicates are stacked (tier) so no seat hides behind another.
 const STATUS_ROWS = [
@@ -115,7 +135,7 @@ const pageDesc =
           <div class="aw-chips">
             <span class="aw-chip"><b>{n(D.totals.bodies)}</b> bodies</span>
             <span class="aw-chip"><b>{n(D.totals.public_member_seats)}</b> public-member seats</span>
-            <span class="aw-chip"><b>{n(D.totals.vacancies)}</b> of them empty</span>
+            <a class="aw-chip aw-chip--link" href="#source-conflict"><b>{n(D.totals.vacancies)}</b> of them empty</a>
             <span class="aw-chip">Free &middot; no login</span>
           </div>
           <p class="aw-independence">
@@ -132,18 +152,34 @@ const pageDesc =
             dashboard &mdash; and shows the clocks that register implies.
           </p>
           <p class="aw-rail__body">
-            <b>Seats, not people.</b> No individual is named anywhere on this page. It does name
-            seats &mdash; and where a body has only one seat of a kind, a determined reader could
-            find out from other public records who holds it. So nothing here is a statement about
-            any person, and it should not be made into one.
+            <b>Seats, not people.</b> No individual is named anywhere on this page. But most rows
+            in the clock table below name a seat that <b>only one person can hold</b> &mdash; where
+            a body has a single seat with that title, the row identifies its holder to anyone
+            holding that body&rsquo;s published roster. That is the ordinary case here, not an edge
+            case. So nothing here is a statement about any person, it cannot be made into one
+            honestly, and anyone who does so is making the claim in their own voice, not this
+            page&rsquo;s.
           </p>
         </aside>
       </div>
 
       <!-- Freshness. Rendered server-side for the no-JS case, upgraded on load. -->
       <p id="freshness" class="aw-fresh" role="status">
-        Figures from the capture taken <b>{capturedLong}</b>. Every duration is measured against
-        the capture date, not today&rsquo;s date.
+        Figures from the capture taken <b>{capturedLong}</b> &mdash; a photograph of the register
+        on that day, not a live readout. Every duration is measured against the capture date, not
+        today&rsquo;s date, and nothing here has changed since. <b>Check that date before quoting
+        anything on this page:</b> if it is old, these figures are old with it.
+      </p>
+
+      <!-- Cadence, by Pippa's call on 2026-08-25 (Wave 1, F-N3). Deliberately outside #freshness,
+           which the inline script rewrites wholesale — a line inside it would vanish the moment
+           JavaScript ran. Phrased as what the capture DOES, not what the page promises: the job is
+           daily and it has already missed five consecutive days once, so a sentence that turns
+           into a lie when a run fails would be worse than no sentence. -->
+      <p class="aw-cadence">
+        The register is captured <b>daily</b>, and this page carries the most recent capture at the
+        time it was built &mdash; not a live feed. A date older than a day or two means a capture or
+        a rebuild was missed, which is why the date is stated rather than assumed.
       </p>
     </div>
   </section>
@@ -197,6 +233,16 @@ const pageDesc =
         </div>
       </div>
 
+      <p class="aw-caveat aw-caveat--person" role="note">
+        <b>This measures a seat, not a person.</b> Every figure above is a date arithmetic on the
+        District&rsquo;s own register: a term end that has passed, a cap date that has arrived, a
+        seat with nobody in it. None of it says anything about the conduct, the standing, or the
+        fitness of anyone holding a seat, and none of it says anyone is serving improperly or
+        unlawfully &mdash; under the District&rsquo;s own scheme a member may keep serving after a
+        term ends. Where a seat is unfilled or a term has run on, the party that has not acted is
+        whoever appoints or confirms.
+      </p>
+
       <p class="aw-caveat" role="note">
         <b>One caveat carries all three figures.</b> Everything here rests on the term-end date
         MOTA publishes for each seat. If that field is kept current, a seat past its term end is
@@ -247,11 +293,14 @@ const pageDesc =
             </tr>
           </thead>
           <tbody>
-            {gauge.map((s) => (
+            {gaugeRows.map((s) => (
               <tr class={s.days_past_term > CAP ? 'aw-row--over' : 'aw-row--near'}>
                 <th scope="row">
                   <span class="aw-body">{s.body}</span>
-                  <span class="aw-seat">{s.seat}</span>
+                  <span class="aw-seat">
+                    {s.seat}
+                    {s.ordinal && <span class="aw-seat__ord"> &middot; {s.ordinal}</span>}
+                  </span>
                   <span class="aw-cluster">{s.cluster}</span>
                 </th>
                 <td class="aw-num">{s.route}</td>
@@ -284,6 +333,12 @@ const pageDesc =
         serving after their term ends, so an empty seat past the cap is not a hold-over problem
         &mdash; it is a seat that has had nobody in it for longer than the law allows anyone to
         stay. Different problem, same date.
+      </p>
+
+      <p class="aw-foot">
+        <b>If one of these rows is your seat and the register&rsquo;s date is wrong,</b> the
+        correction route is <a href="#limits">in &sect; 05</a> &mdash; say which body and seat, and
+        what the register should say instead.
       </p>
 
       <!-- The distribution: all Council-confirmed seats past term, by register status -->
@@ -813,6 +868,14 @@ const pageDesc =
 
   .aw-caveat { margin-top: 1.6rem; padding: 1rem 1.2rem; border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-caution); border-radius: var(--ps-radius); background: var(--ps-surface); font-size: 1rem; color: var(--ps-ink-soft); max-width: 82ch; }
   .aw-caveat b { color: var(--ps-ink); }
+  /* Wave 1, F-N1: the exculpation travels with a screenshot of the figures only if it sits
+     beside them. Same box as the term-end caveat, accented so it does not read as a footnote. */
+  .aw-caveat--person { border-left-color: var(--ps-accent); }
+  .aw-cadence { margin-top: 0.5rem; font-size: 0.9rem; color: var(--ps-ink-soft); max-width: 74ch; }
+  .aw-cadence b { color: var(--ps-ink); }
+  .aw-seat__ord { color: var(--ps-ink-soft); font-variant-numeric: tabular-nums; }
+  .aw-chip--link { text-decoration: none; }
+  .aw-chip--link:hover, .aw-chip--link:focus-visible { border-color: var(--ps-accent); }
 
   /* --- Section prose ------------------------------------------------------ */
   .aw-intro { max-width: 74ch; color: var(--ps-ink-soft); font-size: 1.04rem; margin-bottom: 1.2rem; }
