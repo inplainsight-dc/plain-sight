@@ -114,6 +114,45 @@ away, and no way to know it had happened. The Lambda already wrote conditionally
 **Fixed:** `--apply` now reads with an ETag and writes with `--if-match`, retrying up to five times
 and re-applying verdicts each round. Verified against a simulated mid-review submission.
 
+## F9 — The intake can receive claims about a named living person · **MEDIUM–HIGH** · **found after ship, 2026-08-25, by the DC Appointments Watch session**
+
+Raised by the session working `DC Appointments Watch`, and it is a gap in this redteam rather than
+in the code. F6 considered third-party *reply addresses*. **Nobody considered third-party
+*allegations*.**
+
+The feedback control is in the shared footer, so it is on **all 15 pages** — verified after a clean
+rebuild, including `/appointments/seats/`, which is built but held from deploy. Once that page
+ships, the site will name real, living people in board and commission seats, and the button beneath
+it will accept free text from anyone. "X should not be in that seat", "Y does not live at the
+address they claim", or worse, arrives in `private/feedback.json` and is read by one person.
+
+Three distinct problems, none of which the current design addresses:
+
+1. **The claim is unverifiable and about a third party**, who has no idea it was made and no way to
+   answer it. Nothing is published, which contains the harm — but it does not remove it.
+2. **Nothing tells the sender what will happen to it.** The panel copy explains data handling
+   honestly; it says nothing about the difference between "this page is wrong" and "this person is
+   unfit", and those need different handling.
+3. **It collides with decision D3.** § 05 of the seat clock states the correction route is GitHub
+   ("GitHub now, email when ready"). The footer button is a **third route the page does not
+   acknowledge**, which arrived because a site-wide component shipped, not because anyone chose it
+   for that page. D3 was a decision *about exactly this*.
+
+**Proposed fixes — Pippa's call, and one of them is not mine to make:**
+
+- **`p6-t1`, the person-naming redteam in the Appointments node, must now cover the intake channel
+  and not only the page.** That is the substantive change, and it belongs to that project.
+- Consider a per-page opt-out for the footer control, so a page that names people can decline it
+  rather than inherit it. The component already reads `site.feedbackEndpoint`; a page-level flag is
+  small.
+- If it stays, the panel needs a line for pages that name people: what happens to a report about a
+  person, and that it is not an investigation.
+- Reconcile with D3 either way — a page should not state one correction route while carrying another.
+
+**Recorded, not acted on.** Both halves are decisions rather than code, and the second belongs to
+another project's gate. Nothing about the shipped state is unsafe today: `/appointments/seats/`
+returns 403 in production, so the intake exists on 14 live pages that name **no individuals**.
+
 ---
 
 ## Ship checklist for 4.9 — ✅ **all done, shipped 2026-08-25**
