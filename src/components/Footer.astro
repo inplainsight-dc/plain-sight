@@ -1,7 +1,18 @@
 ---
 import { site } from '../config/site';
+import Feedback from './Feedback.astro';
 const year = new Date().getFullYear();
 ---
+<!-- Feedback sits ABOVE the footer rule, on every page, because the footer is where a
+     reader who has finished with a page already is.
+
+     THE GUARD IS HERE, and it has to be. Astro emits a component's `is:inline` script and
+     `is:global` style wherever they appear in its template, whatever the markup around them
+     is conditional on — so a conditional inside Feedback.astro still shipped a dead script
+     to all fifteen pages. Not rendering the component at all is what actually keeps it off
+     a site that otherwise ships almost no JavaScript. (Roadmap 4.6.) -->
+{site.feedbackEndpoint && <Feedback />}
+
 <footer class="ps-footer">
   <div class="ps-container ps-footer__inner">
     <p class="ps-footer__mantra">{site.mantra}</p>

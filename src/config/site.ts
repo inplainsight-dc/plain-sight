@@ -47,6 +47,12 @@ export const site = {
     email: '',
   },
 
+  // --- Feedback (roadmap 4.6) --------------------------------------------
+  // The API Gateway endpoint printed by infra/feedback-setup.sh. EMPTY = the
+  // feedback button does not render at all, so the site never shows a form that
+  // posts into nowhere. Fill it in after running that script, then rebuild.
+  feedbackEndpoint: '',
+
   // --- About (warm, first-person; edit freely) ---------------------------
   //
   // Phase 4 / decision D5, 2026-08-25. This used to be three paragraphs sitting

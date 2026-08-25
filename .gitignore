@@ -36,6 +36,15 @@ infra/__pycache__/
 
 # private ANC accountability outputs — aggregated from private trash data, never publish
 trash-metrics-out/
+
+# Feedback inbox, review pages and verdict records (added 2026-08-25, roadmap 4.7).
+# THIS REPO IS PUBLIC. Everything under here is what strangers typed into the feedback
+# box on a civic site — it can contain their address, their landlord, their situation.
+# It is pulled to this machine to be read and acted on, and it does not go any further.
+# The verdicts change the roadmap; the words behind them stay here.
+feedback-out/
+FEEDBACK_REVIEW_*.md
+APPROVED_feedback-verdicts_*.json
 .owner
 .project-id.json
 _OWNED-BY-PERSONAL.md

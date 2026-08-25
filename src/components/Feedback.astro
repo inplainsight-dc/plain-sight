@@ -1,0 +1,247 @@
+---
+/**
+ * The feedback button (roadmap 4.6, decision D11).
+ *
+ * IN THE FOOTER, NOT FLOATING. A floating widget fights both the newspaper look and
+ * the focus order — it plants an interactive element in the middle of the tab sequence
+ * of every page, on a site whose accessibility baseline is a promise rather than a
+ * nice-to-have.
+ *
+ * THE HONEST-DISCLOSURE RULE. Every other form on this site keeps what you type in your
+ * browser. This one does not, and it says so where someone is about to type — not in a
+ * privacy policy, not in a footnote. That single line is what keeps the promise
+ * credible everywhere else on the site; if it ever gets softened or moved below the
+ * fold of the panel, the claim on every other page quietly becomes marketing.
+ *
+ * THE REPLY AFFORDANCE CONFIGURES ITSELF. `site.links.email` is empty because the
+ * domain has no MX records, so there is currently nothing to reply *from*. Rather than
+ * offer a reply nobody can honor, the panel offers the email field ONLY when that is
+ * set, and otherwise says plainly that this is one-way. Turn mail routing on, fill in
+ * site.links.email, and the field appears by itself.
+ *
+ * THE OFF SWITCH LIVES IN Footer.astro, NOT HERE. Astro emits an `is:inline` script and
+ * an `is:global` style wherever they sit in the template, regardless of any conditional
+ * around the markup — left to itself this component shipped a dead script to all fifteen
+ * pages while the feature was off. It also cannot be wrapped in an expression, because
+ * `define:vars` will not parse inside one. So Footer.astro renders this component only
+ * when site.feedbackEndpoint is set, which skips the script and the style with it.
+ * Better no button at all than a button that posts into nowhere.
+ */
+import { site } from '../config/site';
+
+const endpoint = site.feedbackEndpoint;
+const canReply = !!site.links.email;
+
+// Must match ALLOWED_CATEGORY in infra/feedback-lambda.py. The server re-checks and
+// falls back to "other", so a mismatch degrades rather than 500s — but keep them in step.
+const CATEGORIES = [
+  { value: 'wrong',     label: 'Something here is wrong' },
+  { value: 'broken',    label: 'Something does not work' },
+  { value: 'confusing', label: 'I could not follow it' },
+  { value: 'missing',   label: 'Something is missing' },
+  { value: 'other',     label: 'Something else' },
+];
+---
+<section class="ips-fb" aria-labelledby="fb-h">
+  <div class="ps-container">
+    <details class="ips-fb__wrap" id="fbWrap">
+      <summary class="ips-fb__toggle">
+        <span class="ips-fb__toggle-label">Found something wrong on this page?</span>
+        <span class="ips-fb__toggle-cue ps-record">Tell me</span>
+      </summary>
+
+      <div class="ips-fb__panel">
+        <h2 class="ips-fb__h" id="fb-h">Tell me what you found</h2>
+        <p class="ips-fb__lede">A correction is the most useful thing you can send me. So is
+        &ldquo;I could not work out what this meant&rdquo; &mdash; that is a fault in the page,
+        not in you.</p>
+
+        <form class="ips-fb__form" id="fbForm" novalidate>
+          <div class="ips-fb__field">
+            <label class="ps-record ips-fb__label" for="fbCategory">What kind of thing?</label>
+            <select id="fbCategory" name="category">
+              {CATEGORIES.map((c) => <option value={c.value}>{c.label}</option>)}
+            </select>
+          </div>
+
+          <div class="ips-fb__field">
+            <label class="ps-record ips-fb__label" for="fbMessage">What happened?</label>
+            <textarea id="fbMessage" name="message" rows="4" maxlength="2000"
+                      aria-describedby="fbPrivacy"
+                      placeholder="What you expected, and what you got instead."></textarea>
+          </div>
+
+          {canReply && (
+            <div class="ips-fb__field">
+              <label class="ps-record ips-fb__label" for="fbEmail">
+                Your email &mdash; only if you want an answer
+              </label>
+              <input id="fbEmail" name="email" type="email" autocomplete="email"
+                     placeholder="Leave blank and this is anonymous" />
+            </div>
+          )}
+
+          {/* Honeypot. Hidden from sight AND from assistive tech, so no real person
+              ever meets it; a bot filling everything in marks itself. */}
+          <div class="ips-fb__hp" aria-hidden="true">
+            <label for="fbWebsite">Website</label>
+            <input id="fbWebsite" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <p class="ips-fb__privacy" id="fbPrivacy">
+            <strong>This is the one form on In Plain Sight that sends something to me.</strong>
+            It goes to a private file that only I read, and it is never published. Everything
+            else you type anywhere on this site stays in your browser.
+            {canReply
+              ? ' Your email is stored only if you fill it in, and only so I can reply.'
+              : ' There is no reply address on this site yet, so this one is one-way — I will read it, but I cannot write back.'}
+            {' '}Please do not put anything in here you would not want written down.
+          </p>
+
+          <button class="ips-fb__btn" type="submit" id="fbGo">Send it</button>
+        </form>
+
+        <div class="ips-fb__result" id="fbResult" role="status" aria-live="polite" tabindex="-1"></div>
+
+        <noscript>
+          <p class="ips-fb__noscript">This form needs JavaScript to send. Sorry &mdash; the
+          rest of the site does not.</p>
+        </noscript>
+      </div>
+    </details>
+  </div>
+</section>
+
+<script is:inline define:vars={{ endpoint }}>
+  (() => {
+    const form = document.getElementById('fbForm');
+    if (!form) return;
+    const btn = document.getElementById('fbGo');
+    const out = document.getElementById('fbResult');
+    const msg = document.getElementById('fbMessage');
+    const cat = document.getElementById('fbCategory');
+    const email = document.getElementById('fbEmail');
+    const hp = document.getElementById('fbWebsite');
+
+    const say = (text, isError) => {
+      out.className = 'ips-fb__result' + (isError ? ' is-error' : ' is-ok');
+      out.textContent = text;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = (msg.value || '').trim();
+      if (message.length < 4) {
+        say('Add a little more detail and I will know what to look at.', true);
+        msg.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      const label = btn.textContent;
+      btn.textContent = 'Sending…';
+
+      try {
+        const r = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            // The path only — never the full URL, and never anything the browser
+            // volunteers about who is sending it.
+            page: location.pathname,
+            category: cat.value,
+            message,
+            email: email ? (email.value || '').trim() : '',
+            website: hp ? hp.value : '',
+          }),
+        });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok || !d.ok) throw new Error(d.error || 'failed');
+        form.hidden = true;
+        say('Thank you — that has reached me. I read everything that comes in here.', false);
+        out.focus();
+      } catch (err) {
+        say('That did not send. It is my end, not yours — please try again in a little while.', true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    });
+  })();
+</script>
+
+<style is:global>
+  .ips-fb { border-top: 1px solid var(--ps-line); padding-block: 1.2rem; }
+  .ips-fb__wrap { max-width: 46rem; }
+  .ips-fb__toggle {
+    cursor: pointer;
+    display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap;
+    padding: 0.4rem 0;
+    list-style: none;
+  }
+  .ips-fb__toggle::-webkit-details-marker { display: none; }
+  .ips-fb__toggle-label { font-family: var(--ps-font-display); font-size: 1.1rem; }
+  .ips-fb__toggle-cue {
+    color: var(--ps-accent-text);
+    border-bottom: 1px solid currentColor;
+  }
+  .ips-fb__wrap[open] .ips-fb__toggle { margin-bottom: 0.6rem; }
+
+  .ips-fb__panel {
+    padding: 1.1rem 1.2rem;
+    background: var(--ps-surface-2);
+    border: 1px solid var(--ps-line);
+    border-left: 4px solid var(--ps-accent-fill);
+    border-radius: var(--ps-radius);
+  }
+  .ips-fb__h { font-family: var(--ps-font-display); font-size: 1.3rem; margin: 0 0 0.35rem; }
+  .ips-fb__lede { color: var(--ps-ink-soft); margin: 0 0 1rem; max-width: 56ch; }
+
+  .ips-fb__field { margin-bottom: 0.9rem; }
+  .ips-fb__label { display: block; margin-bottom: 0.3rem; }
+  .ips-fb__form select,
+  .ips-fb__form textarea,
+  .ips-fb__form input[type="email"] {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    font: inherit;
+    color: var(--ps-ink);
+    background: var(--ps-surface);
+    border: 1.5px solid var(--ps-ink);
+    border-radius: var(--ps-radius);
+  }
+  .ips-fb__form textarea { resize: vertical; min-height: 5.5rem; }
+
+  /* Hidden from sight and from assistive tech — a real person must never meet this. */
+  .ips-fb__hp { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .ips-fb__privacy {
+    margin: 0 0 1rem;
+    padding: 0.7rem 0.8rem;
+    background: var(--ps-surface);
+    border-left: 3px solid var(--ps-caution);
+    font-size: 0.97rem;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+
+  .ips-fb__btn {
+    padding: 0.65rem 1.4rem;
+    font-family: var(--ps-font-record);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ps-accent-fill-ink);
+    background: var(--ps-accent-fill);
+    border: 1.5px solid var(--ps-accent-fill);
+    border-radius: var(--ps-radius);
+    cursor: pointer;
+  }
+  .ips-fb__btn:hover { background: var(--ps-accent-fill-hover); border-color: var(--ps-accent-fill-hover); }
+  .ips-fb__btn[disabled] { opacity: 0.65; cursor: progress; }
+
+  .ips-fb__result:empty { display: none; }
+  .ips-fb__result { margin-top: 0.9rem; padding: 0.7rem 0.8rem; border-left: 3px solid var(--ps-good); background: var(--ps-surface); }
+  .ips-fb__result.is-error { border-left-color: var(--ps-caution); }
+  .ips-fb__noscript { margin-top: 0.8rem; color: var(--ps-ink-soft); }
+</style>

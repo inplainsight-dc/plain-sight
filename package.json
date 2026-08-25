@@ -19,7 +19,9 @@
     "gen-logo": "node scripts/gen-logo-lab.mjs",
     "gen-swatch": "node scripts/gen-contrast-swatches.mjs",
     "family": "node scripts/family-status.mjs",
-    "trash-metrics": "node scripts/trash-metrics.mjs"
+    "trash-metrics": "node scripts/trash-metrics.mjs",
+    "feedback": "node scripts/feedback-review.mjs",
+    "feedback-check": "node scripts/feedback-check.mjs"
   },
   "dependencies": {
     "astro": "^5.13.0"
