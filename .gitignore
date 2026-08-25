@@ -46,8 +46,9 @@ feedback-out/
 FEEDBACK_REVIEW_*.md
 APPROVED_feedback-verdicts_*.json
 
-# DNS watchdog output — machine-level diagnostics, not site content
-dns-watch.log
+# The DNS watchdog moved to Agentic Environment on 2026-08-25 — it is a machine-level
+# instrument, not an IPS concern. It lives at `Agentic Environment/scripts/check_dns.sh`
+# and logs beside itself. Nothing to ignore here any more; this note is the signpost.
 .owner
 .project-id.json
 _OWNED-BY-PERSONAL.md

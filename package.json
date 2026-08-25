@@ -21,8 +21,7 @@
     "family": "node scripts/family-status.mjs",
     "trash-metrics": "node scripts/trash-metrics.mjs",
     "feedback": "node scripts/feedback-review.mjs",
-    "feedback-check": "node scripts/feedback-check.mjs",
-    "dns-watch": "node scripts/dns-watch.mjs"
+    "feedback-check": "node scripts/feedback-check.mjs"
   },
   "dependencies": {
     "astro": "^5.13.0"
