@@ -50,7 +50,27 @@ ALLOWED_CATEGORY = {
 # Storage ceiling. A flood that gets past the throttle and the honeypot should cost a
 # rejected request, not an unbounded S3 object that gets slower and dearer to read every
 # time. 5,000 is far beyond any plausible real volume for this site.
+#
+# REDTEAM F1 (2026-08-25). The first version simply refused everything past this cap,
+# which meant anyone could permanently switch the feedback box off for about the price of
+# an afternoon — and it failed SILENTLY from the inside, so the first anyone would know is
+# when a person mentioned that their message never arrived. Three changes came out of that:
+#
+#   1. At the cap, evict the OLDEST ALREADY-DECIDED item to make room. A decided item has
+#      served its purpose; a report that has just arrived has not. An item still marked
+#      "open" is NEVER evicted — a real report must not be silently dropped to make room
+#      for another one.
+#   2. Suppress byte-identical repeats (see _is_repeat). A crude flood repeats itself, and
+#      refusing repeats costs a real person nothing, because nobody sends the same sentence
+#      twice by accident.
+#   3. When it genuinely cannot accept — everything in the file is undecided — record
+#      `full_since` in the object so `npm run feedback-check` can SAY SO. The failure stays
+#      a failure; it stops being invisible.
 MAX_ITEMS = 5000
+
+# How far back to look for an identical message. Long enough to stop a flood, short enough
+# that two people legitimately reporting the same broken page months apart both get through.
+DEDUPE_WINDOW = 200
 
 CORS = {
     "Access-Control-Allow-Origin": os.environ.get("ALLOW_ORIGIN", "https://inplainsight-dc.org"),
@@ -88,19 +108,53 @@ def _put_conditional(obj, etag):
     s3.put_object(**kwargs)
 
 
+def _is_repeat(items, message):
+    """Has this exact message already arrived recently? See MAX_ITEMS note 2."""
+    m = message.strip()
+    return any((it.get("message") or "").strip() == m for it in items[-DEDUPE_WINDOW:])
+
+
+def _make_room(items):
+    """Drop the oldest DECIDED item so a new report can land. Returns True if it freed a
+    slot. Items still marked "open" are untouchable: evicting one would throw away a real
+    person's report to make room for another, which is the failure this whole guard exists
+    to prevent."""
+    for i, it in enumerate(items):
+        if it.get("status") and it["status"] != "open":
+            del items[i]
+            return True
+    return False
+
+
 def _append(record, attempts=6):
     """Concurrency-safe append. Two people writing at the same moment must not
-    silently erase each other, which a naive read-modify-write does."""
+    silently erase each other, which a naive read-modify-write does.
+
+    Returns "ok" | "repeat" | "full"."""
     for i in range(attempts):
         obj, etag = _load_versioned({"items": []})
         items = obj.setdefault("items", [])
-        if len(items) >= MAX_ITEMS:
-            return False
+
+        if _is_repeat(items, record["message"]):
+            return "repeat"
+
+        if len(items) >= MAX_ITEMS and not _make_room(items):
+            # Genuinely nothing to evict: the file is full of undecided reports. Refuse,
+            # but leave a mark so the local check can surface it instead of it being silent.
+            if not obj.get("full_since"):
+                obj["full_since"] = record["received"]
+                try:
+                    _put_conditional(obj, etag)
+                except ClientError:
+                    pass  # best effort; refusing the write is what matters
+            return "full"
+
         items.append(record)
         obj["updated"] = record["received"][:10]
+        obj.pop("full_since", None)  # it accepted something, so it is not full any more
         try:
             _put_conditional(obj, etag)
-            return True
+            return "ok"
         except ClientError as e:
             if e.response.get("Error", {}).get("Code") in _CONFLICT:
                 time.sleep(min(0.4, 0.05 * (2 ** i)))
@@ -161,7 +215,13 @@ def handler(event, _ctx):
         "status": "open",
     }
 
-    if not _append(record):
+    outcome = _append(record)
+    if outcome == "full":
         return _resp(503, {"ok": False, "error": "inbox full"})
+    if outcome == "repeat":
+        # Answer as though it landed. Telling a flood which of its messages were dropped
+        # just teaches it to vary them, and a real person who double-clicked Send should
+        # not be told off for it.
+        return _resp(200, {"ok": True, "id": record["id"]})
 
     return _resp(200, {"ok": True, "id": record["id"]})

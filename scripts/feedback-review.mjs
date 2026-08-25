@@ -5,7 +5,9 @@
  *   npm run feedback                    pull the inbox and build the review page
  *   npm run feedback -- --apply <file>  write the verdicts back, so decided items
  *                                       never resurface
- *   npm run feedback -- --count         just the number waiting (used by 4.8)
+ *   npm run feedback -- --count         just the number waiting
+ *   npm run feedback -- --status        JSON: waiting, total, and whether the endpoint
+ *                                       has had to refuse a real submission (used by 4.8)
  *
  * WHY THIS IS A LOCAL SCRIPT AND NOT A HOSTED ADMIN PANEL
  * A hosted panel needs auth, which means a credential to store, rotate and worry about,
@@ -29,6 +31,21 @@ const BUCKET = process.env.FEEDBACK_BUCKET || 'inplainsight-feedback-3447';
 const KEY = 'private/feedback.json';
 const OUT = path.resolve('feedback-out');
 const PROFILE = process.env.AWS_PROFILE || 'inplainsight';
+
+/**
+ * REDTEAM F3 (2026-08-25). Nothing used to be deleted, ever. A "spam" verdict marked an
+ * item and left it there, and decided items accumulated indefinitely. On a site whose whole
+ * posture is that it does not keep things about people, holding every word anyone ever
+ * typed — an address, a landlord's name, a housing situation — forever, is that posture
+ * quietly not being true. So:
+ *   - spam is DELETED outright, not marked. It was never worth keeping.
+ *   - anything decided more than RETENTION_DAYS ago is dropped on the next --apply.
+ *   - the panel on the site says how long feedback is kept, because a retention rule
+ *     nobody is told about is not a promise, it is just an implementation detail.
+ * Items still marked "open" are never touched by any of this — an undecided report is
+ * exactly the thing that must not disappear on a timer.
+ */
+const RETENTION_DAYS = 180;
 
 const VERDICTS = [
   ['quick-fix', 'Quick fix',  'Small and safe — do it in this session'],
@@ -195,10 +212,19 @@ ${items.length ? `<div class="bar"><span class="rec" id="tally"></span><button i
 const args = process.argv.slice(2);
 const applyIdx = args.indexOf('--apply');
 
-if (args.includes('--count')) {
+if (args.includes('--count') || args.includes('--status')) {
   const inbox = pull();
   const decided = alreadyDecided();
-  console.log((inbox.items || []).filter((i) => i.status === 'open' && !decided.has(i.id)).length);
+  const all = inbox.items || [];
+  const waiting = all.filter((i) => i.status === 'open' && !decided.has(i.id)).length;
+  if (args.includes('--status')) {
+    // JSON, for feedback-check. `full` is set by the Lambda when it had to refuse a real
+    // submission — the whole point of F1 was that this must never be silent.
+    console.log(JSON.stringify({ waiting, total: all.length, full: !!inbox.full_since,
+                                 fullSince: inbox.full_since || null }));
+  } else {
+    console.log(waiting);
+  }
   process.exit(0);
 }
 
@@ -213,18 +239,31 @@ if (applyIdx > -1) {
   // and nobody would ever know a stranger's message had been thrown away. The Lambda
   // already writes conditionally; this has to as well, or the two disagree about whether
   // the file is safe to clobber. Re-read, re-apply, and put only if the ETag still matches.
-  let touched = 0;
+  let touched = 0, deletedSpam = 0, expired = 0;
   let wrote = false;
   for (let attempt = 0; attempt < 5 && !wrote; attempt++) {
     const { body: inbox, etag } = pull({ withEtag: true });
-    touched = 0;
+    touched = 0; deletedSpam = 0; expired = 0;
+    const today = new Date().toISOString().slice(0, 10);
+    const kept = [];
     for (const item of inbox.items || []) {
       const v = byId.get(item.id);
-      if (!v) continue;
-      item.status = v.verdict;
-      if (v.notes) item.notes = v.notes;
-      touched++;
+      if (v) {
+        touched++;
+        if (v.verdict === 'spam') { deletedSpam++; continue; }   // gone, not flagged
+        item.status = v.verdict;
+        item.decided = today;
+        if (v.notes) item.notes = v.notes;
+      }
+      // Retention sweep. Only ever touches items that already have a verdict — an
+      // undecided report never ages out.
+      if (item.decided && item.status !== 'open') {
+        const age = (Date.parse(today) - Date.parse(item.decided)) / 86400000;
+        if (age > RETENTION_DAYS) { expired++; continue; }
+      }
+      kept.push(item);
     }
+    inbox.items = kept;
     fs.mkdirSync(OUT, { recursive: true });
     const tmp = path.join(OUT, '.writeback.json');
     fs.writeFileSync(tmp, JSON.stringify(inbox, null, 1));
@@ -250,6 +289,8 @@ if (applyIdx > -1) {
   if (!wrote) { console.error('✗ Could not write back after 5 attempts — nothing was changed.'); process.exit(1); }
   fs.copyFileSync(file, path.join(OUT, path.basename(file)));
   console.log(`✓ ${touched} item(s) marked. They will not come back in the next review.`);
+  if (deletedSpam) console.log(`  ${deletedSpam} marked spam — deleted outright, not kept.`);
+  if (expired) console.log(`  ${expired} decided more than ${RETENTION_DAYS} days ago — aged out and deleted.`);
   process.exit(0);
 }
 
