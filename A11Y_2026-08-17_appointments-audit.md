@@ -152,3 +152,41 @@ against the viewport. **A passing audit is only as broad as its checklist.**
 
 _Audited in the running dev server (`npm run dev`, port 4321), not against a static snapshot.
 The production build was re-run afterward and passes: 12 pages._
+
+---
+
+## Re-run 2026-08-25, after the Wave 1 fold
+
+**Why:** Wave 1 (axis F + blind check) changed text on the page — a new person caveat block under
+the § 01 tiles, a reworded staleness line, a cadence line, a seat-ordinal span, an anchored hero
+chip, and a correction link under the § 02 table. p6-t5's rule is that unverified means not
+shippable, so the audit re-runs over changed text.
+
+**Result: zero failures, all eight combinations.**
+
+| Width | Light | Dark | Page overflow | Wide content unscrolled |
+|---|---|---|---|---|
+| 320 | 0 | 0 | 0px | none |
+| 375 | 0 | 0 | 0px | none |
+| 768 | 0 | 0 | 0px | none |
+| 1280 | 0 | 0 | 0px | none |
+
+Also checked, because a width sweep that only measures contrast is half a sweep: the three wide
+tables sit inside `.aw-scroll` containers with `overflow-x: auto`, `role="region"` and a
+non-negative `tabIndex` — so they scroll horizontally, are reachable from the keyboard, and never
+push the page itself sideways. That is the correct pattern rather than a clipped table, and it is
+now measured rather than assumed.
+
+### A third measurement trap, for the collection
+
+The first attempt resized the browser window to 375px and reported `innerWidth: 500`. **Chrome will
+not make a window narrower than about 500px on macOS**, so the pass that looked like a 375 audit was
+a 500 audit wearing its label. Both narrow widths were re-run in fixed-width same-origin iframes —
+which is what the original 2026-08-17 audit did, for what turns out to be exactly this reason.
+
+Three traps now, one family: a mid-transition sample, an estimated character count, and a viewport
+that silently refused the size it was given. Every one of them measured something that was not the
+page. **Print the width you actually measured at, next to the result, every time.**
+
+_Run from Chrome against the live dev server. The tooling's own preview pane could not be used: it
+reports `innerWidth: 0`, which would have produced a flawless audit of nothing at all._

@@ -116,16 +116,27 @@ and re-applying verdicts each round. Verified against a simulated mid-review sub
 
 ---
 
-## Ship checklist for 4.9
+## Ship checklist for 4.9 — ✅ **all done, shipped 2026-08-25**
 
-- [ ] Run `./infra/feedback-setup.sh`, put the endpoint in `site.ts`, rebuild.
-- [ ] **Confirm the endpoint is write-only:** `GET` must return **405**, not 200.
-- [ ] Confirm the S3 bucket blocks all public access and has default encryption on.
-- [ ] Confirm CORS rejects an origin that is not the two production ones.
-- [ ] Post one real piece of feedback from the live site; confirm it lands and that
-      `npm run feedback` shows it.
-- [ ] **Confirm the doorstep's happy path on the production origin** — it cannot be exercised from
-      localhost, so this is the first time it runs for real (carried over from 4.3).
+- [x] Ran `./infra/feedback-setup.sh`, endpoint in `site.ts`, rebuilt, deployed.
+- [x] **Endpoint is write-only:** `GET` returns **405**.
+- [x] Bucket blocks all four public-access vectors; default encryption AES256.
+- [x] CORS allows `inplainsight-dc.org`, returns no allow-origin header for `evil.example.com`.
+- [x] Real feedback posted from the live site; landed with the correct page path;
+      `npm run feedback` and `feedback-check` both saw it. Deleted afterwards.
+- [x] **The doorstep's happy path ran on the production origin** and works: `3114 Sherman Ave NW`
+      → Ward 1 · ANC 1A · SMD 1A10, then one click to `/trash`, which arrived pre-filled and
+      already looked up. First time it has ever run for real.
+- [x] `/appointments/seats/` still returns **403** — that gate held through the deploy.
+
+**One thing broke, and it is worth remembering:** the first live POST returned 500 while validation
+and the honeypot both looked fine. The role had `GetObject`/`PutObject` on one key and nothing else,
+which reads like textbook least privilege and is subtly wrong — **without `s3:ListBucket`, S3 answers
+a GetObject for a missing key with 403 AccessDenied rather than 404 NoSuchKey**, so the "inbox does
+not exist yet" branch never matched. Fixed by granting it and by seeding an empty object, *not* by
+catching AccessDenied — which would have turned a permissions blip into "the file looked empty, so
+replace it". The note now lives in `infra/feedback-lambda.py`, which is tracked, because
+`infra/*.sh` is not.
 - [x] ~~Pippa's verdicts on F1 and F3 applied before, not after.~~ **Both fixed 2026-08-25**,
       before the endpoint exists. F2, F4, F5, F6 and F7 are recorded as accepted or already
       handled; none of them blocks the gate.
