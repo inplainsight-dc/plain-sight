@@ -138,6 +138,24 @@ Three distinct problems, none of which the current design addresses:
    acknowledge**, which arrived because a site-wide component shipped, not because anyone chose it
    for that page. D3 was a decision *about exactly this*.
 
+**RESOLVED IN PART, 2026-08-25.** Pippa ruled: **option 2 — the button stays, and § 05 names both
+routes.** Not the opt-out, so no page-level flag was built.
+
+- ✅ **Done and site-wide:** the panel now carries the boundary in front of the person typing, on
+  all 15 pages — *"If something here is wrong … that is a correction, and it gets fixed. A report
+  about a **person** is something else, and this is not the place for it: nothing on this site is a
+  finding about anybody, and I do not investigate people."* 0 contrast failures in both themes.
+- ⏸ **§ 05 is held, deliberately.** That copy lives in the Appointments node's page, and that
+  session declined to act on a **relayed** ruling — a peer reporting a decision is not the decision
+  arriving, however accurate. It is confirming with Pippa directly and will write § 05 itself. I
+  wrote the change, then reverted it in full; `seats.astro` is byte-identical to `71e2cca`. The
+  right call, and the same boundary I would apply in reverse.
+- 🔴 **Found while reading that page, and handed back rather than fixed:** § 01 and § 05
+  **contradict each other**. § 01, after that session's honesty pass, says most rows "name a seat
+  that only one person can hold … the row identifies its holder". § 05 still says "no individual can
+  be derived from it" — the exact claim § 01 retracts. Their page, their gate, their fix; reported
+  to them. Not live (the page 403s in production).
+
 **Sharpened 2026-08-25 by the same session, and it matters: problem 3 is NOT prospective.** The
 seat clock **as built today** carries two correction routes while its own § 05 says the route is
 GitHub. It contradicts itself the moment it goes live — that is a blocking item on 1.6 now, not a

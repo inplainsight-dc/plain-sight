@@ -45,6 +45,9 @@ trash-metrics-out/
 feedback-out/
 FEEDBACK_REVIEW_*.md
 APPROVED_feedback-verdicts_*.json
+
+# DNS watchdog output — machine-level diagnostics, not site content
+dns-watch.log
 .owner
 .project-id.json
 _OWNED-BY-PERSONAL.md

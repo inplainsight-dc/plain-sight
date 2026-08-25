@@ -99,6 +99,20 @@ const CATEGORIES = [
             turns out to be spam. Please do not put anything in here you would not want written down.
           </p>
 
+          {/* REDTEAM F9. Site-wide, and it earns its place on every page rather than only the
+              ones that describe people: several of these tools point at a population worth
+              looking at — short-term rental licenses, board seats past their term — and the
+              distance between "this page is wrong" and "this person is at fault" is exactly
+              where a reader can slip without meaning to. The distinction belongs in front of
+              the person typing, at the moment they type, which is the only place it does any
+              good. Do not move this below the button. */}
+          <p class="ips-fb__scope">
+            <b>One thing this is not for.</b> If something here is wrong &mdash; a date, a figure,
+            a rule, a broken page &mdash; that is a correction, and it gets fixed. A report about a
+            <i>person</i> is something else, and this is not the place for it: nothing on this site
+            is a finding about anybody, and I do not investigate people.
+          </p>
+
           <button class="ips-fb__btn" type="submit" id="fbGo">Send it</button>
         </form>
 
@@ -215,6 +229,18 @@ const CATEGORIES = [
 
   /* Hidden from sight and from assistive tech — a real person must never meet this. */
   .ips-fb__hp { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Same weight as the data-handling disclosure, in the caution tone rather than shouting:
+     it is a boundary, not a warning about the reader. */
+  .ips-fb__scope {
+    margin: 0 0 1rem;
+    padding: 0.7rem 0.8rem;
+    background: var(--ps-surface);
+    border-left: 3px solid var(--ps-info);
+    font-size: 0.97rem;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
 
   .ips-fb__privacy {
     margin: 0 0 1rem;
