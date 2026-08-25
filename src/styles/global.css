@@ -24,7 +24,7 @@
   --ps-highlight:     #E81B39;  /* solid red: badges, fills              */
   --ps-highlight-ink: #ffffff;  /* text sitting on a solid red fill      */
   --ps-mark:          rgba(232, 27, 57, 0.20); /* translucent red swipe behind text */
-  /* Red used as a BUTTON FILL that carries text. --ps-accent is a fill colour for flags and
+  /* Red used as a BUTTON FILL that carries text. --ps-accent is a fill color for flags and
      large display, and white on it lands at 4.52:1 — technically AA and far too thin a margin
      for a primary action in small uppercase mono. This is the darker step, so white sits on it
      at 7.1:1. Added 2026-08-25 for the Phase 4 doorstep; the same pattern as --ps-accent-text-mark,

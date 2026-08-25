@@ -20,10 +20,15 @@ const badgeLabel = { live: 'Live', building: 'In the works', planned: 'Coming so
 // A card's tier is explicit when set, and otherwise falls out of its status, so an
 // older card with no `tier:` still lands somewhere sensible.
 const tierOf = (p) => p.data.tier ?? (p.data.status === 'live' ? 'use' : 'soon');
+// 4.4 — the bands carry a color so the index scans as a chart rather than as
+// eleven identical rows. Deliberately coloring the BANDS and not the tool families:
+// two overlapping taxonomies would fight each other, and these tokens already carry
+// meaning inside the rentals tools (caution / good / info), so they are used here as
+// a tone on one axis only, never as a judgment about a tool. All three are AA-verified.
 const BANDS = [
-  { key: 'use',  label: 'Use one now',   note: 'Put your address in and get an answer about your own block.' },
-  { key: 'read', label: 'Worth reading', note: 'Nothing to fill in — the rules, explained.' },
-  { key: 'soon', label: 'In the works',  note: 'Being built. No link yet.' },
+  { key: 'use',  label: 'Use one now',   note: 'Put your address in and get an answer about your own block.', tone: 'var(--ps-accent-text)' },
+  { key: 'read', label: 'Worth reading', note: 'Nothing to fill in — the rules, explained.',                  tone: 'var(--ps-info)' },
+  { key: 'soon', label: 'In the works',  note: 'Being built. No link yet.',                                   tone: 'var(--ps-ink-soft)' },
 ];
 const banded = BANDS
   .map((b) => ({ ...b, items: projects.filter((p) => tierOf(p) === b.key) }))
@@ -84,17 +89,18 @@ const banded = BANDS
       </div>
 
       {banded.map((band) => (
-      <div class="ips-band">
+      <div class="ips-band" style={`--band-tone: ${band.tone}`}>
         <div class="ips-band__head">
           <h3 class="ips-band__label ps-record">{band.label}</h3>
           <p class="ips-band__note">{band.note}</p>
         </div>
       <ol class="ips-index">
-        {band.items.map((p) => {
+        {band.items.map((p, i) => {
           const isLink = p.data.status === 'live' && !!p.data.url;
           const Row = isLink ? 'a' : 'div';
+          const featured = band.key === 'use' && i === 0;
           return (
-            <li class:list={['ips-entry', p.data.status === 'planned' && 'is-planned']}>
+            <li class:list={['ips-entry', featured && 'is-featured', p.data.status === 'planned' && 'is-planned']}>
               <Row class="ips-entry__row" {...isLink ? { href: p.data.url } : {}}>
                 <span class="ips-entry__no ps-record">{String(p.data.order).padStart(2, '0')}</span>
                 <div class="ips-entry__body">
@@ -215,7 +221,15 @@ const banded = BANDS
   /* ---- INDEX BANDS (D2: use one now / worth reading / in the works) ---- */
   .ips-band + .ips-band { margin-top: 2.2rem; }
   .ips-band__head { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
-  .ips-band__label { color: var(--ps-accent-text); font-size: 0.8rem; }
+  .ips-band__label { color: var(--band-tone, var(--ps-accent-text)); font-size: 0.8rem; }
+  /* A hairline in the band's tone down the left of its rows: the cheapest way to make
+     the index read as grouped structure rather than as one undifferentiated column. */
+  .ips-band .ips-index { border-left: 3px solid var(--band-tone, var(--ps-line)); padding-left: 1rem; }
+
+  /* The featured entry — the first thing a stranger should reach for. */
+  .ips-entry.is-featured .ips-entry__row { padding-block: 1.8rem; }
+  .ips-entry.is-featured .ips-entry__title { font-size: clamp(1.7rem, 4.4vw, 2.2rem); }
+  .ips-entry.is-featured .ips-entry__desc { font-size: 1.12rem; max-width: 54ch; }
   .ips-band__note { color: var(--ps-ink-soft); font-size: 0.95rem; margin: 0; }
 
   /* ---- INDEX / DOCKET ---- */

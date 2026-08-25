@@ -15,8 +15,11 @@ export const site = {
   jurisdiction: 'DC',
   instanceName: 'In Plain Sight DC',
   tagline: 'Bringing the fine print into plain sight.',
+  // Trimmed 2026-08-25 (Phase 4). The second sentence was a list of subject areas —
+  // six lines on a phone, sitting between the reader and the address box, and saying
+  // nothing the index below does not say better with live cards.
   blurb:
-    "Civic tools that make the fine print of DC government easier to read, search, trust, and work for you. Laws, budgets, contracts, programs, services, open data, with more always on the way.",
+    "Civic tools that make the fine print of DC government easier to read, search, trust, and work for you.",
   mantra: "Reading the fine print so you don’t have to.",
 
   // --- Person behind it --------------------------------------------------

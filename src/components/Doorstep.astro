@@ -21,7 +21,39 @@
  * so a home address never lands in a query string, a server log, or browser history.
  * The page says all of this where someone is about to type, not in a footer.
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import { site } from '../config/site';
+
+/**
+ * The standing figure, read at BUILD TIME from the same bundle /ghost-homes serves.
+ * Not hardcoded: that file is synced from the DC Short-Term Rentals and Housing node,
+ * so a fresh capture updates this number on the next build and the front page cannot
+ * quietly disagree with the tool it is quoting. Same drift-proof idea as the law-brain
+ * JSON twins. If the shape ever changes, the stat block is skipped rather than shown
+ * wrong — a missing figure is recoverable, a stale one on the front page is not.
+ *
+ * `core` is the tool's own measure, in its own words: "whole homes run as full-time
+ * short-term rentals". Cross-checked four ways in the bundle (head.core, ops.total_core,
+ * the flagged rows of `pts`, and the sum of per-cluster stats) — all 2,986 on this capture.
+ */
+let cityStat = null;
+try {
+  const gh = JSON.parse(
+    fs.readFileSync(path.resolve('public/ghost-homes/data.json'), 'utf8')
+  );
+  if (gh?.head?.core && gh?.ops?.multi && gh?.snap) {
+    cityStat = {
+      core: gh.head.core,
+      listings: gh.head.listings,
+      multi: gh.ops.multi,
+      topSum: gh.ops.top_sum,
+      snap: gh.snap,
+    };
+  }
+} catch (e) {
+  cityStat = null;
+}
 
 // Same endpoint /ghost-homes already uses. CORS is allow-listed to this origin and
 // the API throttles; see infra/geocode-proxy/README.md.
@@ -57,6 +89,23 @@ const TRASH_REPORT_SMD = '1E03';
 
     <div class="ips-door__result" id="doorResult" role="status" aria-live="polite" tabindex="-1"></div>
 
+    {cityStat && (
+      <!-- The standing answer, so the box is not a blank prompt: it shows the KIND of
+           thing typing an address gets you. Sits BELOW the input on purpose — it must
+           not cost the reader the fold. Hidden once a real answer replaces it. -->
+      <div class="ips-door__stat" id="doorStat">
+        <div class="ips-door__stat-main">
+          <p class="ips-door__figure">{cityStat.core.toLocaleString('en-US')}</p>
+          <p class="ips-door__figure-label">whole homes across DC run as full-time short-term
+          rentals &mdash; out of {cityStat.listings.toLocaleString('en-US')} listings.</p>
+        </div>
+        <p class="ips-door__stat-sub">{cityStat.multi.toLocaleString('en-US')} operators run more
+        than one. The ten largest run about {cityStat.topSum.toLocaleString('en-US')} between them.</p>
+        <p class="ips-door__stat-src ps-record">Airbnb listings only, so every figure is a floor,
+        not a total &middot; snapshot {cityStat.snap} &middot; <a href="/ghost-homes">DC Ghost Homes</a></p>
+      </div>
+    )}
+
     <noscript>
       <p class="ips-door__noscript">This lookup needs JavaScript. You can go straight to
       <a href="/ghost-homes">DC Ghost Homes</a> or <a href="/trash">DC Trash Tracker</a> and
@@ -84,9 +133,13 @@ const TRASH_REPORT_SMD = '1E03';
       try { sessionStorage.setItem(HANDOFF, addr); } catch (e) { /* private mode: the tool just asks again */ }
     };
 
+    const stat = document.getElementById('doorStat');
     const say = (html, isError) => {
       out.className = 'ips-door__result' + (isError ? ' is-error' : ' is-answer');
       out.innerHTML = html;
+      // The citywide figure is the stand-in for an answer; once there is a real one
+      // about the reader's own block, it stops earning its space.
+      if (stat) stat.hidden = true;
     };
 
     form.addEventListener('submit', async (e) => {
@@ -238,6 +291,41 @@ const TRASH_REPORT_SMD = '1E03';
   .ips-door__routes a { font-size: 1.05rem; }
   .ips-door__note { color: var(--ps-ink-soft); font-size: 0.98rem; }
   .ips-door__noscript { margin-top: 1rem; color: var(--ps-ink-soft); }
+
+  /* ---- The standing figure (4.4). The visual interest on this page is DATA, not
+     decoration — a real number about the reader's own city, in display type, which
+     also happens to show what typing an address will get them. ---- */
+  .ips-door__stat[hidden] { display: none; }
+  .ips-door__stat {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ps-line);
+    max-width: 46rem;
+  }
+  .ips-door__stat-main { display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap; }
+  .ips-door__figure {
+    font-family: var(--ps-font-display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 9vw, 4.2rem);
+    line-height: 0.9;
+    color: var(--ps-accent-text);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .ips-door__figure-label {
+    flex: 1 1 14rem;
+    margin: 0;
+    font-size: 1.05rem;
+    max-width: 30ch;
+  }
+  .ips-door__stat-sub { margin: 0.7rem 0 0; color: var(--ps-ink-soft); font-size: 1rem; }
+  .ips-door__stat-src {
+    margin: 0.5rem 0 0;
+    color: var(--ps-ink-soft);
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.6;
+  }
 
   @media (max-width: 640px) {
     /* On a 375x812 phone the address box landed 18px below the fold — close enough
