@@ -84,7 +84,12 @@ function describeWindow(w) {
 // election. Say it once on the group; say "varies" rather than pick a winner.
 function groupWindow(g) {
   const seen = [...new Set(g.locations.map((p) => p.dates_open).filter(Boolean))];
-  return seen.length === 1 ? seen[0] : seen.length ? 'hours vary by location' : '';
+  const when = seen.length === 1 ? seen[0] : seen.length ? 'hours vary by location' : '';
+  // A-M4: the summary used to drop the opening TIME that the same page states in
+  // section 03 -- "October 9 to November 3 at 8:00 PM" lost the 11 a.m. start, so
+  // the group contradicted the window above it about a time people act on.
+  const hours = [...new Set(g.locations.map((p) => p.time_open).filter(Boolean))];
+  return hours.length === 1 && when ? `${when} \u00b7 ${hours[0]}` : when;
 }
 // The build's own count of days, replaced client-side against the reader's real
 // today — the page can sit in a cache for a week (see the script below).
@@ -128,9 +133,9 @@ const today = new Date().toLocaleDateString('en-US', {
 
 // How each avenue reaches the resident — the build-vs-plug-in call, said plainly.
 const DELIVERY = {
-  native:    { label: 'Done here',        note: 'Built into the Almanac.' },
-  hybrid:    { label: 'Timing here, tool theirs', note: 'We surface the deadline and the plain language; the reading tool is someone else’s, credited below.' },
-  route_out: { label: 'We point you there', note: 'A good tool already does this well. We name it and the step, and send you on.' },
+  native:    { label: 'You can do this here', note: 'Built into the Almanac.' },
+  hybrid:    { label: 'Dates here, their tool', note: 'We surface the deadline and the plain language; the reading tool is someone else’s, credited below.' },
+  route_out: { label: 'We send you to theirs', note: 'A good tool already does this well. We name it and the step, and send you on.' },
 };
 
 const featured = avenues.find((a) => a.featured) || avenues[0];
@@ -162,7 +167,7 @@ const rest = avenues.filter((a) => a !== featured);
               <li><span class="al-dot" data-d={a.delivery}></span>{a.title}</li>
             ))}
           </ul>
-          <p class="al-rail__note ps-record">Elections is avenue #1. The model is built to hold the rest.</p>
+          <p class="al-rail__note">Elections is avenue #1. The model is built to hold the rest.</p>
         </aside>
       </div>
     </div>
@@ -245,7 +250,7 @@ const rest = avenues.filter((a) => a !== featured);
         ))}
       </div>
 
-      <p class="al-aside ps-record">The delivery mode is an honest call, not a default: some avenues we build, some we hand to a tool that already nails it — named and credited, never rebuilt. A listing here is not an endorsement.</p>
+      <p class="al-aside">The delivery mode is an honest call, not a default: some avenues we build, some we hand to a tool that already nails it — named and credited, never rebuilt. A listing here is not an endorsement.</p>
     </div>
   </section>
 
@@ -285,8 +290,9 @@ const rest = avenues.filter((a) => a !== featured);
           </p>
 
           <h3 class="al-h3">The dates inside the date</h3>
-          <p class="al-sub">An election is not one deadline, it is six. Each one closes on its own, and the
-          earliest of them is nearly a month before the day itself.</p>
+          <p class="al-sub">An election is not one deadline, it is {opp.sub_windows.length}. Each one falls on its
+          own, the earliest is more than a month before the day itself &mdash; and the last two come
+          <em>after</em> it, when a ballot already cast can still be saved.</p>
           <ol class="al-windows">
             {opp.sub_windows.map((w) => (
               <li class="al-window" data-closes={w.closes_at || w.occurs_at || ''}>
@@ -317,7 +323,7 @@ const rest = avenues.filter((a) => a !== featured);
           </p>
         </>
       ) : (
-        <p class="al-aside ps-record">No dated election record is loaded for this instance yet.</p>
+        <p class="al-aside">No dated election record is loaded for this instance yet.</p>
       )}
     </div>
   </section>
@@ -353,10 +359,11 @@ const rest = avenues.filter((a) => a !== featured);
           </form>
 
           <p class="al-privacy" id="alPrivacy">
-            <strong>Where this goes.</strong> Your address is sent from this page straight to
-            {' '}{j.name}&rsquo;s own address service and boundary map, and nowhere else. This site has no
-            server of its own to store it on, it is never put in the web address, and nothing about the
-            lookup is written to your device. Close the tab and it is gone.
+            <strong>We keep nothing.</strong> Your address is sent from this page straight to
+            {' '}{j.name}&rsquo;s own address service and boundary map, and nowhere else. The lookup runs
+            in your browser: your address never reaches a server of ours, it is never put in the web
+            address, and nothing about it is written to your device. There is no record of it here to
+            keep, or to hand over. Close the tab and it is gone.
           </p>
 
           <div class="al-result" id="alResult" role="status" aria-live="polite" tabindex="-1"></div>
@@ -369,7 +376,7 @@ const rest = avenues.filter((a) => a !== featured);
           </noscript>
         </>
       ) : (
-        <p class="al-aside ps-record">This instance has no geocoder configured, so the address lookup is off.</p>
+        <p class="al-aside">This instance has no geocoder configured, so the address lookup is off.</p>
       )}
 
       <h3 class="al-h3">The layers it resolves</h3>
@@ -395,7 +402,7 @@ const rest = avenues.filter((a) => a !== featured);
         <div class="ps-container">
           <div class="ips-sec-head">
             <span class="ps-record ps-record--red">&sect; 05</span>
-            <h2 class="ips-sec-title">Where and when to hand it in</h2>
+            <h2 class="ips-sec-title">Where to vote, and where to hand a ballot in</h2>
             <span class="ips-sec-rule"></span>
             <span class="ps-record">{locTotal} places</span>
           </div>
@@ -432,7 +439,11 @@ const rest = avenues.filter((a) => a !== featured);
                     </p>
                     <p class="al-place__meta">
                       {p.ward}{p.anc ? <> &middot; ANC {p.anc}</> : null}
-                      {p.accessibility_note ? <span class="al-place__a11y"> &middot; {p.accessibility_note}</span> : null}
+                      {p.accessible === false && p.accessibility_note
+                        ? <span class="al-place__a11y"> &middot; {p.accessibility_note}</span>
+                        : p.accessible === true
+                        ? <span class="al-place__a11y al-place__a11y--ok"> &middot; {authorityName} lists this one as accessible</span>
+                        : <span class="al-place__a11y al-place__a11y--unknown"> &middot; {authorityName} publishes no access information for this one</span>}
                     </p>
                   </li>
                 ))}
@@ -440,6 +451,13 @@ const rest = avenues.filter((a) => a !== featured);
             </details>
           ))}
 
+          <p class="al-source">
+            Each group above is one published list: {authorityName} keeps a separate map layer for
+            election day vote centers, for early vote centers and for drop boxes, and the dates shown on
+            each group are the operating window {authorityName} publishes <em>on that layer</em> &mdash; not
+            our summary of where you may go on a given day. {authorityName} also publishes a combined
+            list on its own site; if you are counting, count from theirs.
+          </p>
           <p class="al-source">
             All {locTotal} places and their opening times come from the map data published by {authorityName},
             read on <time datetime={locs.fetched_at}>{fmtDate(locs.fetched_at)}</time>. They are refreshed
@@ -865,9 +883,13 @@ const rest = avenues.filter((a) => a !== featured);
     };
 
     const serviceDown = () => {
-      say('<p><strong>The address lookup is not answering right now.</strong> It is run by the ' +
-          'jurisdiction, not by us, so there is nothing on this end to restart. Everything below ' +
-          'works without it &mdash; the dates, and every voting place with its hours.</p>', 'error');
+      // A-R1: says what is known. The earlier wording named the jurisdiction as the
+      // cause, which the page cannot tell -- and told readers on a weak connection
+      // that a government service was down. (is:inline comments ship: keep short.)
+      say('<p><strong>That lookup did not go through.</strong> It could be this connection or ' +
+          'the District\'s map service &mdash; there is no way to tell from here, and it is worth ' +
+          'trying again. Everything below works without it &mdash; the dates, and every voting ' +
+          'place with its hours.</p>', 'error');
     };
 
     form.addEventListener('submit', async (e) => {
@@ -1008,6 +1030,30 @@ const rest = avenues.filter((a) => a !== featured);
      dates; all-caps is harder to read and worse for dyslexic readers, and
      uppercasing a cited document title misquotes it. Data keeps the record
      typeface, at a readable size and in its own case. */
+  /* B-A1 -- .al-aside and .al-rail__note carried .ps-record, which is a LABEL
+     style: uppercase at 11.5px. On .al-aside that put 194 characters of running
+     prose in capitals, six times the 32-character ceiling this project set for
+     itself in p2-t2. All-caps removes word-shape, which second-language and
+     dyslexic readers lean on hardest, so it sits inside the accessibility
+     baseline rather than beside it. They keep the small, quiet type and lose the
+     shouting. */
+  .al-aside { font-family: var(--ps-font-record); font-size: 0.82rem; letter-spacing: 0.01em; text-transform: none; }
+  .al-rail__note { font-family: var(--ps-font-record); font-size: 0.82rem; letter-spacing: 0.01em; text-transform: none; }
+
+  /* B-D2 -- access is stated for EVERY place now, not only the seven exceptions.
+     Silence used to read as a promise; on the drop boxes it was not one, because
+     that layer publishes no accessibility column at all (B-D1). The three states
+     are visually distinct but none of them shouts: a reader planning a journey
+     needs to find this, not to be alarmed by it.
+
+     DOUBLED-UP SELECTORS ON PURPOSE: p2-t2 already sets `.al-place__a11y` to the
+     red accent-text, and that rule sits LATER in this file. A single-class
+     modifier here has equal specificity and therefore loses to it -- which it
+     silently did, rendering all three states in identical red until a computed-
+     style check caught it. Two classes outrank one, wherever they sit. */
+  .al-place__a11y.al-place__a11y--ok { color: var(--ps-ink-soft); }
+  .al-place__a11y.al-place__a11y--unknown { color: var(--ps-caution); }
+
   .al-source { display: block; margin-top: 1rem; color: var(--ps-ink-soft); max-width: 72ch; line-height: 1.5; font-size: 0.88rem; }
   .al-source a { color: var(--ps-ink); }
   .al-caution { margin-top: 0.9rem; max-width: 68ch; border-left: 3px solid var(--ps-caution); background: color-mix(in srgb, var(--ps-caution) 8%, transparent); padding: 0.7rem 0.95rem; border-radius: 0 6px 6px 0; color: var(--ps-ink); }

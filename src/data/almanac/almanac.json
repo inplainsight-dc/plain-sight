@@ -159,6 +159,16 @@
           },
           "sub_windows": [
             {
+              "id": "ballots-mailed",
+              "label": "Ballots start going out in the post",
+              "kind": "point",
+              "occurs_at": "2026-09-28",
+              "timezone": "America/New_York",
+              "precision": "date",
+              "note": "Every registered voter in the District is mailed a ballot without asking for one. DCBOE marks this start date tentative on its own calendar. If yours has not arrived a couple of weeks after it, that is worth chasing rather than waiting.",
+              "calendarable": false
+            },
+            {
               "id": "registration-deadline",
               "label": "Last day to register or update your registration by mail or online",
               "kind": "deadline",
@@ -176,6 +186,16 @@
               "timezone": "America/New_York",
               "precision": "date",
               "note": "For voters who need to request one — for example to have it sent to a different address. Most registered DC voters do not need to do anything: a ballot is mailed to them.",
+              "calendarable": true
+            },
+            {
+              "id": "mail-ballot-request-uocava",
+              "label": "Last day for military and overseas voters to request a ballot",
+              "kind": "deadline",
+              "closes_at": "2026-10-31",
+              "timezone": "America/New_York",
+              "precision": "date",
+              "note": "A later deadline, and it applies only to voters covered by the Uniformed and Overseas Citizens Absentee Voting Act — District voters serving in the military or living abroad. If that is you, the October 19 date above is not yours.",
               "calendarable": true
             },
             {
@@ -219,6 +239,26 @@
               "timezone": "America/New_York",
               "precision": "date",
               "note": "A mailed ballot must be postmarked on or before election day — not received by. DCBOE accepts postmarked ballots that arrive up to Friday, November 13.",
+              "calendarable": true
+            },
+            {
+              "id": "special-ballot-verification",
+              "label": "Last day to prove you were eligible, if you cast a special ballot",
+              "kind": "deadline",
+              "closes_at": "2026-11-10",
+              "timezone": "America/New_York",
+              "precision": "date",
+              "note": "A special ballot is one you are given when your eligibility cannot be confirmed at the vote center. It is set aside rather than counted, and it only counts if you follow up by this date.",
+              "calendarable": true
+            },
+            {
+              "id": "cure-mail-ballot",
+              "label": "Last day to fix a problem with your mail ballot",
+              "kind": "deadline",
+              "closes_at": "2026-11-19",
+              "timezone": "America/New_York",
+              "precision": "date",
+              "note": "If your mail ballot is rejected — most often because the signature does not match the one on file — you can correct it up to this date and it will be counted. Nobody tells you automatically. DCBOE runs a toll-free line and a website where you can check whether your ballot was counted, and why if it was not.",
               "calendarable": true
             }
           ],
@@ -283,7 +323,7 @@
         }
       ],
       "locations": {
-        "fetched_at": "2026-08-26T16:51:30Z",
+        "fetched_at": "2026-08-26T21:27:57Z",
         "groups": [
           {
             "id": "election-day-centers",
@@ -299,6 +339,7 @@
                 "anc": "1D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.934318,
                 "lon": -77.040553
               },
@@ -312,6 +353,7 @@
                 "anc": "1A",
                 "accessible": false,
                 "accessibility_note": "Vote Center Not-Accessible",
+                "accessibility_published": true,
                 "lat": 38.929337,
                 "lon": -77.035558
               },
@@ -325,6 +367,7 @@
                 "anc": "1C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.924,
                 "lon": -77.038539
               },
@@ -338,11 +381,12 @@
                 "anc": "1C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.919112,
                 "lon": -77.040822
               },
               {
-                "name": "Fifteenth  Street Presbyterian Church",
+                "name": "Fifteenth Street Presbyterian Church",
                 "address": "1701 15th Street, NW",
                 "dates_open": "Tuesday, November 3, 2026",
                 "time_open": "7:00 AM to 8:00 PM",
@@ -351,6 +395,7 @@
                 "anc": "2F",
                 "accessible": false,
                 "accessibility_note": "Vote Center Not-Accessible",
+                "accessibility_published": true,
                 "lat": 38.912874,
                 "lon": -77.034195
               },
@@ -364,6 +409,7 @@
                 "anc": "2E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.915395,
                 "lon": -77.068627
               },
@@ -377,6 +423,7 @@
                 "anc": "2G",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.909909,
                 "lon": -77.024327
               },
@@ -387,9 +434,10 @@
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 3",
-                "anc": "3C",
+                "anc": "3A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.930149,
                 "lon": -77.075817
               },
@@ -403,6 +451,7 @@
                 "anc": "3D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.93428,
                 "lon": -77.087971
               },
@@ -416,6 +465,7 @@
                 "anc": "3E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.94755,
                 "lon": -77.080995
               },
@@ -429,6 +479,7 @@
                 "anc": "3F",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.952934,
                 "lon": -77.070079
               },
@@ -442,6 +493,7 @@
                 "anc": "3C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.923596,
                 "lon": -77.057203
               },
@@ -455,6 +507,7 @@
                 "anc": "3D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.924473,
                 "lon": -77.104571
               },
@@ -465,9 +518,10 @@
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 4",
-                "anc": "4C",
+                "anc": "4D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.948231,
                 "lon": -77.017777
               },
@@ -481,6 +535,7 @@
                 "anc": "4A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.970262,
                 "lon": -77.031159
               },
@@ -494,8 +549,23 @@
                 "anc": "4B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.966592,
                 "lon": -77.019285
+              },
+              {
+                "name": "LaSalle-Backus Education Campus",
+                "address": "501 Riggs Road, NE",
+                "dates_open": "Tuesday, November 3, 2026",
+                "time_open": "7:00 AM to 8:00 PM",
+                "status": "Open",
+                "ward": "Ward 4",
+                "anc": "4B",
+                "accessible": true,
+                "accessibility_note": "",
+                "accessibility_published": true,
+                "lat": 38.959972,
+                "lon": -76.999883
               },
               {
                 "name": "Lafayette Elementary School",
@@ -507,21 +577,9 @@
                 "anc": "3/4G",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.966628,
                 "lon": -77.068037
-              },
-              {
-                "name": "Lasalle-Backus Education Campus",
-                "address": "501 Riggs Road, NE",
-                "dates_open": "Tuesday, November 3, 2026",
-                "time_open": "7:00 AM to 8:00 PM",
-                "status": "Open",
-                "ward": "Ward 4",
-                "anc": "4B",
-                "accessible": true,
-                "accessibility_note": "",
-                "lat": 38.959972,
-                "lon": -76.999883
               },
               {
                 "name": "Powell Elementary School",
@@ -533,6 +591,7 @@
                 "anc": "4C",
                 "accessible": false,
                 "accessibility_note": "Vote Center Not-Accessible",
+                "accessibility_published": true,
                 "lat": 38.941657,
                 "lon": -77.031582
               },
@@ -546,6 +605,7 @@
                 "anc": "4A",
                 "accessible": false,
                 "accessibility_note": "Vote Center Not-Accessible",
+                "accessibility_published": true,
                 "lat": 38.984682,
                 "lon": -77.033973
               },
@@ -559,6 +619,7 @@
                 "anc": "4B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.975043,
                 "lon": -77.022795
               },
@@ -572,6 +633,7 @@
                 "anc": "5B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.942012,
                 "lon": -76.984996
               },
@@ -585,6 +647,7 @@
                 "anc": "5E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.907627,
                 "lon": -77.012691
               },
@@ -598,11 +661,12 @@
                 "anc": "5D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.904118,
                 "lon": -76.988501
               },
               {
-                "name": "Lamond-Riggs/Lillian J.Huff Library",
+                "name": "Lamond-Riggs/lillian J.huff Library",
                 "address": "5401 South Dakota Avenue, NE",
                 "dates_open": "Tuesday, November 3, 2026",
                 "time_open": "7:00 AM to 8:00 PM",
@@ -611,19 +675,21 @@
                 "anc": "5A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.955128,
                 "lon": -76.999584
               },
               {
-                "name": "McKINLEY TECHNOLOGY HIGH SCHOOL",
+                "name": "McKinley Technology High School",
                 "address": "151 T Street, NE",
                 "dates_open": "Tuesday, November 3, 2026",
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 5",
-                "anc": "5E",
+                "anc": "5F",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.914927,
                 "lon": -77.004328
               },
@@ -637,6 +703,7 @@
                 "anc": "5C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.928234,
                 "lon": -76.962604
               },
@@ -650,6 +717,7 @@
                 "anc": "5B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.925178,
                 "lon": -76.991843
               },
@@ -663,6 +731,7 @@
                 "anc": "6C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.900848,
                 "lon": -76.998677
               },
@@ -676,6 +745,7 @@
                 "anc": "6B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.886413,
                 "lon": -76.996468
               },
@@ -689,6 +759,7 @@
                 "anc": "6D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.879907,
                 "lon": -77.022939
               },
@@ -702,6 +773,7 @@
                 "anc": "6B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.885171,
                 "lon": -76.984984
               },
@@ -715,6 +787,7 @@
                 "anc": "6C",
                 "accessible": false,
                 "accessibility_note": "Vote Center Not-Accessible",
+                "accessibility_published": true,
                 "lat": 38.896298,
                 "lon": -77.000004
               },
@@ -728,6 +801,7 @@
                 "anc": "6B",
                 "accessible": false,
                 "accessibility_note": "Vote Center Not-Accessible",
+                "accessibility_published": true,
                 "lat": 38.883349,
                 "lon": -76.989859
               },
@@ -741,6 +815,7 @@
                 "anc": "7D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.901392,
                 "lon": -76.949107
               },
@@ -754,6 +829,7 @@
                 "anc": "7C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.893315,
                 "lon": -76.932455
               },
@@ -767,6 +843,7 @@
                 "anc": "7F",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.882999,
                 "lon": -76.957625
               },
@@ -777,9 +854,10 @@
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 7",
-                "anc": "6A",
+                "anc": "7D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.897401,
                 "lon": -76.982699
               },
@@ -793,6 +871,7 @@
                 "anc": "7E",
                 "accessible": false,
                 "accessibility_note": "Vote Center Not-Accessible",
+                "accessibility_published": true,
                 "lat": 38.885954,
                 "lon": -76.930797
               },
@@ -806,6 +885,7 @@
                 "anc": "7B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.870092,
                 "lon": -76.964356
               },
@@ -819,11 +899,12 @@
                 "anc": "7D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.895428,
                 "lon": -76.957808
               },
               {
-                "name": "St. Timothy'S Episcopal Church",
+                "name": "St. Timothy's Episcopal Church",
                 "address": "3601 Alabama Ave, SE",
                 "dates_open": "Tuesday, November 3, 2026",
                 "time_open": "7:00 AM to 8:00 PM",
@@ -832,6 +913,7 @@
                 "anc": "7B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.86299,
                 "lon": -76.956092
               },
@@ -845,6 +927,7 @@
                 "anc": "8B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.856861,
                 "lon": -76.970283
               },
@@ -858,6 +941,7 @@
                 "anc": "8A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.870084,
                 "lon": -76.983077
               },
@@ -871,6 +955,7 @@
                 "anc": "8C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.838512,
                 "lon": -77.001362
               },
@@ -881,9 +966,10 @@
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "8C",
+                "anc": "8D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.834011,
                 "lon": -77.008661
               },
@@ -894,9 +980,10 @@
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "8D",
+                "anc": "8E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.828986,
                 "lon": -76.999185
               },
@@ -907,9 +994,10 @@
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "8B",
+                "anc": "8E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.843557,
                 "lon": -76.975322
               },
@@ -920,9 +1008,10 @@
                 "time_open": "7:00 AM to 8:00 PM",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "8E",
+                "anc": "8C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.847636,
                 "lon": -76.980313
               },
@@ -936,6 +1025,7 @@
                 "anc": "8A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.864505,
                 "lon": -76.988951
               }
@@ -952,14 +1042,15 @@
                 "time_open": "8:30 AM to 7:00 PM",
                 "status": "Open",
                 "ward": "Ward 1",
-                "anc": "1B",
+                "anc": "1A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.925146,
                 "lon": -77.035052
               },
               {
-                "name": "Prince Hall Center(Masonic Temple)",
+                "name": "Prince Hall Center(masonic Temple)",
                 "address": "1000 U Street, NW",
                 "dates_open": "October 26, 2026 to November 1, 2026",
                 "time_open": "8:30 AM to 7:00 PM",
@@ -968,6 +1059,7 @@
                 "anc": "1B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.916708,
                 "lon": -77.026297
               },
@@ -981,11 +1073,12 @@
                 "anc": "2E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.913402,
                 "lon": -77.066015
               },
               {
-                "name": "M.L.K. Jr. MEMORIAL LIBRARY",
+                "name": "M.L.K. Jr. Memorial Library",
                 "address": "901 G Street, NW",
                 "dates_open": "October 26, 2026 to November 1, 2026",
                 "time_open": "8:30 AM to 7:00 PM",
@@ -994,6 +1087,7 @@
                 "anc": "2C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.898692,
                 "lon": -77.024766
               },
@@ -1007,6 +1101,7 @@
                 "anc": "2B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.910025,
                 "lon": -77.037621
               },
@@ -1020,6 +1115,7 @@
                 "anc": "2A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.903966,
                 "lon": -77.05063
               },
@@ -1030,9 +1126,10 @@
                 "time_open": "8:30 AM to 7:00 PM",
                 "status": "Open",
                 "ward": "Ward 3",
-                "anc": "3G",
+                "anc": "3/4G",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.965159,
                 "lon": -77.075109
               },
@@ -1046,11 +1143,12 @@
                 "anc": "3C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.93378,
                 "lon": -77.057893
               },
               {
-                "name": "University Of The District Of Columbia",
+                "name": "University of the District of Columbia",
                 "address": "4200 Connecticut Avenue, NW",
                 "dates_open": "October 26, 2026 to November 1, 2026",
                 "time_open": "8:30 AM to 7:00 PM",
@@ -1059,6 +1157,7 @@
                 "anc": "3F",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.94412,
                 "lon": -77.064405
               },
@@ -1069,9 +1168,10 @@
                 "time_open": "8:30 AM to 7:00 PM",
                 "status": "Open",
                 "ward": "Ward 4",
-                "anc": "4B",
+                "anc": "4D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.958818,
                 "lon": -77.027876
               },
@@ -1085,6 +1185,7 @@
                 "anc": "4C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.936432,
                 "lon": -77.026634
               },
@@ -1098,6 +1199,7 @@
                 "anc": "4B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.968893,
                 "lon": -77.017996
               },
@@ -1111,6 +1213,7 @@
                 "anc": "5B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.938104,
                 "lon": -76.99279
               },
@@ -1124,6 +1227,7 @@
                 "anc": "5C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.927414,
                 "lon": -76.978635
               },
@@ -1137,6 +1241,7 @@
                 "anc": "6D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.875083,
                 "lon": -77.012755
               },
@@ -1150,11 +1255,12 @@
                 "anc": "6A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.898595,
                 "lon": -76.993167
               },
               {
-                "name": "Walker Jones Ms/Rh Terrell Rec Ctr",
+                "name": "Walker Jones Ms/rh Terrell Rec Ctr",
                 "address": "155 L Street, NW",
                 "dates_open": "October 26, 2026 to November 1, 2026",
                 "time_open": "8:30 AM to 7:00 PM",
@@ -1163,6 +1269,7 @@
                 "anc": "6E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.904003,
                 "lon": -77.013617
               },
@@ -1176,6 +1283,7 @@
                 "anc": "7F",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.888888,
                 "lon": -76.948219
               },
@@ -1189,6 +1297,7 @@
                 "anc": "7C",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.908445,
                 "lon": -76.932156
               },
@@ -1202,6 +1311,7 @@
                 "anc": "7B",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.858806,
                 "lon": -76.962642
               },
@@ -1212,9 +1322,10 @@
                 "time_open": "8:30 AM to 7:00 PM",
                 "status": "Open",
                 "ward": "Ward 7",
-                "anc": "6A",
+                "anc": "7D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.897812,
                 "lon": -76.979134
               },
@@ -1225,9 +1336,10 @@
                 "time_open": "8:30 AM to 7:00 PM",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "6D",
+                "anc": "8F",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.877905,
                 "lon": -76.999127
               },
@@ -1241,6 +1353,7 @@
                 "anc": "8D",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.81889,
                 "lon": -77.010162
               },
@@ -1254,6 +1367,7 @@
                 "anc": "8E",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.832238,
                 "lon": -76.996852
               },
@@ -1267,6 +1381,7 @@
                 "anc": "8A",
                 "accessible": true,
                 "accessibility_note": "",
+                "accessibility_published": true,
                 "lat": 38.8576,
                 "lon": -76.978731
               }
@@ -1283,9 +1398,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 1",
-                "anc": "1B",
-                "accessible": true,
+                "anc": "1E",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.922704,
                 "lon": -77.022583
               },
@@ -1297,8 +1413,9 @@
                 "status": "Open",
                 "ward": "Ward 1",
                 "anc": "1A",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.929301,
                 "lon": -77.032984
               },
@@ -1310,8 +1427,9 @@
                 "status": "Open",
                 "ward": "Ward 1",
                 "anc": "1B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.917569,
                 "lon": -77.032515
               },
@@ -1323,8 +1441,9 @@
                 "status": "Open",
                 "ward": "Ward 1",
                 "anc": "1D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.930468,
                 "lon": -77.037145
               },
@@ -1336,21 +1455,23 @@
                 "status": "Open",
                 "ward": "Ward 1",
                 "anc": "1C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.923059,
                 "lon": -77.042443
               },
               {
-                "name": "Foggy Bottom/Gwu Metro",
+                "name": "Foggy Bottom/gwu Metro",
                 "address": "2301 I Street, NW",
                 "dates_open": "October 9 to November 3 at 8:00 PM",
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 2",
                 "anc": "2A",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.900872,
                 "lon": -77.05046
               },
@@ -1362,8 +1483,9 @@
                 "status": "Open",
                 "ward": "Ward 2",
                 "anc": "2E",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.913402,
                 "lon": -77.066015
               },
@@ -1375,8 +1497,9 @@
                 "status": "Open",
                 "ward": "Ward 2",
                 "anc": "2C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.898692,
                 "lon": -77.024766
               },
@@ -1387,9 +1510,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 2",
-                "anc": "6E",
-                "accessible": true,
+                "anc": "2G",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.912442,
                 "lon": -77.022218
               },
@@ -1401,8 +1525,9 @@
                 "status": "Open",
                 "ward": "Ward 2",
                 "anc": "2B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.910025,
                 "lon": -77.037621
               },
@@ -1414,8 +1539,9 @@
                 "status": "Open",
                 "ward": "Ward 2",
                 "anc": "2A",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.903966,
                 "lon": -77.05063
               },
@@ -1426,9 +1552,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 3",
-                "anc": "3G",
-                "accessible": true,
+                "anc": "3/4G",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.965576,
                 "lon": -77.07543
               },
@@ -1440,8 +1567,9 @@
                 "status": "Open",
                 "ward": "Ward 3",
                 "anc": "3C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.93378,
                 "lon": -77.057893
               },
@@ -1453,8 +1581,9 @@
                 "status": "Open",
                 "ward": "Ward 3",
                 "anc": "3B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.922139,
                 "lon": -77.071221
               },
@@ -1466,8 +1595,9 @@
                 "status": "Open",
                 "ward": "Ward 3",
                 "anc": "3D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.918382,
                 "lon": -77.097175
               },
@@ -1478,9 +1608,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 3",
-                "anc": "3C",
-                "accessible": true,
+                "anc": "3A",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.934846,
                 "lon": -77.074838
               },
@@ -1492,8 +1623,9 @@
                 "status": "Open",
                 "ward": "Ward 3",
                 "anc": "3E",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.947607,
                 "lon": -77.079947
               },
@@ -1505,8 +1637,9 @@
                 "status": "Open",
                 "ward": "Ward 4",
                 "anc": "4B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.963126,
                 "lon": -77.027411
               },
@@ -1518,8 +1651,9 @@
                 "status": "Open",
                 "ward": "Ward 4",
                 "anc": "4D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.956382,
                 "lon": -77.017123
               },
@@ -1531,8 +1665,9 @@
                 "status": "Open",
                 "ward": "Ward 4",
                 "anc": "4B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.967727,
                 "lon": -77.008238
               },
@@ -1544,8 +1679,9 @@
                 "status": "Open",
                 "ward": "Ward 4",
                 "anc": "4C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.9422,
                 "lon": -77.026137
               },
@@ -1557,8 +1693,9 @@
                 "status": "Open",
                 "ward": "Ward 4",
                 "anc": "4A",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.98029,
                 "lon": -77.027006
               },
@@ -1570,8 +1707,9 @@
                 "status": "Open",
                 "ward": "Ward 4",
                 "anc": "4B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.974437,
                 "lon": -77.020157
               },
@@ -1583,8 +1721,9 @@
                 "status": "Open",
                 "ward": "Ward 5",
                 "anc": "5E",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.907627,
                 "lon": -77.012691
               },
@@ -1595,9 +1734,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 5",
-                "anc": "5E",
-                "accessible": true,
+                "anc": "5F",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.913986,
                 "lon": -77.007868
               },
@@ -1609,21 +1749,23 @@
                 "status": "Open",
                 "ward": "Ward 5",
                 "anc": "5D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.904118,
                 "lon": -76.988501
               },
               {
-                "name": "Monroe Street Market (Outside Of Busboys And Poets)",
+                "name": "Monroe Street Market (Outside of Busboys and Poets)",
                 "address": "625 Monroe Street, NE",
                 "dates_open": "October 9 to November 3 at 8:00 PM",
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 5",
-                "anc": "5E",
-                "accessible": true,
+                "anc": "5F",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.932057,
                 "lon": -76.997041
               },
@@ -1635,8 +1777,9 @@
                 "status": "Open",
                 "ward": "Ward 5",
                 "anc": "5B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.936796,
                 "lon": -76.978596
               },
@@ -1648,21 +1791,23 @@
                 "status": "Open",
                 "ward": "Ward 5",
                 "anc": "5A",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.953341,
                 "lon": -76.997267
               },
               {
-                "name": "Union Market Dc",
+                "name": "Union Market DC",
                 "address": "1309 5th Street, NE",
                 "dates_open": "October 9 to November 3 at 8:00 PM",
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 5",
                 "anc": "5D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.908717,
                 "lon": -76.99765
               },
@@ -1674,8 +1819,9 @@
                 "status": "Open",
                 "ward": "Ward 5",
                 "anc": "5C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.927414,
                 "lon": -76.978635
               },
@@ -1686,9 +1832,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 6",
-                "anc": "6D",
-                "accessible": true,
+                "anc": "8F",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.877952,
                 "lon": -77.007925
               },
@@ -1699,9 +1846,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 6",
-                "anc": "6C",
-                "accessible": true,
+                "anc": "6E",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.906082,
                 "lon": -77.006299
               },
@@ -1713,8 +1861,9 @@
                 "status": "Open",
                 "ward": "Ward 6",
                 "anc": "6B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.886413,
                 "lon": -76.996468
               },
@@ -1726,8 +1875,9 @@
                 "status": "Open",
                 "ward": "Ward 6",
                 "anc": "6C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.894409,
                 "lon": -76.99643
               },
@@ -1739,8 +1889,9 @@
                 "status": "Open",
                 "ward": "Ward 6",
                 "anc": "6B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.885171,
                 "lon": -76.984984
               },
@@ -1752,8 +1903,9 @@
                 "status": "Open",
                 "ward": "Ward 6",
                 "anc": "6D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.878698,
                 "lon": -77.015832
               },
@@ -1765,21 +1917,23 @@
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7E",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.88866,
                 "lon": -76.937448
               },
               {
-                "name": "Benning/Dorothy I. Height Library",
+                "name": "Benning/dorothy I. Height Library",
                 "address": "3935 Benning Road, NE",
                 "dates_open": "October 9 to November 3 at 8:00 PM",
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7F",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.894134,
                 "lon": -76.947805
               },
@@ -1791,8 +1945,9 @@
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7E",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.888955,
                 "lon": -76.929577
               },
@@ -1804,21 +1959,23 @@
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.908445,
                 "lon": -76.932156
               },
               {
-                "name": "Francis A. Gregory Library",
+                "name": "Francis a. Gregory Library",
                 "address": "3660 Alabama Avenue, SE",
                 "dates_open": "October 9 to November 3 at 8:00 PM",
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.864872,
                 "lon": -76.954201
               },
@@ -1830,8 +1987,9 @@
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.869998,
                 "lon": -76.960115
               },
@@ -1843,8 +2001,9 @@
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7E",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.876434,
                 "lon": -76.940723
               },
@@ -1855,9 +2014,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 7",
-                "anc": "6A",
-                "accessible": true,
+                "anc": "7D",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.897812,
                 "lon": -76.979134
               },
@@ -1869,8 +2029,9 @@
                 "status": "Open",
                 "ward": "Ward 7",
                 "anc": "7C",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.900365,
                 "lon": -76.93015
               },
@@ -1882,34 +2043,37 @@
                 "status": "Open",
                 "ward": "Ward 8",
                 "anc": "8A",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.865986,
                 "lon": -76.978544
               },
               {
-                "name": "Bellevue/William O. Lockridge Library",
+                "name": "Bellevue/william O. Lockridge Library",
                 "address": "115 Atlantic Street, SW",
                 "dates_open": "October 9 to November 3 at 8:00 PM",
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 8",
                 "anc": "8D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.831251,
                 "lon": -77.009419
               },
               {
-                "name": "Department Of Human Services",
+                "name": "Department of Human Services",
                 "address": "2100 Martin Luther King Jr. Avenue, SE",
                 "dates_open": "October 9 to November 3 at 8:00 PM",
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 8",
                 "anc": "8A",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.865352,
                 "lon": -76.989228
               },
@@ -1920,9 +2084,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "8B",
-                "accessible": true,
+                "anc": "8A",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.8576,
                 "lon": -76.978731
               },
@@ -1933,9 +2098,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "8D",
-                "accessible": true,
+                "anc": "8E",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.828986,
                 "lon": -76.999185
               },
@@ -1947,8 +2113,9 @@
                 "status": "Open",
                 "ward": "Ward 8",
                 "anc": "8E",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.846187,
                 "lon": -76.981251
               },
@@ -1960,8 +2127,9 @@
                 "status": "Open",
                 "ward": "Ward 8",
                 "anc": "8D",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.826782,
                 "lon": -77.008238
               },
@@ -1973,8 +2141,9 @@
                 "status": "Open",
                 "ward": "Ward 8",
                 "anc": "8B",
-                "accessible": true,
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.8534,
                 "lon": -76.969548
               },
@@ -1985,9 +2154,10 @@
                 "time_open": "",
                 "status": "Open",
                 "ward": "Ward 8",
-                "anc": "8B",
-                "accessible": true,
+                "anc": "8E",
+                "accessible": null,
                 "accessibility_note": "",
+                "accessibility_published": false,
                 "lat": 38.843557,
                 "lon": -76.975322
               }
