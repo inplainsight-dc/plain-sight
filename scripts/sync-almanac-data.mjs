@@ -83,6 +83,88 @@ function indexById(prefix) {
 }
 const avenues = indexById('avenue.');
 const bindings = indexById('binding.');
+const opportunities = indexById('opportunity.');
+
+// --- the per-cycle location cache --------------------------------------------
+// Lives OUTSIDE schema/examples/ (the validator there rejects any filename that is
+// not a schema record) and is refreshed by the Almanac's own
+// scripts/fetch_vote_locations.py, per election cycle, by hand. Keyed by binding_id
+// from inside the file, so nothing here has to know a place name.
+function readLocationCaches() {
+  const root = path.join(electify, 'content');
+  const byBinding = {};
+  if (!fs.existsSync(root)) return byBinding;
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.startsWith('locations.') && entry.name.endsWith('.json')) {
+        const doc = JSON.parse(fs.readFileSync(full, 'utf8'));
+        if (doc.binding_id) byBinding[doc.binding_id] = doc;
+      }
+    }
+  };
+  walk(root);
+  return byBinding;
+}
+const locationCaches = readLocationCaches();
+
+// --- the confidence gate -----------------------------------------------------
+// An opportunity is the record a resident acts on: a date they will show up for.
+// The July fixture carried `confidence: "inferred"` precisely so it could not be
+// mistaken for data, with a note saying a record like that "must never render to a
+// resident without being re-sourced". That is a rule, so it is enforced here rather
+// than remembered — an unverified opportunity fails the build instead of shipping.
+function opportunitiesFor(binding) {
+  return Object.values(opportunities)
+    .filter((o) => o.binding_id === binding.id)
+    .map((o) => {
+      const confidence = o.provenance?.confidence ?? 'verified';
+      if (confidence !== 'verified') {
+        fail(
+          `opportunity ${o.id} has confidence "${confidence}" and would render to a resident.\n` +
+          `    Dates a person plans their day around ship only once they have been read off the\n` +
+          `    authority's own published source. Re-source the record and set confidence to\n` +
+          `    "verified", or move it out of schema/examples/ until it is ready.`
+        );
+      }
+      return {
+        id: o.id,
+        title: o.title,
+        summary: o.summary ?? '',
+        window: o.window,
+        sub_windows: o.sub_windows ?? [],
+        actions: o.actions ?? [],
+        provenance: {
+          as_of: o.provenance.as_of,
+          review_due: o.provenance.review_due ?? '',
+          sources: o.provenance.sources ?? [],
+        },
+      };
+    })
+    .sort((a, b) =>
+      String(a.window.occurs_at ?? a.window.closes_at ?? '')
+        .localeCompare(String(b.window.occurs_at ?? b.window.closes_at ?? '')));
+}
+
+// --- the location groups, named by the binding -------------------------------
+// The cache holds rows; the binding holds what to call them. `notes` on a source is
+// maintainer prose and is deliberately NOT a fallback here: a group with no `label`
+// is a content bug, and showing a paragraph of internal reasoning where a heading
+// belongs is worse than showing nothing.
+function locationsFor(binding) {
+  const cache = locationCaches[binding.id];
+  if (!cache) return null;
+  const labels = Object.fromEntries((binding.sources || []).map((s) => [s.id, s.label]));
+  const groups = cache.groups
+    .filter((g) => {
+      if (labels[g.id]) return true;
+      console.warn(`[sync-almanac] source '${g.id}' on ${binding.id} has no label — group skipped`);
+      return false;
+    })
+    .map((g) => ({ id: g.id, label: labels[g.id], locations: g.locations }));
+  return groups.length ? { fetched_at: cache.fetched_at, groups } : null;
+}
 
 // --- 2. RESOLVE: config + enabled avenues -> one neutral bundle ---------------
 const configFile = fs
@@ -117,6 +199,11 @@ for (const a of [...config.avenues].sort((x, y) => (x.order ?? 99) - (y.order ??
       name: t.name, operator: t.operator, url: t.url, covers: t.covers,
     })),
     steps: (avenue.steps || []).map((s) => ({ title: s.title, leaves_site: !!s.leaves_site })),
+    // p2-t2: the two halves of "your election, in plain sight". Both are null for an
+    // avenue that has neither, so the page renders the p2-t1 shell for those and the
+    // address surface only where the content actually exists.
+    opportunities: opportunitiesFor(binding),
+    locations: locationsFor(binding),
   });
 }
 
@@ -126,6 +213,28 @@ const bundle = {
   area_levels: (config.area_scheme?.levels || []).map((l) => ({
     level: l.level, label: l.label, explainer: l.explainer,
   })),
+  // p2-t2: everything the browser needs to turn a typed address into districts,
+  // and nothing it doesn't. The page holds no endpoint of its own — a fork points
+  // these at its own geocoder and boundary service and the template is untouched.
+  lookup: {
+    geocoder: config.geocoder
+      ? { kind: config.geocoder.kind, url: config.geocoder.url, retain_address: config.geocoder.retain_address }
+      : null,
+    // Point-in-polygon levels grouped by the service that holds them, so the client
+    // can ask each service ONCE for every layer at that address (ArcGIS `identify`
+    // takes a layer list) instead of one request per district level. For DC that is
+    // a single round trip for ward, ANC, SMD and precinct together.
+    services: Object.values(
+      (config.area_scheme?.levels || [])
+        .filter((l) => l.source?.kind === 'arcgis_layer' && l.source.layer_id !== undefined)
+        .reduce((acc, l) => {
+          (acc[l.source.url] ||= { url: l.source.url, layers: [] }).layers.push({
+            level: l.level, label: l.label, layer_id: l.source.layer_id,
+          });
+          return acc;
+        }, {})
+    ),
+  },
   governance: config.governance || {},
   footprint: config.footprint || {},
   avenues: entries,

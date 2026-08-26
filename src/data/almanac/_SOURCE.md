@@ -4,9 +4,20 @@
 `scripts/sync-almanac-data.mjs` from the Civic Almanac content brain:
 
     100 IPS Electify/schema/examples/
-      ├─ instance-config.dc.json   ← the fork seam: jurisdiction, districts, which avenues are on
+      ├─ instance-config.dc.json   ← the fork seam: jurisdiction, geocoder, districts, which avenues are on
       ├─ avenue.*.json             ← portable, jurisdiction-neutral (what an avenue *is*)
-      └─ binding.dc.*.json         ← the DC-specific half (authority, delivery mode, tools it routes to)
+      ├─ binding.dc.*.json         ← the DC-specific half (authority, delivery mode, tools it routes to)
+      └─ opportunity.dc.*.json     ← a dated instance of an avenue: the election, and the deadlines inside it
+
+    100 IPS Electify/content/<jurisdiction>/
+      └─ locations.*.json          ← the PER-CYCLE CACHE (voting places + their hours)
+
+The cache sits outside `schema/examples/` on purpose: `validate.py` rejects any
+filename there that is not a schema record, and this is a fetched artifact rather
+than an authored one. It is refreshed by hand, per election cycle, with
+`python3 scripts/fetch_vote_locations.py` in the Electify folder, and committed —
+so the build stays reproducible and offline, and a bad upstream edit shows up in a
+diff instead of silently reaching a reader.
 
 The sync does two things, in order:
 
@@ -25,7 +36,15 @@ The sync does two things, in order:
 **To change what the /almanac page says,** edit the source records in
 `100 IPS Electify/schema/examples/` and rebuild — never edit `almanac.json`.
 
-_Scope note: this is the `p2-t1` scaffold. Opportunity records (dated cards)
-and footprint entries are deliberately **not** synced yet — those drive
-`p2-t2`/`p2-t4`/`p2-t5`. The 2026-general opportunity fixture is marked
-`confidence: inferred` and must not ship as real data._
+**Two build gates, not one.** As well as running `validate.py`, the sync now
+**refuses to bundle an opportunity whose `provenance.confidence` is not
+`verified`** and fails the build with the record's id. Opportunities are the dates
+a person plans their day around, and the July fixture carried
+`confidence: "inferred"` with a note saying a record like that "must never render
+to a resident without being re-sourced" — so that sentence is now a failing test
+rather than a memo. The 2026-general record was re-sourced from DCBOE's published
+calendar on 2026-08-26 and is `verified`; two dates in the fixture were wrong.
+
+_Scope note: `p2-t1` (the four-avenue shell) and `p2-t2` (address → districts,
+dates, and voting places) are built. Footprint entries are still deliberately
+**not** synced — those drive `p2-t5`._

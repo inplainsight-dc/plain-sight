@@ -26,6 +26,78 @@ const gov = almanac.governance || {};
 const avenues = almanac.avenues || [];
 const levels = almanac.area_levels || [];
 
+// -----------------------------------------------------------------------------
+// p2-t2 — "your election, in plain sight". Everything below is derived from the
+// bundle, never from a place name: the avenue that carries dated opportunities and
+// voting locations is FOUND, not named, so a fork that enables a different avenue
+// first gets the same page with its own content.
+// -----------------------------------------------------------------------------
+const withContent = avenues.find((a) => (a.opportunities || []).length || a.locations) || null;
+const opp = withContent?.opportunities?.[0] || null;
+const locs = withContent?.locations || null;
+const lookup = almanac.lookup || {};
+const canLookUp = !!(lookup.geocoder?.url && (lookup.services || []).length);
+
+const authorityName = withContent?.authority?.name || 'the authority';
+const authorityUrl = withContent?.authority?.url || '';
+const anyCenterNote = withContent?.local_note || '';
+
+const oppDate = opp ? (opp.window.occurs_at || opp.window.closes_at || '') : '';
+const locTotal = locs ? locs.groups.reduce((n, g) => n + g.locations.length, 0) : 0;
+const firstGroupId = locs?.groups?.[0]?.id;
+
+// Dates are formatted from their parts in UTC rather than parsed as local time, so
+// the string a reader sees does not depend on which machine ran the build.
+function fmtDate(s) {
+  if (!s) return '';
+  const [y, m, d] = s.slice(0, 10).split('-').map(Number);
+  if (!y || !m || !d) return s;
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+  });
+}
+function fmtTime(s) {
+  const t = String(s).slice(11, 16);
+  if (!/^\d{2}:\d{2}$/.test(t)) return '';
+  const [h, min] = t.split(':').map(Number);
+  const suffix = h < 12 ? 'a.m.' : 'p.m.';
+  const hour = h % 12 === 0 ? 12 : h % 12;
+  return `${hour}${min ? ':' + String(min).padStart(2, '0') : ''} ${suffix}`;
+}
+// One window, said the way a person would say it. A deadline is a "by"; a range that
+// opens and closes on the same day is a set of hours, not two dates.
+function describeWindow(w) {
+  const at = (s) => (w.precision === 'datetime' && fmtTime(s) ? `${fmtDate(s)}, ${fmtTime(s)}` : fmtDate(s));
+  if (w.kind === 'deadline') return `by ${at(w.closes_at)}`;
+  if (w.kind === 'point') return at(w.occurs_at);
+  if (w.kind === 'range') {
+    const sameDay = w.opens_at && w.closes_at && w.opens_at.slice(0, 10) === w.closes_at.slice(0, 10);
+    if (sameDay) {
+      const hours = fmtTime(w.opens_at) && fmtTime(w.closes_at) ? `, ${fmtTime(w.opens_at)} to ${fmtTime(w.closes_at)}` : '';
+      return `${fmtDate(w.opens_at)}${hours}`;
+    }
+    return `${at(w.opens_at)} to ${at(w.closes_at)}`;
+  }
+  return '';
+}
+// Every place in a group usually shares one operating window, because it is one
+// election. Say it once on the group; say "varies" rather than pick a winner.
+function groupWindow(g) {
+  const seen = [...new Set(g.locations.map((p) => p.dates_open).filter(Boolean))];
+  return seen.length === 1 ? seen[0] : seen.length ? 'hours vary by location' : '';
+}
+// The build's own count of days, replaced client-side against the reader's real
+// today — the page can sit in a cache for a week (see the script below).
+const daysAway = oppDate
+  ? Math.round((Date.parse(oppDate.slice(0, 10) + 'T00:00:00Z') - Date.parse(new Date().toISOString().slice(0, 10) + 'T00:00:00Z')) / 86400000)
+  : null;
+
+// local_note is authored as markdown in the binding; the only markup it uses is
+// bold, so it gets a four-line splitter rather than a markdown dependency.
+function emphasize(text) {
+  return String(text).split(/\*\*(.+?)\*\*/s).map((t, i) => ({ t, bold: i % 2 === 1 }));
+}
+
 const today = new Date().toLocaleDateString('en-US', {
   month: 'long', day: 'numeric', year: 'numeric',
 });
@@ -111,8 +183,10 @@ const rest = avenues.filter((a) => a !== featured);
           <p class="al-avenue__lead">{featured.one_liner}</p>
           <p class="al-avenue__what">{featured.what_it_is}</p>
           <div class="al-soon">
-            <span class="ps-record">Coming in v1</span>
-            <p>Type your address → your districts, your ballot, and where &amp; when to hand it in. Built on {j.name}’s own open data. <span class="al-soon__flag">not yet wired — that’s the next task.</span></p>
+            <span class="ps-record">Built and live</span>
+            <p>Type your address &rarr; your districts, and the voting places nearest you, with their
+            opening times. Built on {j.name}&rsquo;s own open data, resolved in your browser.
+            <a class="al-soon__go" href="#your-election">See your election &darr;</a></p>
           </div>
           {featured.authority && (
             <p class="al-avenue__auth ps-record">Authority: <a href={featured.authority.url} target="_blank" rel="noopener">{featured.authority.name} &#8599;</a></p>
@@ -155,15 +229,114 @@ const rest = avenues.filter((a) => a !== featured);
     <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
-  <!-- 03 — YOUR DISTRICTS (preview) -->
-  <section class="ips-sec" id="districts">
+  <!-- 03 — YOUR ELECTION, IN PLAIN SIGHT (p2-t2) -->
+  <section class="ips-sec" id="your-election">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 03</span>
+        <h2 class="ips-sec-title">Your election, in plain sight</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      {opp ? (
+        <>
+          <article class="al-next" aria-labelledby="al-next-h">
+            <p class="ps-record al-next__kicker">The next one</p>
+            <h3 class="al-next__h" id="al-next-h">{opp.title}</h3>
+            <p class="al-next__date"><time datetime={oppDate}>{fmtDate(oppDate)}</time></p>
+            <p class="al-next__countdown ps-record" id="al-countdown" data-date={oppDate}>{daysAway === null ? '' : daysAway > 0 ? `${daysAway} days away` : daysAway === 0 ? 'Today' : 'This election has passed'}</p>
+            {opp.summary && <p class="al-next__sum">{opp.summary}</p>}
+          </article>
+
+          <h3 class="al-h3">The dates inside the date</h3>
+          <p class="al-sub">An election is not one deadline, it is six. Each one closes on its own, and the
+          earliest of them is nearly a month before the day itself.</p>
+          <ol class="al-windows">
+            {opp.sub_windows.map((w) => (
+              <li class="al-window" data-closes={w.closes_at || w.occurs_at || ''}>
+                <div class="al-window__when">
+                  <span class="ps-record al-window__kind">{w.kind === 'deadline' ? 'Closes' : 'Open'}</span>
+                  <span class="al-window__dates">{describeWindow(w)}</span>
+                </div>
+                <div class="al-window__what">
+                  <p class="al-window__label">{w.label}</p>
+                  {w.note && <p class="al-window__note">{w.note}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <p class="al-source">
+            Dates read from the calendar published by {authorityName}, as of {fmtDate(opp.provenance.as_of)}.
+            {opp.provenance.sources.length > 0 && (
+              <> Source{opp.provenance.sources.length > 1 ? 's' : ''}: {opp.provenance.sources.map((s, i) => (
+                <>{i > 0 && <>, </>}<a href={s.url} target="_blank" rel="noopener">{s.label} &#8599;</a></>
+              ))}.</>
+            )}
+          </p>
+          <p class="al-caution">
+            <strong>Dates move.</strong> {authorityName} publishes this calendar &ldquo;subject to change&rdquo; and marks
+            some periods tentative. Before you rely on a date here &mdash; especially to post something &mdash; check it
+            against {authorityName}{authorityUrl ? <> at <a href={authorityUrl} target="_blank" rel="noopener">their site &#8599;</a></> : null}.
+          </p>
+        </>
+      ) : (
+        <p class="al-aside ps-record">No dated election record is loaded for this instance yet.</p>
+      )}
+    </div>
+  </section>
+
+  <div class="ips-stardiv" aria-hidden="true">
+    <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+  </div>
+
+  <!-- 04 — KEYED TO WHERE YOU LIVE: the address lookup -->
+  <section class="ips-sec" id="districts">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 04</span>
         <h2 class="ips-sec-title">Keyed to where you live</h2>
         <span class="ips-sec-rule"></span>
       </div>
-      <div class="ips-about"><p>Nearly everything above depends on your address — sometimes down to a single block. In v1 you’ll type it once; it’s resolved to the districts below and then <strong>discarded</strong> — never stored, never logged, because there is no server to store it on. These are the layers the {j.short_name} instance resolves:</p></div>
+
+      <div class="ips-about">
+        <p>Your ballot depends on your address, sometimes down to a single block. Type it once and it is
+        resolved to the districts below &mdash; and to the voting places nearest you &mdash; and then it is gone.</p>
+      </div>
+
+      {canLookUp ? (
+        <>
+          <form class="al-form" id="alForm" novalidate>
+            <label class="ps-record al-form__label" for="alAddr">Your address in {j.short_name || j.name}</label>
+            <div class="al-form__row">
+              <input id="alAddr" name="address" type="text" inputmode="text"
+                     autocomplete="street-address" placeholder="e.g. 700 A St NE"
+                     aria-describedby="alPrivacy" />
+              <button class="al-form__btn" type="submit" id="alGo">Look it up</button>
+            </div>
+          </form>
+
+          <p class="al-privacy" id="alPrivacy">
+            <strong>Where this goes.</strong> Your address is sent from this page straight to
+            {' '}{j.name}&rsquo;s own address service and boundary map, and nowhere else. This site has no
+            server of its own to store it on, it is never put in the web address, and nothing about the
+            lookup is written to your device. Close the tab and it is gone.
+          </p>
+
+          <div class="al-result" id="alResult" role="status" aria-live="polite" tabindex="-1"></div>
+
+          <noscript>
+            <p class="al-noscript">This lookup needs JavaScript, because the work happens in your browser
+            rather than on a server &mdash; that is the same reason nothing about your address is stored.
+            Without it you can still use everything below, and
+            {authorityUrl ? <> the <a href={authorityUrl} target="_blank" rel="noopener">{authorityName} &#8599;</a> has an address lookup of its own.</> : <> your election authority has an address lookup of its own.</>}</p>
+          </noscript>
+        </>
+      ) : (
+        <p class="al-aside ps-record">This instance has no geocoder configured, so the address lookup is off.</p>
+      )}
+
+      <h3 class="al-h3">The layers it resolves</h3>
       <ol class="al-levels">
         {levels.map((l) => (
           <li class="al-level">
@@ -172,7 +345,6 @@ const rest = avenues.filter((a) => a !== featured);
           </li>
         ))}
       </ol>
-      <p class="al-aside ps-record">The address lookup itself is the next build task (p2-t2). This scaffold names the layers; it does not yet resolve them.</p>
     </div>
   </section>
 
@@ -180,11 +352,67 @@ const rest = avenues.filter((a) => a !== featured);
     <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
   </div>
 
-  <!-- 04 — FINE PRINT -->
+  <!-- 05 — WHERE AND WHEN TO HAND IT IN -->
+  {locs && (
+    <>
+      <section class="ips-sec" id="where">
+        <div class="ps-container">
+          <div class="ips-sec-head">
+            <span class="ps-record ps-record--red">&sect; 05</span>
+            <h2 class="ips-sec-title">Where and when to hand it in</h2>
+            <span class="ips-sec-rule"></span>
+            <span class="ps-record">{locTotal} places</span>
+          </div>
+
+          <div class="ips-about">
+            <p>{emphasize(anyCenterNote).map((part) => (part.bold ? <strong>{part.t}</strong> : <Fragment>{part.t}</Fragment>))}</p>
+          </div>
+
+          {locs.groups.map((g) => (
+            <details class="al-places" open={g.id === firstGroupId}>
+              <summary class="al-places__sum">
+                <span class="al-places__title">{g.label}</span>
+                <span class="ps-record al-places__count">{g.locations.length}</span>
+                <span class="al-places__when">{groupWindow(g)}</span>
+              </summary>
+              <ul class="al-place-list" data-group={g.id}>
+                {g.locations.map((p) => (
+                  <li class="al-place" data-lat={p.lat} data-lon={p.lon}>
+                    <p class="al-place__name">{p.name}</p>
+                    <p class="al-place__addr">{p.address}</p>
+                    <p class="al-place__when">
+                      {p.dates_open}{p.time_open ? <> &middot; {p.time_open}</> : null}
+                    </p>
+                    <p class="al-place__meta">
+                      {p.ward}{p.anc ? <> &middot; ANC {p.anc}</> : null}
+                      {p.accessibility_note ? <span class="al-place__a11y"> &middot; {p.accessibility_note}</span> : null}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ))}
+
+          <p class="al-source">
+            All {locTotal} places and their opening times come from the map data published by {authorityName},
+            read on <time datetime={locs.fetched_at}>{fmtDate(locs.fetched_at)}</time>. They are refreshed
+            per election cycle, not live &mdash; if the day is close, confirm against
+            {authorityUrl ? <> <a href={authorityUrl} target="_blank" rel="noopener">{authorityName} &#8599;</a></> : <> the authority</>}.
+          </p>
+        </div>
+      </section>
+
+      <div class="ips-stardiv" aria-hidden="true">
+        <span class="ps-stars"><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg><svg><use href="#ips-star" /></svg></span>
+      </div>
+    </>
+  )}
+
+  <!-- 06 — FINE PRINT -->
   <section class="ips-sec" id="fineprint">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 04</span>
+        <span class="ps-record ps-record--red">&sect; 06</span>
         <h2 class="ips-sec-title">The fine print</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -205,6 +433,350 @@ const rest = avenues.filter((a) => a !== featured);
 
   <Footer slot="footer" />
 </Base>
+
+
+<!--
+  THE ADDRESS LOOKUP (p2-t2).
+
+  WHY IT RUNS HERE AND NOT ON A SERVER
+  The section above promises the reader that their address is not stored. That is a
+  claim about architecture, not about intentions, so it is met structurally: this
+  page is static, there is no backend, and the two calls below go from the reader's
+  own browser to the jurisdiction's own GIS. Nothing we operate is in the path, so
+  there is nothing of ours that could log an address even by accident. Both
+  endpoints answer cross-origin (verified 2026-08-26 from three origins), which is
+  the reason a geocoder that needed a proxy was rejected — a proxy would be a
+  server, and the promise would become a policy instead of a fact.
+
+  WHAT IT REFUSES TO DO
+  * It never writes the address anywhere: no localStorage, no sessionStorage, no
+    query string, no hash. Reload the page and it is gone.
+  * It never guesses between two equally-good matches. An address typed without a
+    quadrant matches two real places in different wards with identical scores, so
+    the reader is asked which one they meant. A confidently wrong district is worse
+    than a second question.
+  * It never claims a vote center is "yours". Distance is offered as convenience,
+    and the any-center rule is stated next to it.
+-->
+<script is:inline define:vars={{ LOOKUP: lookup, BBOX: j.bbox || null, AUTHORITY: withContent?.authority || null }}>
+  (() => {
+    'use strict';
+
+    // --- the countdown, corrected against the reader's real today ---------------
+    // The number rendered at build time is right on the day of the build and drifts
+    // afterwards. Same idea as the freshness stamp on /appointments/seats.
+    const cd = document.getElementById('al-countdown');
+    if (cd && cd.dataset.date) {
+      const now = new Date();
+      const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      const then = Date.parse(cd.dataset.date.slice(0, 10) + 'T00:00:00Z');
+      if (isFinite(then)) {
+        const days = Math.round((then - today) / 86400000);
+        cd.textContent =
+          days > 1 ? days + ' days away' :
+          days === 1 ? 'Tomorrow' :
+          days === 0 ? 'Today' : 'This election has passed';
+        if (days < 0) cd.classList.add('is-past');
+      }
+    }
+
+    const form = document.getElementById('alForm');
+    const input = document.getElementById('alAddr');
+    const btn = document.getElementById('alGo');
+    const out = document.getElementById('alResult');
+    if (!form || !input || !btn || !out) return;
+
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+    const say = (html, kind) => {
+      out.className = 'al-result is-' + (kind || 'answer');
+      out.innerHTML = html;
+    };
+    const busy = (on) => {
+      btn.disabled = on;
+      btn.textContent = on ? 'Looking…' : 'Look it up';
+      out.setAttribute('aria-busy', on ? 'true' : 'false');
+    };
+
+    // The jurisdiction's GIS is a real public service under real load, and in the
+    // week before an election it is under its heaviest. Observed 2026-08-26: the
+    // same request answering in 0.1s, then 9s, then not at all. Two consequences,
+    // both handled here rather than left to the reader:
+    //   * a bare fetch() has NO timeout, so a hung connection leaves the button on
+    //     "Looking…" forever — a stuck control is worse than an error message;
+    //   * a single transient failure should not become a visible failure when one
+    //     retry would have answered.
+    // One retry, short backoff, hard ceiling. Beyond that it is an outage and the
+    // reader is told so plainly, because everything else on the page still works.
+    const getJson = async (url, attempt = 0) => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 12000);
+      try {
+        const r = await fetch(url, {
+          credentials: 'omit', referrerPolicy: 'no-referrer', signal: ctrl.signal,
+        });
+        if (!r.ok) throw new Error('http ' + r.status);
+        const d = await r.json();
+        if (d && d.error) throw new Error('service error');
+        return d;
+      } catch (e) {
+        if (attempt === 0) {
+          await new Promise((r) => setTimeout(r, 1200));
+          return getJson(url, 1);
+        }
+        throw e;
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    // --- 1. address -> a point ---------------------------------------------------
+    const dedupe = (list) => {
+      const seen = new Set();
+      return list.filter((c) => {
+        const k = (c.address || '').toUpperCase();
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+    };
+
+    const geocode = async (q) => {
+      const u = LOOKUP.geocoder.url.replace(/\/$/, '') +
+        '/findAddressCandidates?SingleLine=' + encodeURIComponent(q) +
+        '&outFields=Match_addr&maxLocations=5&outSR=4326&f=json';
+      const d = await getJson(u);
+      let all = (d.candidates || []).filter((c) => c && c.location);
+
+      // QUADRANT GUARD. The locator matches loosely, and loosely is dangerous in a
+      // city that reuses street names across quadrants: "1215 I Street NW" comes
+      // back as 1215 I STREET **NE** and **SE**, scoring 93 each, with the quadrant
+      // the reader actually typed absent. Ranked together they read as "the
+      // alternatives to what you asked for", which they are not — they are
+      // different addresses in different districts.
+      //
+      // The guard SEPARATES them; it does not hide them. An earlier version
+      // withheld them entirely, which was overshoot: NW and NE are one keystroke
+      // apart, so a mistyped quadrant is the likeliest cause, and refusing to say
+      // what was found left the reader guessing what to retype. The property that
+      // actually matters is that a mismatch is never resolved silently — labelling
+      // delivers that, and withholding bought nothing on top of it.
+      const quadrantOf = (a) => ((a || '').toUpperCase().match(/\b(NW|NE|SW|SE)\b/g) || []).pop();
+      const asked = quadrantOf(q);
+      let elsewhere = [];
+      if (asked) {
+        elsewhere = all.filter((c) => quadrantOf(c.address) !== asked);
+        all = all.filter((c) => quadrantOf(c.address) === asked);
+      }
+      if (!all.length) return { candidates: [], elsewhere: dedupe(elsewhere), asked };
+
+
+      // Keep only matches as good as the best one. Two candidates a whisker apart
+      // are a genuine ambiguity, not a ranking to resolve on the reader's behalf.
+      const best = all[0].score;
+      return { asked, elsewhere: [], candidates: dedupe(all.filter((c) => best - c.score <= 1)) };
+    };
+
+    const inBbox = (lon, lat) =>
+      !BBOX || (lon >= BBOX[0] && lon <= BBOX[2] && lat >= BBOX[1] && lat <= BBOX[3]);
+
+    // --- 2. a point -> every district level, in one request per service ----------
+    // ArcGIS `identify` takes a list of layers, so all four levels come back
+    // together. The layer-to-level mapping comes from the config, so this function
+    // knows nothing about which districts a jurisdiction happens to have.
+    const identify = async (lon, lat) => {
+      const extent = BBOX ? BBOX.join(',') : '-180,-90,180,90';
+      const rounds = (LOOKUP.services || []).map(async (svc) => {
+        const ids = svc.layers.map((l) => l.layer_id);
+        const u = svc.url.replace(/\/$/, '') + '/identify' +
+          '?geometry=' + encodeURIComponent(JSON.stringify({ x: lon, y: lat, spatialReference: { wkid: 4326 } })) +
+          '&geometryType=esriGeometryPoint&sr=4326' +
+          '&layers=' + encodeURIComponent('all:' + ids.join(',')) +
+          '&tolerance=0&mapExtent=' + encodeURIComponent(extent) +
+          '&imageDisplay=600,600,96&returnGeometry=false&f=json';
+        const d = await getJson(u);
+        const found = {};
+        for (const r of d.results || []) found[r.layerId] = r.value;
+        return svc.layers.map((l) => ({ level: l.level, label: l.label, value: found[l.layer_id] || null }));
+      });
+      return (await Promise.all(rounds)).flat();
+    };
+
+    // --- 3. the point -> the nearest places already on the page ------------------
+    // Read out of the DOM rather than a second copy of the data: the full lists are
+    // server-rendered below, so a reader without JavaScript still sees every one.
+    const miles = (aLat, aLon, bLat, bLon) => {
+      const R = 3958.8, rad = Math.PI / 180;
+      const dLat = (bLat - aLat) * rad, dLon = (bLon - aLon) * rad;
+      const s = Math.sin(dLat / 2) ** 2 +
+        Math.cos(aLat * rad) * Math.cos(bLat * rad) * Math.sin(dLon / 2) ** 2;
+      return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
+    };
+
+    const nearest = (lat, lon) => {
+      const groups = [];
+      for (const list of document.querySelectorAll('.al-place-list')) {
+        const label = list.closest('.al-places')?.querySelector('.al-places__title')?.textContent || '';
+        const rows = [...list.querySelectorAll('.al-place')]
+          .map((el) => ({ el, d: miles(lat, lon, parseFloat(el.dataset.lat), parseFloat(el.dataset.lon)) }))
+          .filter((r) => isFinite(r.d))
+          .sort((a, b) => a.d - b.d)
+          .slice(0, 3);
+        if (rows.length) groups.push({ label, rows });
+      }
+      return groups;
+    };
+
+    const renderNearest = (groups) => groups.map((g) => (
+      '<div class="al-near__group">' +
+        '<p class="ps-record al-near__h">' + esc(g.label) + '</p>' +
+        '<ul class="al-near__list">' + g.rows.map((r) => {
+          const q = r.el.querySelector.bind(r.el);
+          const a11y = q('.al-place__a11y');
+          return '<li>' +
+            '<span class="al-near__name">' + esc(q('.al-place__name').textContent) + '</span>' +
+            '<span class="al-near__dist ps-record">' + r.d.toFixed(1) + ' mi</span>' +
+            '<span class="al-near__addr">' + esc(q('.al-place__addr').textContent) + '</span>' +
+            '<span class="al-near__when">' + esc(q('.al-place__when').textContent.trim()) + '</span>' +
+            (a11y ? '<span class="al-near__a11y">' + esc(a11y.textContent.replace(/^\s*·\s*/, '')) + '</span>' : '') +
+          '</li>';
+        }).join('') + '</ul>' +
+      '</div>'
+    )).join('');
+
+    // --- the answer --------------------------------------------------------------
+    const resolve = async (label, lon, lat) => {
+      if (!inBbox(lon, lat)) {
+        say('<p><strong>That address is outside the area this instance covers.</strong> ' +
+            'The lookup only holds boundaries for this jurisdiction, so there is nothing ' +
+            'honest it can tell you about somewhere else.</p>', 'error');
+        return;
+      }
+      const levels = await identify(lon, lat);
+      const known = levels.filter((l) => l.value);
+      if (!known.length) {
+        say('<p><strong>We found that address but could not place it in a district.</strong> ' +
+            'The boundary service answered without a match, which usually means it is ' +
+            'temporarily out of step. Please try again shortly.</p>', 'error');
+        return;
+      }
+      const missing = levels.filter((l) => !l.value).map((l) => l.label);
+
+      say(
+        '<p class="al-result__matched"><span class="ps-record">Matched</span> ' + esc(label) + '</p>' +
+        '<h3 class="al-result__h">Your districts</h3>' +
+        '<ul class="al-result__districts">' + known.map((l) =>
+          '<li><span class="ps-record">' + esc(l.label) + '</span> <b>' + esc(l.value) + '</b></li>'
+        ).join('') + '</ul>' +
+        (missing.length
+          ? '<p class="al-result__gap">No answer came back for: ' + esc(missing.join(', ')) +
+            '. Shown as missing rather than guessed.</p>'
+          : '') +
+        '<h3 class="al-result__h">Closest to you</h3>' +
+        '<div class="al-near">' + renderNearest(nearest(lat, lon)) + '</div>' +
+        '<p class="al-result__note">Distance is straight-line, as the crow flies, and it is a ' +
+        'convenience only &mdash; not an assignment. The full lists, and the rule about which ' +
+        'places you may use, are below. <a href="#where">See every place &darr;</a></p>' +
+        '<p class="al-result__privacy">Your address was used to draw this and has already ' +
+        'been discarded. Nothing above was written to your device.</p>',
+        'answer'
+      );
+      out.focus();
+    };
+
+    // Two situations end in a list of buttons, and they need opposite framings.
+    //   asked === undefined -> the reader named no quadrant, so these ARE the
+    //     alternatives; but the register does not always return all four, so the
+    //     list may be short and says so.
+    //   asked && mismatch    -> the reader named a quadrant and nothing matched it.
+    //     These are shown, because a mistyped quadrant is the likeliest cause and
+    //     the reader can see it — but they are presented as a different address,
+    //     never as "the answer", and nothing is preselected.
+    const askWhich = (candidates, asked, mismatch) => {
+      const list = '<ul class="al-result__choices">' + candidates.map((c, i) =>
+        '<li><button type="button" class="al-choice" data-i="' + i + '">' + esc(c.address) + '</button></li>'
+      ).join('') + '</ul>';
+
+      say(mismatch
+        ? '<p><strong>Nothing matched in ' + esc(asked) + '.</strong> The address register has no ' +
+          '<em>' + esc(asked) + '</em> entry for what you typed. It does have ' +
+          (candidates.length === 1 ? 'this, in another quadrant' : 'these, in other quadrants') + ' &mdash; ' +
+          'a different quadrant is a different place in a different district, so take ' +
+          (candidates.length === 1 ? 'it' : 'one') + ' only if you meant it:</p>' + list +
+          '<p class="al-result__gap">If none of these is yours, check the number and street ' +
+          'name too &mdash; a few real addresses are missing from the register under the form people ' +
+          'usually type them.</p>'
+
+        : '<p><strong>Which one did you mean?</strong> ' + candidates.length + ' addresses matched ' +
+          'that equally well &mdash; usually a missing quadrant (NW, NE, SW, SE). They are in ' +
+          'different districts, so we would rather ask than guess.</p>' + list +
+          '<p class="al-result__gap">This is what the address register offered, not every ' +
+          'address that exists &mdash; it does not always return all four quadrants. If none of ' +
+          'these is yours, add the quadrant to what you typed and try again.</p>',
+        'ask'
+      );
+      out.querySelectorAll('.al-choice').forEach((b) => {
+        b.addEventListener('click', async () => {
+          const c = candidates[Number(b.dataset.i)];
+          busy(true);
+          say('<p>Looking up ' + esc(c.address) + '…</p>', 'answer');
+          try {
+            await resolve(c.address, c.location.x, c.location.y);
+          } catch (e) {
+            serviceDown();
+          } finally {
+            busy(false);
+          }
+        });
+      });
+      out.focus();
+    };
+
+    const serviceDown = () => {
+      say('<p><strong>The address lookup is not answering right now.</strong> It is run by the ' +
+          'jurisdiction, not by us, so there is nothing on this end to restart. Everything below ' +
+          'works without it &mdash; the dates, and every voting place with its hours.</p>', 'error');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (!q) {
+        say('<p>Type a street address to get started.</p>', 'error');
+        input.focus();
+        return;
+      }
+      busy(true);
+      say('<p>Looking up that address…</p>', 'answer');
+      try {
+        const { candidates, elsewhere, asked } = await geocode(q);
+        if (!candidates.length) {
+          // Nothing in the quadrant asked for, but the register found something.
+          // Hand it over, framed as a different address rather than as the answer.
+          if (elsewhere.length) { askWhich(elsewhere, asked, true); return; }
+          const authority = AUTHORITY && AUTHORITY.url
+            ? ' <a href="' + esc(AUTHORITY.url) + '" target="_blank" rel="noopener">' + esc(AUTHORITY.name) + ' &#8599;</a> keeps its own lookup.'
+            : '';
+          say('<p><strong>We could not place that address.</strong> Check the quadrant &mdash; ' +
+              'addresses here need NW, NE, SW or SE. A few real addresses are also missing from the ' +
+              'official register under the form people usually type, so if you are sure it is right, ' +
+              'try the plain street number without a unit or building name.' + authority +
+              ' Everything below works without an address.</p>', 'error');
+          out.focus();
+          return;
+        }
+        if (candidates.length > 1) { askWhich(candidates, asked, false); return; }
+        await resolve(candidates[0].address, candidates[0].location.x, candidates[0].location.y);
+      } catch (err) {
+        serviceDown();
+        out.focus();
+      } finally {
+        busy(false);
+      }
+    });
+  })();
+</script>
 
 <style>
   .ips-lead { padding-block: clamp(2.6rem, 8vw, 5rem) clamp(2rem, 5vw, 3.4rem); }
@@ -251,6 +823,7 @@ const rest = avenues.filter((a) => a !== featured);
   .al-soon { border-left: 2px solid var(--ps-accent); background: color-mix(in srgb, var(--ps-accent) 6%, transparent); padding: 0.7rem 0.9rem; border-radius: 0 6px 6px 0; margin: 0.4rem 0 0.7rem; }
   .al-soon > .ps-record { display: inline-block; color: var(--ps-accent-text); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.25rem; }
   .al-soon p { margin: 0; color: var(--ps-ink-soft); font-size: 1rem; max-width: 72ch; }
+  .al-soon__go { display: inline-block; margin-top: 0.2rem; font-family: var(--ps-font-record); font-size: 0.85rem; }
   .al-soon__flag { color: var(--ps-accent-text); font-style: italic; }
 
   .al-tools { list-style: none; margin: 0.2rem 0 0.4rem; padding: 0; display: grid; gap: 0.55rem; }
@@ -275,5 +848,124 @@ const rest = avenues.filter((a) => a !== featured);
   @media (max-width: 640px) {
     .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
     .al-level { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+
+  /* ---- p2-t2: your election, in plain sight -------------------------------- */
+  .al-h3 { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.25rem; margin: 2rem 0 0.35rem; }
+  .al-sub { color: var(--ps-ink-soft); max-width: 62ch; margin-bottom: 1rem; }
+
+  /* The next election */
+  .al-next { border: 1px solid var(--ps-line); border-left: 3px solid var(--ps-accent); border-radius: 0 8px 8px 0; background: var(--ps-surface-2); padding: 1.1rem 1.35rem; max-width: 62ch; }
+  .al-next__kicker { display: block; color: var(--ps-accent-text); margin-bottom: 0.2rem; }
+  .al-next__h { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.4rem, 3.4vw, 1.9rem); }
+  .al-next__date { font-size: 1.15rem; color: var(--ps-ink); margin-top: 0.15rem; }
+  .al-next__countdown { display: block; color: var(--ps-accent-text); margin-top: 0.25rem; }
+  .al-next__countdown.is-past { color: var(--ps-ink-soft); }
+  .al-next__sum { color: var(--ps-ink-soft); margin-top: 0.7rem; }
+
+  /* The dates inside the date */
+  .al-windows { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--ps-ink); max-width: 72ch; }
+  .al-window { display: grid; grid-template-columns: 15rem 1fr; gap: 1rem; padding: 0.9rem 0.2rem; border-bottom: 1px solid var(--ps-line); }
+  .al-window__kind { display: block; color: var(--ps-accent-text); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .al-window__dates { display: block; font-family: var(--ps-font-record); font-size: 0.95rem; color: var(--ps-ink); }
+  .al-window__label { font-weight: 600; margin-bottom: 0.2rem; }
+  .al-window__note { color: var(--ps-ink-soft); font-size: 0.99rem; }
+
+  /* .ps-record is a LABEL style — 0.72rem, uppercase, wide tracking. It belongs on
+     'CLOSES', 'MATCHED', '§ 03'. It was on these too until an audit found 197
+     characters of uppercase 11.5px prose and 130 opening times shouting their
+     dates; all-caps is harder to read and worse for dyslexic readers, and
+     uppercasing a cited document title misquotes it. Data keeps the record
+     typeface, at a readable size and in its own case. */
+  .al-source { display: block; margin-top: 1rem; color: var(--ps-ink-soft); max-width: 72ch; line-height: 1.5; font-size: 0.88rem; }
+  .al-source a { color: var(--ps-ink); }
+  .al-caution { margin-top: 0.9rem; max-width: 68ch; border-left: 3px solid var(--ps-caution); background: color-mix(in srgb, var(--ps-caution) 8%, transparent); padding: 0.7rem 0.95rem; border-radius: 0 6px 6px 0; color: var(--ps-ink); }
+
+  /* The address form */
+  .al-form { margin: 0.4rem 0 0.6rem; max-width: 34rem; }
+  .al-form__label { display: block; color: var(--ps-accent-text); margin-bottom: 0.35rem; }
+  .al-form__row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .al-form__row input { flex: 1 1 16rem; min-width: 0; font: inherit; font-size: 1.05rem; padding: 0.65rem 0.8rem; color: var(--ps-ink); background: var(--ps-paper); border: 1.5px solid var(--ps-ink); border-radius: 6px; }
+  .al-form__row input::placeholder { color: var(--ps-ink-soft); opacity: 1; }
+  .al-form__btn { font-family: var(--ps-font-record); font-size: 0.9rem; letter-spacing: 0.03em; padding: 0.72rem 1.2rem; min-height: 44px; border-radius: 6px; border: 1.5px solid var(--ps-accent-fill); background: var(--ps-accent-fill); color: var(--ps-accent-fill-ink); cursor: pointer; }
+  .al-form__btn:hover { background: var(--ps-accent-fill-hover); border-color: var(--ps-accent-fill-hover); }
+  .al-form__btn[disabled] { opacity: 0.65; cursor: progress; }
+
+  .al-privacy { max-width: 62ch; color: var(--ps-ink-soft); font-size: 0.99rem; border-left: 2px solid var(--ps-line); padding-left: 0.85rem; }
+  .al-privacy strong { color: var(--ps-ink); }
+  .al-noscript { margin-top: 0.8rem; max-width: 62ch; color: var(--ps-ink-soft); border-left: 3px solid var(--ps-info); padding-left: 0.85rem; }
+
+
+  /* The full lists */
+  .al-places { border: 1px solid var(--ps-line); border-radius: 8px; background: var(--ps-surface); margin-bottom: 0.7rem; }
+  .al-places__sum { cursor: pointer; padding: 0.85rem 1.1rem; display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
+  .al-places__sum::-webkit-details-marker { display: none; }
+  .al-places__sum::marker { content: ''; }
+  .al-places__sum::before { content: '▸'; color: var(--ps-accent-text); flex: none; }
+  .al-places[open] > .al-places__sum::before { content: '▾'; }
+  .al-places__title { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.1rem; }
+  .al-places__count { color: var(--ps-paper); background: var(--ps-ink); border-radius: 999px; padding: 0.05rem 0.5rem; font-size: 0.72rem; }
+  .al-places__when { color: var(--ps-ink-soft); font-family: var(--ps-font-record); font-size: 0.84rem; }
+  .al-place-list { list-style: none; margin: 0; padding: 0 1.1rem 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr)); gap: 0.9rem; }
+  .al-place { padding-left: 0.8rem; border-left: 2px solid var(--ps-line); }
+  .al-place__name { font-weight: 600; }
+  .al-place__addr { color: var(--ps-ink-soft); font-size: 0.97rem; }
+  .al-place__when { display: block; color: var(--ps-ink); font-family: var(--ps-font-record); font-size: 0.84rem; letter-spacing: 0.01em; }
+  .al-place__meta { display: block; color: var(--ps-ink-soft); font-family: var(--ps-font-record); font-size: 0.8rem; }
+  .al-place__a11y { color: var(--ps-accent-text); }
+
+  @media (max-width: 640px) {
+    .al-window { grid-template-columns: 1fr; gap: 0.25rem; }
+    .al-result__districts .ps-record { min-width: 0; }
+  }
+</style>
+
+<!--
+  GLOBAL on purpose, for the same reason as the doorstep component: everything the
+  answer is made of is injected by the script above, so it never carries Astro's
+  scoped-style attribute. A scoped block styles the empty container and silently
+  skips the answer inside it — which is exactly how this shipped the first time and
+  how the contrast audit caught it. Global CSS on a hub shared by five tools is a
+  standing hazard, so every selector below descends from .al-result — containment
+  doing the job the scoping cannot. It compiles into a chunk only this page loads.
+-->
+<style is:global>
+  /* >>> GLOBAL-BLOCK-START — reapply.py splits the file on these two sentinels.
+     Everything between them is injected by the script at runtime, so it carries no
+     Astro scoped attribute and must ship in a `<style is:global>`. Every rule here
+     descends from .al-result: containment is the job the scoping would otherwise
+     have done. Do not reword the sentinels; add rules between them. */
+  .al-result:empty { display: none; }
+  .al-result { margin-top: 1.1rem; max-width: 62ch; border: 1px solid var(--ps-line); border-radius: 8px; padding: 1rem 1.2rem; background: var(--ps-surface); }
+  .al-result.is-error { border-left: 3px solid var(--ps-caution); }
+  .al-result.is-ask { border-left: 3px solid var(--ps-info); }
+  .al-result.is-answer { border-left: 3px solid var(--ps-accent); }
+  .al-result p { margin-bottom: 0.6rem; }
+  .al-result p:last-child { margin-bottom: 0; }
+  .al-result__matched { color: var(--ps-ink-soft); }
+  .al-result__matched .ps-record { color: var(--ps-accent-text); margin-right: 0.4rem; }
+  .al-result__h { font-family: var(--ps-font-display); font-weight: 700; font-size: 1.05rem; margin: 0.9rem 0 0.4rem; }
+  .al-result__districts { list-style: none; margin: 0 0 0.6rem; padding: 0; display: grid; gap: 0.3rem; }
+  .al-result__districts li { display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap; }
+  .al-result__districts .ps-record { color: var(--ps-ink-soft); min-width: 12rem; }
+  .al-result__gap, .al-result__privacy { display: block; color: var(--ps-ink-soft); line-height: 1.5; font-size: 0.93rem; max-width: 58ch; }
+  .al-result__note { color: var(--ps-ink-soft); font-size: 0.99rem; }
+  .al-result__choices { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; gap: 0.45rem; }
+  .al-result .al-choice { font: inherit; text-align: left; width: 100%; padding: 0.6rem 0.8rem; border: 1.5px solid var(--ps-ink); border-radius: 6px; background: var(--ps-paper); color: var(--ps-ink); cursor: pointer; }
+  .al-result .al-choice:hover { background: var(--ps-surface-2); }
+
+  .al-result .al-near { display: grid; gap: 0.9rem; }
+  .al-result .al-near__h { display: block; color: var(--ps-accent-text); }
+  .al-result .al-near__list { list-style: none; margin: 0.25rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+  .al-result .al-near__list li { display: grid; grid-template-columns: 1fr auto; column-gap: 0.8rem; padding-left: 0.8rem; border-left: 2px solid var(--ps-line); }
+  .al-result .al-near__name { font-weight: 600; }
+  .al-result .al-near__dist { color: var(--ps-ink-soft); text-align: right; }
+  .al-result .al-near__addr { grid-column: 1 / -1; color: var(--ps-ink-soft); font-size: 0.95rem; }
+  .al-result .al-near__when, .al-result .al-near__a11y { grid-column: 1 / -1; color: var(--ps-ink-soft); font-family: var(--ps-font-record); font-size: 0.82rem; }
+  .al-result .al-near__a11y { color: var(--ps-accent-text); }
+
+  /* >>> GLOBAL-BLOCK-END */
+  @media (max-width: 640px) {
+    .al-result__districts .ps-record { min-width: 0; }
   }
 </style>
