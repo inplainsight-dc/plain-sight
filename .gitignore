@@ -23,17 +23,18 @@ AWS_SETUP.md
 DEPLOY_RUNBOOK.md
 HANDOFF_*.md
 
-# The whole handoffs/
-
-# Internal tooling that reads the private portfolio manifest and scans sibling
-# project folders. It cannot work from a clone and its dependency (PORTFOLIO.md)
-# is not published, so shipping it only hands a forker a script that ENOENTs.
-scripts/family-status.mjs directory is internal. HANDOFF_*.md above already caught most
+# The whole handoffs/ directory is internal. HANDOFF_*.md above already caught most
 # of it, but SPINOFF-SEED_* files slipped past that pattern and were published: they
 # carry local folder paths (~/Projects/...) and band/Level classification, the same
 # private-tree exposure PORTFOLIO.md had. Ignore the directory so the next file added
 # there cannot leak by naming convention. (2026-08-26)
 handoffs/
+
+# Internal tooling that reads the private portfolio manifest and scans sibling project
+# folders. It cannot work from a clone and its dependency (PORTFOLIO.md) is not
+# published, so shipping it only handed a forker a script that ENOENTs. (2026-08-26)
+scripts/family-status.mjs
+
 MCKL-redaction-license-email.md
 
 # internal docs — never publish (added 2026-07-20)
