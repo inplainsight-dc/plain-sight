@@ -210,6 +210,14 @@ for (const a of [...config.avenues].sort((x, y) => (x.order ?? 99) - (y.order ??
 const bundle = {
   _generated: 'Built by scripts/sync-almanac-data.mjs — do not edit by hand. Source: 100 IPS Electify/schema/examples/.',
   jurisdiction: config.jurisdiction, // {id,name,short_name,timezone,bbox} — the only place a jurisdiction is named
+  // p2-t6: the one knob the reader-facing staleness guard needs. It is a CEILING,
+  // not the rule — the page tolerates min(max_age_days, days until the election),
+  // so a snapshot whose age is unremarkable in March is loud on the 1st of
+  // November. Optional in the instance config; null here means the page falls
+  // back to its own default, so a fork written before this block still builds.
+  staleness: {
+    max_age_days: config.staleness?.max_age_days ?? null,
+  },
   area_levels: (config.area_scheme?.levels || []).map((l) => ({
     level: l.level, label: l.label, explainer: l.explainer,
   })),

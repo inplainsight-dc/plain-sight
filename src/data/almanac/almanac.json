@@ -12,6 +12,9 @@
       39
     ]
   },
+  "staleness": {
+    "max_age_days": 60
+  },
   "area_levels": [
     {
       "level": "jurisdiction",

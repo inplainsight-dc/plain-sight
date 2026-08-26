@@ -98,6 +98,30 @@ function emphasize(text) {
   return String(text).split(/\*\*(.+?)\*\*/s).map((t, i) => ({ t, bold: i % 2 === 1 }));
 }
 
+// -----------------------------------------------------------------------------
+// p2-t6 — the staleness guard's inputs. Everything here is repo data; none of it
+// is derived from the reader, which is what keeps the define:vars exemption true.
+//
+// The BUILD cannot know when the page is read — this one is rebuilt per election
+// cycle, not nightly — so no useful staleness statement can be server-rendered.
+// Only raw dates and pre-formatted labels cross over; the arithmetic happens in
+// the browser against the reader's own today. Formatting stays here so the string
+// a reader sees still does not depend on their locale.
+// -----------------------------------------------------------------------------
+const GUARD_DEFAULT_MAX_AGE_DAYS = 60;
+const guard = {
+  electionDate: oppDate ? oppDate.slice(0, 10) : '',
+  electionTitle: opp?.title || '',
+  electionLong: oppDate ? fmtDate(oppDate) : '',
+  fetchedAt: locs?.fetched_at ? locs.fetched_at.slice(0, 10) : '',
+  fetchedAtLong: locs?.fetched_at ? fmtDate(locs.fetched_at) : '',
+  asOfLong: opp?.provenance?.as_of ? fmtDate(opp.provenance.as_of) : '',
+  reviewDue: opp?.provenance?.review_due ? opp.provenance.review_due.slice(0, 10) : '',
+  reviewDueLong: opp?.provenance?.review_due ? fmtDate(opp.provenance.review_due) : '',
+  maxAgeDays: almanac.staleness?.max_age_days ?? GUARD_DEFAULT_MAX_AGE_DAYS,
+  authorityName,
+};
+
 const today = new Date().toLocaleDateString('en-US', {
   month: 'long', day: 'numeric', year: 'numeric',
 });
@@ -248,6 +272,18 @@ const rest = avenues.filter((a) => a !== featured);
             {opp.summary && <p class="al-next__sum">{opp.summary}</p>}
           </article>
 
+          <!-- p2-t6 staleness guard. Server-rendered but HIDDEN: this page is rebuilt
+               per cycle, so only the browser knows how old it is when read. Without JS
+               the quiet source line below stands. textContent only, never innerHTML --
+               scoped CSS does not reach injected markup. -->
+          <p class="al-guard" id="al-dates-guard" role="status" hidden>
+            <strong class="al-guard__lead"></strong>{' '}
+            <span class="al-guard__body"></span>
+            {authorityUrl && (
+              <a class="al-guard__link" href={authorityUrl} target="_blank" rel="noopener">Check with {authorityName} &#8599;</a>
+            )}
+          </p>
+
           <h3 class="al-h3">The dates inside the date</h3>
           <p class="al-sub">An election is not one deadline, it is six. Each one closes on its own, and the
           earliest of them is nearly a month before the day itself.</p>
@@ -368,6 +404,17 @@ const rest = avenues.filter((a) => a !== featured);
             <p>{emphasize(anyCenterNote).map((part) => (part.bold ? <strong>{part.t}</strong> : <Fragment>{part.t}</Fragment>))}</p>
           </div>
 
+          <!-- The louder of the two. A confidently-rendered vote center that has
+               moved is this tool's worst failure, and it is worst in the week the
+               page is busiest — so it sits above the list, not under it. -->
+          <p class="al-guard" id="al-places-guard" role="status" hidden>
+            <strong class="al-guard__lead"></strong>{' '}
+            <span class="al-guard__body"></span>
+            {authorityUrl && (
+              <a class="al-guard__link" href={authorityUrl} target="_blank" rel="noopener">Check with {authorityName} &#8599;</a>
+            )}
+          </p>
+
           {locs.groups.map((g) => (
             <details class="al-places" open={g.id === firstGroupId}>
               <summary class="al-places__sum">
@@ -458,7 +505,7 @@ const rest = avenues.filter((a) => a !== featured);
   * It never claims a vote center is "yours". Distance is offered as convenience,
     and the any-center rule is stated next to it.
 -->
-<script is:inline define:vars={{ LOOKUP: lookup, BBOX: j.bbox || null, AUTHORITY: withContent?.authority || null }}>
+<script is:inline define:vars={{ LOOKUP: lookup, BBOX: j.bbox || null, AUTHORITY: withContent?.authority || null, GUARD: guard }}>
   (() => {
     'use strict';
 
@@ -479,6 +526,90 @@ const rest = avenues.filter((a) => a !== featured);
         if (days < 0) cd.classList.add('is-past');
       }
     }
+
+    // --- p2-t6: the staleness guard ---------------------------------------------
+    // The dates and the voting places are a per-cycle cache refreshed by hand. The
+    // tolerated age of it is min(maxAgeDays, days until the election), so it tightens
+    // on its own as the date closes in and is zero once it has passed. A fixed number
+    // would be wrong in both directions -- forty days old is unremarkable in March and
+    // dangerous on the 1st of November. Full reasoning, and the same arithmetic for the
+    // maintainer, in 100 IPS Electify/scripts/staleness_sweep.py.
+    // NOTE: is:inline scripts ship verbatim, comments included, so this stays short.
+    (() => {
+      if (typeof GUARD !== 'object' || !GUARD) return;
+
+      const now = new Date();
+      const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      const utc = (s) => (s ? Date.parse(s + 'T00:00:00Z') : NaN);
+      const daysBetween = (a, b) => Math.round((a - b) / 86400000);
+      const n = (d) => (Math.abs(d) === 1 ? '1 day' : Math.abs(d) + ' days');
+
+      const electionAt = utc(GUARD.electionDate);
+      const toElection = isFinite(electionAt) ? daysBetween(electionAt, today) : null;
+      const isOver = toElection !== null && toElection < 0;
+      const what = GUARD.electionTitle || 'this election';
+      const who = GUARD.authorityName || 'the authority';
+
+      // A clock set to the past would otherwise report a negative age and read as
+      // fresh. Nothing is claimed either way in that case — the server text stands.
+      const skewed = (age) => !isFinite(age) || age < 0;
+
+      const show = (id, lead, body) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const l = el.querySelector('.al-guard__lead');
+        const b = el.querySelector('.al-guard__body');
+        if (!l || !b) return;
+        l.textContent = lead;
+        b.textContent = body;   // never innerHTML: injected markup gets no scoped style
+        el.hidden = false;
+      };
+
+      // --- the voting places ----------------------------------------------------
+      const fetchedAt = utc(GUARD.fetchedAt);
+      if (isFinite(fetchedAt)) {
+        const age = daysBetween(today, fetchedAt);
+        const ceiling = Number(GUARD.maxAgeDays) > 0 ? Number(GUARD.maxAgeDays) : 60;
+        const tolerated = toElection === null ? ceiling : Math.min(ceiling, Math.max(toElection, 0));
+
+        if (isOver) {
+          show('al-places-guard',
+            'This page is showing an election that has already finished.',
+            'The ' + what + ' was on ' + GUARD.electionLong + '. Every voting place and opening '
+            + 'time below belongs to that election, and none of it describes a current one.');
+        } else if (!skewed(age) && age > tolerated) {
+          show('al-places-guard',
+            'These voting places may be out of date.',
+            'They were read from ' + who + ' on ' + GUARD.fetchedAtLong + ', ' + n(age) + ' ago'
+            + (toElection === null ? '. '
+                 : toElection === 0 ? ', and the ' + what + ' is TODAY. '
+                 : ', and the ' + what + ' is ' + n(toElection) + ' away. ')
+            + 'Vote centers are set up for each election, so one listed here may since have moved, '
+            + 'changed its hours, or closed. Confirm any place below before you travel to it.');
+        }
+      }
+
+      // --- the dates ------------------------------------------------------------
+      // review_due is a date a maintainer chose as "these need re-checking by then".
+      // Here it was set before early voting opens. If it passes unhonored the reader
+      // should be told, without this second-guessing the judgment that set it.
+      const reviewDue = utc(GUARD.reviewDue);
+      if (isOver) {
+        show('al-dates-guard',
+          'This election has already finished.',
+          'The dates below are for the ' + what + ', which was on ' + GUARD.electionLong + '.');
+      } else if (isFinite(reviewDue) && today > reviewDue) {
+        // The authority's name is long ("District of Columbia Board of Elections"),
+        // and the link below already carries it — so say it once, and avoid the
+        // possessive, which reads as a stutter on a name ending in a plural.
+        show('al-dates-guard',
+          'These dates are past their own review date.',
+          'They were read from the calendar published by ' + who + ' on ' + GUARD.asOfLong
+          + ', and were due to be checked again by ' + GUARD.reviewDueLong + ' — '
+          + n(daysBetween(today, reviewDue)) + ' ago. That calendar is published subject to '
+          + 'change, so a date below may have moved without this page knowing.');
+      }
+    })();
 
     const form = document.getElementById('alForm');
     const input = document.getElementById('alAddr');
@@ -880,6 +1011,30 @@ const rest = avenues.filter((a) => a !== featured);
   .al-source { display: block; margin-top: 1rem; color: var(--ps-ink-soft); max-width: 72ch; line-height: 1.5; font-size: 0.88rem; }
   .al-source a { color: var(--ps-ink); }
   .al-caution { margin-top: 0.9rem; max-width: 68ch; border-left: 3px solid var(--ps-caution); background: color-mix(in srgb, var(--ps-caution) 8%, transparent); padding: 0.7rem 0.95rem; border-radius: 0 6px 6px 0; color: var(--ps-ink); }
+
+  /* p2-t6 — the staleness guard. Deliberately louder than .al-caution: that one is
+     a standing "dates move" note which is always true and should not shout, this
+     one fires only when the page has actually gone out of date. Hence red rather
+     than amber, a heavier rule, and the accent-tinted ground.
+
+     COLORS ARE THE PRE-VERIFIED PAIRING, not a fresh guess. --ps-mark is the
+     translucent red the palette already calibrates against, and small red text on
+     it needs --ps-accent-text-mark; plain --ps-accent-text reaches only 4.25:1
+     there and would fail AA in light. Both are defined per theme, so this holds in
+     dark without a second rule.
+
+     [hidden] IS RESTATED ON PURPOSE. The rule above sets `display`, which beats the
+     user agent's low-specificity [hidden] rule — without this line the banner would
+     render for every reader, stale or not, which is the exact opposite of the job. */
+  .al-guard { display: block; margin: 1rem 0 1.2rem; max-width: 68ch; border-left: 4px solid var(--ps-accent); background: var(--ps-mark); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; color: var(--ps-ink); line-height: 1.5; }
+  .al-guard[hidden] { display: none; }
+  .al-guard__lead { color: var(--ps-accent-text-mark); }
+  /* inline-flex + min-height rather than inline-block: at 0.85rem the line box
+     alone gave a 41px tap target, just under the 45-90px the rest of this page
+     was measured at in p2-t2. Comfortably over WCAG 2.2 AA's 24px either way,
+     but a banner asking someone to go and check a fact should not be the
+     fiddliest thing to tap on the page. */
+  .al-guard__link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 0.25rem; font-family: var(--ps-font-record); font-size: 0.85rem; color: var(--ps-ink); }
 
   /* The address form */
   .al-form { margin: 0.4rem 0 0.6rem; max-width: 34rem; }
