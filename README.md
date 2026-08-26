@@ -102,3 +102,21 @@ Reading the log another way would be a mistake in either direction. This is not
 a project a person typed alone, and it is not one an assistant produced on its
 own. If you fork it — please do, that is what `FORKING.md` is for — the same
 honesty is worth keeping.
+
+## Licensing
+
+Fork it. The licensing is split by component so that both halves are genuinely
+reusable, and so the bundled fonts stay honest about their own terms:
+
+| Component | License | File |
+| --- | --- | --- |
+| Code — Astro, TypeScript, JavaScript, CSS, build scripts | **MIT** | [`LICENSE`](LICENSE) |
+| Content and data — prose, page copy, compiled datasets | **CC BY 4.0** | [`LICENSE-CONTENT`](LICENSE-CONTENT) |
+| Webfonts under `public/fonts/` | **SIL OFL 1.1**, upstream | [`NOTICE`](NOTICE) |
+
+The typeface *Redaction* (MCKL) is **not** bundled and **not** licensed here — the
+site ships on Newsreader. DC government source material quoted in the tools keeps
+whatever status it had at the source and is not relicensed by this repository.
+
+See [`NOTICE`](NOTICE) for the full picture and [`FORKING.md`](FORKING.md) for how to
+stand up an instance for your own city.

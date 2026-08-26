@@ -1,0 +1,40 @@
+In Plain Sight — licensing at a glance
+======================================
+
+This repository is deliberately fork-friendly. Three licenses apply, by
+component, so that both the code and the writing are clearly reusable:
+
+  Code                  MIT              -> LICENSE
+                        Astro components, TypeScript, JavaScript, CSS,
+                        build scripts, configuration.
+
+  Content and data      CC BY 4.0        -> LICENSE-CONTENT
+                        Markdown prose, page and card copy, compiled
+                        datasets under src/data/ and language-access/,
+                        research notes.
+
+  Bundled webfonts      SIL Open Font License 1.1 (NOT MIT, NOT CC BY)
+                        Everything under public/fonts/ is redistributed
+                        under its own upstream license and is not covered
+                        by this project's grants:
+                          Newsreader     (c) The Newsreader Project Authors
+                          Public Sans    (c) The Public Sans Project Authors
+                          IBM Plex Mono  (c) IBM Corp.
+                        Full OFL text: https://openfontlicense.org
+
+Not covered by any grant here
+-----------------------------
+  * The typeface "Redaction" (MCKL) is NOT bundled and NOT licensed for this
+    project. The site ships on Newsreader. If a fork wants Redaction, it must
+    license it independently from MCKL.
+  * Source material quoted from District of Columbia government publications
+    (regulations, meeting minutes, transcripts, notices) is government work
+    reproduced for public-interest purposes; it carries whatever status it had
+    at the source and is not relicensed by this repository.
+  * The name "In Plain Sight" and the three-stars-and-two-bars mark are used
+    as project identity. Forks are asked to follow the naming convention in
+    FORKING.md rather than to present themselves as the DC instance.
+
+Attribution
+-----------
+  In Plain Sight — https://inplainsight-dc.org

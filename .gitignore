@@ -56,3 +56,11 @@ _to_delete/
 
 # Personal event prep — not site content
 EVENT_KIT.md
+
+# Local ops runbooks — may reference private addresses. Never publish.
+.local-ops/
+
+# Internal working docs — kept locally, not published.
+# PORTFOLIO.md maps the private project tree; OUTREACH.md is a playbook addressed to Pippa.
+PORTFOLIO.md
+OUTREACH.md
