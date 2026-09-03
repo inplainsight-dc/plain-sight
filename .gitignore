@@ -77,3 +77,10 @@ EVENT_KIT.md
 # PORTFOLIO.md maps the private project tree; OUTREACH.md is a playbook addressed to Pippa.
 PORTFOLIO.md
 OUTREACH.md
+
+# Findings written ABOUT this repo's own infrastructure. THIS REPO IS PUBLIC, and a document
+# describing where the deploy is weak (no staging tier, a single bucket and distribution, a build
+# that reads the working tree, and the variable that overrides the dirty-tree guard) is not
+# something to hand the internet about a live civic site. Same treatment as AWS_SETUP.md and
+# DEPLOY_RUNBOOK.md above: kept locally, read by whoever fixes it, never published. (2026-09-03)
+FINDING_*
