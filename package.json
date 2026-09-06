@@ -19,6 +19,7 @@
     "gen-logo": "node scripts/gen-logo-lab.mjs",
     "gen-swatch": "node scripts/gen-contrast-swatches.mjs",
     "trash-metrics": "node scripts/trash-metrics.mjs",
+    "parking-summary": "node scripts/parking-summary.mjs",
     "feedback": "node scripts/feedback-review.mjs",
     "feedback-check": "node scripts/feedback-check.mjs"
   },
