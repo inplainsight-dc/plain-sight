@@ -84,3 +84,11 @@ OUTREACH.md
 # something to hand the internet about a live civic site. Same treatment as AWS_SETUP.md and
 # DEPLOY_RUNBOOK.md above: kept locally, read by whoever fixes it, never published. (2026-09-03)
 FINDING_*
+
+# Scoping notes for tools that do not exist yet. THIS REPO IS PUBLIC, and an early scope note is
+# the wrong thing to publish twice over: it reasons out loud about whether a claim survives (the
+# DC towing note assumes its own central reading is WRONG until checked), and it names the bodies
+# a finding might be referred to before anyone has decided to refer it. Both read as assertions
+# once they are on GitHub. Same treatment as FINDING_* above — kept locally, promoted deliberately
+# if and when the tool becomes real. (2026-09-07)
+SCOPING_*
