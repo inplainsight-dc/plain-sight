@@ -69,6 +69,34 @@ const caps = [
   ['Drop fee', 'if you arrive and they stop the tow before removing the car', '$50'],
 ];
 
+// Retrieval differs completely depending on who took the car, and the reader
+// cannot act until they know which. District tows go to a DPW lot and are
+// gated on unpaid tickets; private-lot tows go to the company's own storage
+// lot and are governed by the duties above. Fees below are DC DMV's published
+// figures, which match 16 DCMR § 408.1.
+const districtLot = [
+  ['Where it goes', 'Blue Plains, 5001 Shepherd Parkway SW — or Bryant Street, 2115 Bryant St NE. Call first; don’t guess.'],
+  ['What to bring', 'Your fee payment receipt, the vehicle registration, and a valid driver’s license. Collecting someone else’s car? You need a notarized statement from the owner.'],
+  ['How you pay', 'Card only — Visa or MasterCard. Cash and checks are not accepted.'],
+  ['Hours', 'Monday to Friday, 8:30am to 4:30pm, except District holidays.'],
+  ['The catch', 'Every outstanding ticket has to be paid first — including tickets on other plates registered to you. And once you’ve paid the storage, collect the car that day or another day’s storage is added.'],
+];
+
+const districtFees = [
+  ['Tow', '$100'],
+  ['Tow, oversized vehicle', '$275'],
+  ['Storage, per day', '$20'],
+  ['Boot removal', '$75'],
+];
+
+const privateLot = [
+  ['They must tell you where it is', 'The storage lot address is required on the itemized estimate, and the lot must be in the District.', '16 DCMR §§ 409.2, 405.1'],
+  ['They must release it promptly', 'On proof of who you are and that it’s your car, plus payment of what’s genuinely owed — unless the government has placed a hold on it.', '16 DCMR § 408.7'],
+  ['They must take a card', 'Cash, insurance draft, certified check, bank check, money order, and at least two major credit cards. Cash-only is a violation.', '16 DCMR § 408.8'],
+  ['You can inspect it before paying', 'Refusing you that is a violation in itself.', '16 DCMR § 410.13'],
+  ['They must hand you five things', 'The towing control number, the legal authority for the removal, an itemized statement, a receipt, and a copy of the Owner’s Bill of Rights.', '16 DCMR § 408.9'],
+];
+
 const routes = [
   {
     who: 'DLCP — Department of Licensing and Consumer Protection',
@@ -98,8 +126,8 @@ const routes = [
 ---
 
 <Base
-  title="Towed in DC? Two questions that decide whether it was legal"
-  description="A tow from a private lot in the District is a public tow — which means it needed a police or parking-enforcement citation, it needed a DPW control number, and it is capped at $100 plus $20 a day. What a tow company owes you under 16 DCMR chapter 4, and who to complain to. No account, no AI, nothing leaves your browser."
+  title="Towed in DC? Find your car, and find out if it was legal"
+  description="Your car is gone in Washington DC. Call (202) 541-6083 to find out where it is. Then: a tow you did not agree to is a public tow, which means it needed a citation and a DPW control number, and it is capped at $100 plus $20 a day. What the tow company or the District owes you under 16 DCMR chapter 4, how to get the car back, and who to complain to. No account, no AI, nothing leaves your browser."
 >
   <Header slot="header" />
 
@@ -115,9 +143,11 @@ const routes = [
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">Your car is <span class="ps-highlight">gone</span>. Two questions.</h1>
           <p class="ips-lead__blurb">
-            If it was towed off a private lot and you didn’t agree to it, the District calls that a
-            <strong>public tow</strong> — and public tows come with rules the company has to have followed
-            <em>before</em> the truck arrived. Most people are never told this, and pay whatever they’re asked.
+            Whoever took it — the District, or a private lot — <strong>you did not consent to it, and the
+            District calls that a public tow.</strong> Public tows come with rules that had to be followed
+            <em>before</em> the truck arrived, a published ceiling on what you can be charged, and things
+            they owe you when you turn up to collect. Most people are never told any of it, and pay
+            whatever they’re asked.
           </p>
           <p class="ips-lead__note ps-record">
             16 DCMR chapter 4 &middot; not legal advice &middot; this page states the rule, not the merits of your tow
@@ -133,11 +163,41 @@ const routes = [
     </div>
   </section>
 
+  <!-- §01 FIND IT FIRST -->
+  <section class="ips-sec" id="find-it">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 01</span>
+        <h2 class="ips-sec-title">Find it first</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <p class="ips-lede">
+        Before anything else — <strong>is it towed, or is it stolen?</strong> Most people can’t tell,
+        and the answer changes what you do next. There is one number that settles it.
+      </p>
+
+      <div class="tw-call">
+        <p class="ps-record tw-call__label">Towing Control Dispatch Center</p>
+        <p class="tw-call__num"><a href="tel:+12025416083">(202) 541-6083</a></p>
+        <p class="tw-call__note">
+          They can tell you whether your car was towed and which lot it went to. If they have no
+          record of it, treat it as stolen and report it to the police.
+        </p>
+      </div>
+
+      <p class="tw-note">
+        If the District towed it, the government is also supposed to notify the registered owner of
+        the tow and where the car is. <span class="tw-cite ps-record">16 DCMR &sect; 406.10</span>
+      </p>
+    </div>
+  </section>
+
   <!-- §01 THE TWO QUESTIONS -->
   <section class="ips-sec" id="two-questions">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 01</span>
+        <span class="ps-record ps-record--red">&sect; 02</span>
         <h2 class="ips-sec-title">Ask these two things</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -176,7 +236,7 @@ const routes = [
   <section class="ips-sec" id="what-it-costs">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 02</span>
+        <span class="ps-record ps-record--red">&sect; 03</span>
         <h2 class="ips-sec-title">What it can cost</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -218,7 +278,7 @@ const routes = [
   <section class="ips-sec" id="duties">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 03</span>
+        <span class="ps-record ps-record--red">&sect; 04</span>
         <h2 class="ips-sec-title">What they owe you</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -252,11 +312,66 @@ const routes = [
     </div>
   </section>
 
+  <!-- §05 GETTING IT BACK -->
+  <section class="ips-sec" id="getting-it-back">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 05</span>
+        <h2 class="ips-sec-title">Getting it back</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <p class="ips-lede">
+        This is where the two kinds of tow stop behaving the same way. <strong>Who took it decides
+        where it is, what you pay, and what they owe you.</strong>
+      </p>
+
+      <div class="tw-fork">
+        <div class="tw-fork__col">
+          <h3 class="tw-fork__h">The District towed it</h3>
+          <p class="tw-fork__when ps-record">Unpaid tickets, a snow emergency, illegal parking</p>
+          <dl class="tw-dl">
+            {districtLot.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+          </dl>
+          <table class="tw-caps tw-caps--tight">
+            <caption class="ps-record">DC DMV published fees</caption>
+            <tbody>
+              {districtFees.map(([k, v]) => (
+                <tr><th scope="row">{k}</th><td class="tw-caps__num"><strong>{v}</strong></td></tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="tw-note">
+            These are the same figures as the regulation’s public-tow schedule.
+            <span class="tw-cite ps-record">16 DCMR &sect; 408.1</span>
+          </p>
+        </div>
+
+        <div class="tw-fork__col">
+          <h3 class="tw-fork__h">A private lot towed it</h3>
+          <p class="tw-fork__when ps-record">An apartment lot, a retail lot, a space you were parked in</p>
+          <ul class="tw-duties">
+            {privateLot.map(([k, v, cite]) => (
+              <li class="tw-duty">
+                <p class="tw-duty__text"><strong>{k}.</strong> {v}</p>
+                <p class="tw-duty__meta ps-record"><span class="tw-cite">{cite}</span></p>
+              </li>
+            ))}
+          </ul>
+          <p class="tw-note">
+            And the question from &sect; 02 still applies: <strong>was there a citation?</strong> If
+            not, they should not have taken it at all.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- §04 WHAT TO DO -->
   <section class="ips-sec" id="what-to-do">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 04</span>
+        <span class="ps-record ps-record--red">&sect; 06</span>
         <h2 class="ips-sec-title">What to do now</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -286,7 +401,7 @@ const routes = [
   <section class="ips-sec" id="method">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 05</span>
+        <span class="ps-record ps-record--red">&sect; 07</span>
         <h2 class="ips-sec-title">How this page knows</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -431,6 +546,49 @@ const routes = [
   .tw-route__what { margin: 0 0 .5rem; }
   .tw-route__how { margin: 0 0 .3rem; color: var(--ps-ink); }
   .tw-asof { color: var(--ps-ink-soft); }
+
+  /* The one number a person needs before anything else. Given weight because at
+     11pm the difference between "towed" and "stolen" is the whole decision. */
+  .tw-call {
+    border: 1px solid var(--ps-line);
+    border-left: 3px solid var(--ps-accent);
+    background: var(--ps-surface);
+    padding: 1rem 1.1rem;
+    margin: 1.2rem 0;
+    max-width: 34rem;
+    border-radius: var(--ps-radius);
+  }
+  .tw-call__label { margin: 0 0 .3rem; }
+  .tw-call__num {
+    font-family: var(--ps-font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 .5rem;
+    letter-spacing: -.01em;
+  }
+  .tw-call__num a { color: var(--ps-accent-text); text-decoration: none; }
+  .tw-call__num a:hover, .tw-call__num a:focus { text-decoration: underline; }
+  .tw-call__note { margin: 0; color: var(--ps-ink-soft); }
+
+  .tw-fork {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: 2rem;
+    margin-top: 1.4rem;
+  }
+  .tw-fork__h {
+    font-family: var(--ps-font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 .2rem;
+    padding-bottom: .4rem;
+    border-bottom: 2px solid var(--ps-ink);
+  }
+  .tw-fork__when { margin: .4rem 0 .9rem; color: var(--ps-ink-soft); }
+  .tw-dl { margin: 0 0 1rem; }
+  .tw-dl dt { font-weight: 700; margin-top: .7rem; }
+  .tw-dl dd { margin: .15rem 0 0; }
+  .tw-caps--tight { margin: .6rem 0; max-width: 22rem; }
 
   @media (max-width: 40rem) {
     .tw-test { grid-template-columns: 1fr; gap: .3rem; }
