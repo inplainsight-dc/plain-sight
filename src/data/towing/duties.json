@@ -1,0 +1,211 @@
+{
+  "generatedFrom": "DC Towing · scripts/build_duties.py",
+  "nodeGeneratedAt": "2026-09-07T19:11:30Z",
+  "chapter": "16 DCMR chapter 4 — Towing Service for Motor Vehicles",
+  "currencyVerified": "Verified against dcregs.dc.gov on 2026-09-07 across 15 sections. § 406 shows one rulemaking on record (R0028747, 52 DCR 522). The sole amendment anywhere in the chapter is § 405 (storage lots), 56 DCR 3093, April 24, 2009. See docs/FINDING_2026-09-07_p1t1-trespass-tow-authority.md.",
+  "groupOrder": [
+    "towed-from-private-property",
+    "any-tow",
+    "the-truck",
+    "accident-scene",
+    "licensing"
+  ],
+  "definitions": [
+    {
+      "term": "Private tow",
+      "citation": "16 DCMR § 499",
+      "plain": "A tow you asked for."
+    },
+    {
+      "term": "Public tow",
+      "citation": "16 DCMR § 499",
+      "plain": "A tow you did not consent to — including a tow from a private lot. This is the definition the whole thing turns on."
+    }
+  ],
+  "duties": [
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 406.7",
+      "heading": "PUBLIC TOWS",
+      "plain": "They needed a citation. A car cannot be towed from private property without your consent unless a police officer or parking enforcement official issued it a ticket, or a police officer directed the tow in an emergency. A landlord, property manager or lot owner cannot authorize it on their own.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 406.3",
+      "heading": "PUBLIC TOWS",
+      "plain": "They needed a control number from DPW before touching the car. In an emergency they still have to get one within two hours.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 408.9",
+      "heading": "PAYMENT FOR SERVICES",
+      "plain": "Ask for the control number when you collect the car — they must give it to you, along with the legal authority for the tow, an itemized statement, a receipt, and a copy of the Owner's Bill of Rights.",
+      "infractionClass": "Class 3",
+      "infractionClassVia": null
+    },
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 408.1",
+      "heading": "PAYMENT FOR SERVICES",
+      "plain": "Storage is capped at $20 per 24 hours, or part of one.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 408.1",
+      "heading": "PAYMENT FOR SERVICES",
+      "plain": "A standard tow of an ordinary car within DC is capped at $100. This cap applies because a tow you did not consent to is a *public* tow — the company's own advertised rates do not govern it.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 410.12",
+      "heading": "PROHIBITED ACTS",
+      "plain": "Charging more than the capped rate for a public tow is itself unlawful. (The prohibition is § 410.12; the infraction schedule classes the same conduct under § 408.1 — charging public-tow rates above the Director's schedule.)",
+      "infractionClass": "Class 1",
+      "infractionClassVia": "16 DCMR § 408.1"
+    },
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 406.4",
+      "heading": "PUBLIC TOWS",
+      "plain": "Before the tow, the company had to give DPW the ticket number and the reason — so there is a record of whether a citation ever existed.",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    },
+    {
+      "group": "towed-from-private-property",
+      "citation": "16 DCMR § 406.10",
+      "heading": "PUBLIC TOWS",
+      "plain": "The government is supposed to notify the registered owner of the tow and where the car is.",
+      "infractionClass": null,
+      "infractionClassVia": null
+    },
+    {
+      "group": "any-tow",
+      "citation": "16 DCMR § 408.8",
+      "heading": "PAYMENT FOR SERVICES",
+      "plain": "They must take cards. Cash, insurance draft, certified check, bank check, money order and at least two major credit cards — cash-only is a violation.",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    },
+    {
+      "group": "any-tow",
+      "citation": "16 DCMR § 410.11",
+      "heading": "PROHIBITED ACTS",
+      "plain": "They cannot refuse you an itemized receipt.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "any-tow",
+      "citation": "16 DCMR § 410.13",
+      "heading": "PROHIBITED ACTS",
+      "plain": "You can inspect the car before you pay and before it is released. Refusing that is a violation.",
+      "infractionClass": "Class 5",
+      "infractionClassVia": null
+    },
+    {
+      "group": "any-tow",
+      "citation": "16 DCMR § 408.7",
+      "heading": "PAYMENT FOR SERVICES",
+      "plain": "Once you show ID and proof of ownership and pay what is genuinely owed, they must release the car promptly, unless the government has placed a hold on it.",
+      "infractionClass": "Class 3",
+      "infractionClassVia": null
+    },
+    {
+      "group": "any-tow",
+      "citation": "16 DCMR § 410.4",
+      "heading": "PROHIBITED ACTS",
+      "plain": "They cannot make you sign up for repairs as a condition of towing your car.",
+      "infractionClass": "Class 3",
+      "infractionClassVia": null
+    },
+    {
+      "group": "any-tow",
+      "citation": "16 DCMR § 410.6",
+      "heading": "PROHIBITED ACTS",
+      "plain": "If they tow your car to their own repair shop, they can only charge one towing fee.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "any-tow",
+      "citation": "16 DCMR § 401.5",
+      "heading": "INSPECTIONS AUTHORIZED",
+      "plain": "Every record of your tow must be kept for three years, and handed to the regulator within one hour of a lawful demand.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "the-truck",
+      "citation": "16 DCMR § 404.2",
+      "heading": "REQUIRED TOW TRUCK EQUIPMENT AND MARKINGS",
+      "plain": "The trade name, address and phone number must be on both cab doors in lettering at least 3 inches high.",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    },
+    {
+      "group": "the-truck",
+      "citation": "16 DCMR § 404.3",
+      "heading": "REQUIRED TOW TRUCK EQUIPMENT AND MARKINGS",
+      "plain": "The company's minimum and maximum fees must be painted on both sides of the truck in lettering at least 2 inches high. (These are the rates for tows you request — a tow you did not consent to is capped separately, and lower.)",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    },
+    {
+      "group": "the-truck",
+      "citation": "16 DCMR § 404.4",
+      "heading": "REQUIRED TOW TRUCK EQUIPMENT AND MARKINGS",
+      "plain": "Every tow truck carries a unique ID issued by the regulator, on both sides, at least 1 inch high. Photograph it.",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    },
+    {
+      "group": "accident-scene",
+      "citation": "16 DCMR § 410.9",
+      "heading": "PROHIBITED ACTS",
+      "plain": "A tow truck cannot stop at a crash and offer to tow you unless you called them or DPW sent them.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "accident-scene",
+      "citation": "16 DCMR § 410.3",
+      "heading": "PROHIBITED ACTS",
+      "plain": "After a reportable crash they cannot move your car until police authorize it, except to free someone trapped or in a life-threatening situation.",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    },
+    {
+      "group": "accident-scene",
+      "citation": "16 DCMR § 410.8",
+      "heading": "PROHIBITED ACTS",
+      "plain": "Carrying a scanner tuned to police frequencies is flatly unlawful. This is the rule against chasing crashes.",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    },
+    {
+      "group": "licensing",
+      "citation": "16 DCMR § 410.1",
+      "heading": "PROHIBITED ACTS",
+      "plain": "Operating a towing business or a storage lot without a license is unlawful, and can carry arrest as well as a fine.",
+      "infractionClass": "Class 1",
+      "infractionClassVia": null
+    },
+    {
+      "group": "licensing",
+      "citation": "16 DCMR § 410.18",
+      "heading": "PROHIBITED ACTS",
+      "plain": "They must carry at least $750,000 of liability insurance to tow in the District.",
+      "infractionClass": "Class 2",
+      "infractionClassVia": null
+    }
+  ]
+}
