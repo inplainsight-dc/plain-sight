@@ -13,11 +13,16 @@ import duties from '../data/towing/duties.json';
 // section, so an amendment breaks the build instead of quietly misstating the
 // law here. To change a duty, change the regulation reading in the node.
 //
-// DELIBERATELY ABSENT: the dollar figure for a CPPA claim. D.C. Code
-// § 28-3905(k)(1) gives treble damages or a statutory minimum, and a 2026
-// amendment reportedly raises that minimum — unconfirmed (node roadmap p1-t4).
-// A number quoted at a resident who then relies on it has to be right, so this
-// page names the right and not the amount until that closes.
+// THE CPPA FIGURE IS DELIBERATELY CONSERVATIVE (node roadmap p1-t4, resolved).
+// D.C. Code § 28-3905(k)(2)(A)(i) — note (k)(2), not (k)(1), which is only about
+// WHO may sue — gives treble damages or $1,500 per violation, whichever is
+// greater. B26-0174 raises the floor to $3,000 and renumbers the remedies to
+// § 28-3905(m)(2)(A), but it is enrolled, awaiting congressional review, and its
+// private-action provisions hang on an FY2027 budget applicability clause. The
+// vendored D.C. Code mirror is the 2026-05-23 series and cannot see past it.
+// So the page says "at least $1,500", which is true now AND stays true if the
+// increase has landed. Printing $3,000 and being wrong would tell someone their
+// claim is worth double what it is. Understate; never overstate.
 // -----------------------------------------------------------------------------
 
 const today = new Date().toLocaleDateString('en-US', {
@@ -85,9 +90,9 @@ const routes = [
   },
   {
     who: 'You, directly',
-    what: 'The CPPA gives you a private right of action, with damages, attorney’s fees and an injunction available — against a regulation that puts more than twenty separate duties on the company. Small claims in D.C. Superior Court is a realistic venue.',
+    what: 'The CPPA lets you sue directly, and recover treble damages or at least $1,500 per violation — whichever is greater — plus your attorney’s fees, punitive damages and an injunction. The regulation above puts more than twenty separate duties on the company, and each breach is a violation. Small claims in D.C. Superior Court is a realistic venue.',
     how: 'A consumer lawyer, or the Superior Court Small Claims and Conciliation Branch',
-    cite: 'D.C. Code § 28-3905(k)(1)',
+    cite: 'D.C. Code § 28-3905(k)(2)',
   },
 ];
 ---
