@@ -832,11 +832,49 @@ const routes = [
 </Base>
 
 <style>
+  /* ---------------------------------------------------------------------
+     SECTION FURNITURE — ported from the rentals pages, where these rules
+     live per-page rather than in global.css.
+     This page used the markup (.ips-sec-head, .ips-sec-rule, .ips-lede) and
+     shipped WITHOUT the styles, so: section heads were not flex rows, the
+     rule after each title had no border and sat in the flow as an empty
+     span, and every lede ran the full 1050px container at ~150 characters a
+     line. That is the "hanging lines and misaligned boxes".
+     --------------------------------------------------------------------- */
+  .ips-sec { padding-block: clamp(2rem, 5vw, 3.2rem); }
+  .ips-sec-head { display: flex; align-items: baseline; gap: .9rem; margin-bottom: 1.2rem; }
+  .ips-sec-title { font-family: var(--ps-font-display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
+  .ips-lede { max-width: var(--tw-lede); font-size: 1.12rem; color: var(--ps-ink-soft); margin-bottom: 1.6rem; }
+  .ips-lede strong { color: var(--ps-ink); }
+  .ips-lede, .tw-note, .tw-duty__text, .tw-test__text, .tw-test__edge,
+  .tw-mgr p, .tw-obj p, .tw-clock, .tw-safety, .tw-rc__foot, .tw-pk__scout {
+    text-wrap: pretty;
+  }
+
+  /* ---------------------------------------------------------------------
+     ONE MEASURE. This page had SIX ad-hoc max-widths (34rem, 60ch, 62ch,
+     66ch, 68ch, 46rem) because blocks were added across a long session and
+     each got whatever felt right. At 1280px that produced six different
+     right edges -- 691, 771, 792, 854, 883 and 1133 -- which is what reads
+     as ragged. Four role-based values now, and every block uses one of them.
+     --------------------------------------------------------------------- */
+  :where(.ips-lead, .ips-sec) {
+    /* rem, NOT ch. This is the actual root cause of the ragged edge: `ch` is
+       the width of the "0" glyph AT THE ELEMENT'S OWN FONT SIZE, so 68ch on a
+       1.12rem lede is 39px wider than 68ch on a 17px note. Six blocks nominally
+       sharing a measure sat on six different edges. In rem every block lands on
+       the same pixel, whatever size its type is. 46rem is ~64 characters at
+       body size, which is the measure the family already uses. */
+    --tw-measure: 46rem;
+    --tw-lede: var(--tw-measure);
+    --tw-callout: 34rem;  /* emphasis blocks kept deliberately short */
+  }
   .tw-def {
     border-left: 3px solid var(--ps-accent);
     padding: 1rem 0 1rem 1.1rem;
     margin: 0 0 2rem;
-    max-width: 60ch;
+    max-width: var(--tw-measure);
   }
   .tw-def__label { display: block; margin-bottom: .4rem; }
   .tw-cite {
@@ -853,7 +891,7 @@ const routes = [
     gap: 0 1rem;
     padding: 1.2rem 0;
     border-top: 1px solid var(--ps-line);
-    max-width: 68ch;
+    max-width: var(--tw-measure);
   }
   .tw-test__n { font-size: 1.4rem; line-height: 1.1; margin: 0; }
   .tw-test__q {
@@ -869,7 +907,7 @@ const routes = [
   .tw-caps {
     border-collapse: collapse;
     width: 100%;
-    max-width: 46rem;
+    max-width: var(--tw-measure);
     margin: 1.2rem 0;
   }
   .tw-caps caption { text-align: left; padding-bottom: .6rem; color: var(--ps-ink-soft); }
@@ -881,7 +919,7 @@ const routes = [
   }
   .tw-caps thead th { border-top: 0; border-bottom: 2px solid var(--ps-ink); font-size: .82rem; }
   .tw-caps__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .tw-note { max-width: 62ch; color: var(--ps-ink-soft); }
+  .tw-note { max-width: var(--tw-measure); color: var(--ps-ink-soft); }
   .tw-note .tw-cite { display: inline; }
 
   .tw-group { margin: 2rem 0 0; }
@@ -892,9 +930,9 @@ const routes = [
     margin: 0 0 .2rem;
     padding-bottom: .4rem;
     border-bottom: 2px solid var(--ps-ink);
-    max-width: 68ch;
+    max-width: var(--tw-measure);
   }
-  .tw-duties { list-style: none; margin: 0; padding: 0; max-width: 68ch; }
+  .tw-duties { list-style: none; margin: 0; padding: 0; max-width: var(--tw-measure); }
   .tw-duty { padding: .9rem 0; border-bottom: 1px solid var(--ps-line); }
   .tw-duty__text { margin: 0 0 .35rem; }
   .tw-duty__meta { margin: 0; display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: baseline; }
@@ -912,14 +950,19 @@ const routes = [
   .tw-class--class1 { color: var(--ps-accent-text); border-color: var(--ps-accent); }
   .tw-class__via { text-transform: none; letter-spacing: .02em; }
 
-  .tw-first { max-width: 66ch; }
+  .tw-first { max-width: var(--tw-measure); }
   .tw-first li { margin-bottom: .6rem; }
 
+  /* Four routes. auto-fit fitted THREE columns at desktop and stranded the
+     fourth alone on a second row, which is the ragged block in § 06. Two
+     columns divides four evenly and gives the DLCP card, much the longest,
+     room to breathe. One column once that would squeeze below ~20rem. */
   .tw-routes {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
     gap: 1.2rem;
     margin-top: 1.6rem;
+    max-width: var(--tw-measure);
   }
   .tw-route {
     border: 1px solid var(--ps-line);
@@ -955,7 +998,7 @@ const routes = [
     background: var(--ps-surface);
     padding: 1rem 1.1rem;
     margin: 1.2rem 0;
-    max-width: 34rem;
+    max-width: var(--tw-callout);
     border-radius: var(--ps-radius);
   }
   .tw-call__label { margin: 0 0 .3rem; }
@@ -972,8 +1015,9 @@ const routes = [
 
   .tw-fork {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
     gap: 2rem;
+    max-width: var(--tw-measure);
     margin-top: 1.4rem;
   }
   .tw-fork__h {
@@ -1005,13 +1049,13 @@ const routes = [
     background: var(--ps-mark);
     padding: .9rem 1rem;
     margin: 1rem 0 1.6rem;
-    max-width: 68ch;
+    max-width: var(--tw-measure);
     border-radius: var(--ps-radius);
   }
 
   /* The other side of the tow. Deliberately NOT styled as a warning: this reader
      is being armed, not accused, and a red alarm box would undo the copy. */
-  .tw-mgr { max-width: 68ch; }
+  .tw-mgr { max-width: var(--tw-measure); }
   .tw-mgr p { margin: 0 0 .9rem; }
   .tw-mgr .tw-cite { display: block; margin-top: .25rem; }
   .tw-mgr__ask {
@@ -1029,7 +1073,7 @@ const routes = [
     border-radius: var(--ps-radius);
     padding: 1.1rem 1.2rem;
     margin: 1.4rem 0;
-    max-width: 68ch;
+    max-width: var(--tw-measure);
   }
   .tw-obj__h {
     font-family: var(--ps-font-display);
@@ -1040,13 +1084,24 @@ const routes = [
   .tw-opnote a { color: var(--ps-accent-text); }
   .tw-obj p:last-child { margin-bottom: 0; }
 
+  /* Small tracked mono meta strands orphans badly: uppercase plus letter-spacing
+     makes long words that will not fit, so the last line ends up holding one of
+     them. Balancing evens the lines out instead. Progressive: browsers without
+     it simply keep today's behavior. */
+  .ips-lead__note, .rk-privacy, .tw-asof, .ips-dateline,
+  .tw-caps caption, .tw-rc__label, .tw-pk__label, .tw-stand__label {
+    text-wrap: balance;
+  }
+  /* The rail is a narrow column (~240px), so tracked mono at full letter-spacing
+     wraps into six ragged lines. Ease the tracking there only. */
+  .ips-lead__rail .rk-privacy { letter-spacing: .06em; line-height: 1.65; }
+
   /* The one action that belongs in the first screen on a phone. */
   .ips-lead__first {
     margin: 0 0 1.1rem;
     padding: .8rem 0 .9rem;
     border-top: 1px solid var(--ps-line);
     border-bottom: 1px solid var(--ps-line);
-    max-width: 34rem;
   }
   .ips-lead__first-k { display: block; margin-bottom: .1rem; color: var(--ps-ink-soft); }
   .ips-lead__tel {
@@ -1064,8 +1119,9 @@ const routes = [
      and mixing them is what made the whole list read as things to do tonight. */
   .tw-when {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
     gap: 2rem;
+    max-width: var(--tw-measure);
     margin-top: 1.4rem;
   }
   .tw-when__h {
@@ -1126,7 +1182,7 @@ const routes = [
     background: var(--ps-mark);
     border-left: 3px solid var(--ps-accent);
     padding: 1rem 1.1rem;
-    max-width: 68ch;
+    max-width: var(--tw-measure);
     border-radius: var(--ps-radius);
     margin: 1.4rem 0 1rem;
   }
@@ -1151,7 +1207,7 @@ const routes = [
     border-radius: var(--ps-radius);
     padding: 1.1rem;
     margin: 1.6rem 0;
-    max-width: 46rem;
+    max-width: var(--tw-measure);
   }
   .tw-rc__label { margin: 0 0 .8rem; color: var(--ps-accent-text); }
   .tw-rc__row {
@@ -1265,6 +1321,7 @@ const routes = [
      their complaint, and it reads better in their words than in ours.
      --------------------------------------------------------------------- */
   .tw-pk {
+    max-width: var(--tw-measure);
     border: 1px solid var(--ps-line);
     border-top: 3px solid var(--ps-accent);
     background: var(--ps-surface);
@@ -1298,7 +1355,7 @@ const routes = [
   .tw-pk__out:focus-visible {
     outline: 3px solid var(--ps-accent); outline-offset: 2px;
   }
-  .tw-pk__scout { margin: 0 0 1.2rem; color: var(--ps-ink-soft); font-size: .96rem; max-width: 66ch; }
+  .tw-pk__scout { margin: 0 0 1.2rem; color: var(--ps-ink-soft); font-size: .96rem; max-width: var(--tw-measure); }
   .tw-pk__scout .tw-cite { display: block; margin-top: .3rem; }
 
   .tw-pk__actions { margin: 0 0 .6rem; display: flex; flex-wrap: wrap; gap: .5rem; }
