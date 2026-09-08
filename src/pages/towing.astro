@@ -136,29 +136,46 @@ const privateLot = [
   ['They must hand you five things', 'The towing control number, the legal authority for the removal, an itemized statement, a receipt, and a copy of the Owner’s Bill of Rights.', '16 DCMR § 408.9'],
 ];
 
+// B-1, Wave 4. This section had FOUR routes and ZERO links — an email that was not
+// a mailto, a phone number that was not a tel, a form that was named but not
+// linked. Meanwhile the dispatch number in § 01 is tappable twice. The page made
+// finding your car actionable and complaining about it not, for the one reader
+// whose defining trait is deciding whether it is worth the bother.
+//
+// Every URL below was checked at its source on the date in `operational`, and
+// they are operational facts like the lot addresses — not generated, not covered
+// by the build guard. See § 09.
 const routes = [
   {
     who: 'DLCP — Department of Licensing and Consumer Protection',
-    what: 'The regulator. It is obliged to investigate a complaint, and it can suspend or revoke the license of a towing business or a storage lot.',
-    how: 'dlcp@dc.gov · (202) 671-4500 · the Consumer Protection Unit complaint form',
+    what: 'The regulator. It is obliged to investigate a complaint, and it can suspend or revoke the license of a towing business or a storage lot. It asks you to file within three years of the incident, and says it opens investigations where losses total $250 or more — or where there is a pattern or practice of abuse. A single tow may fall under that figure. The pattern is made of single tows.',
+    links: [
+      ['Consumer Protection Unit complaint form', 'https://dcra.kustomer.help/contact/consumer-complaint-form-Sk6BW94Lu'],
+      ['(202) 671-4500', 'tel:+12026714500'],
+      ['dlcp@dc.gov', 'mailto:dlcp@dc.gov'],
+    ],
     cite: '16 DCMR §§ 411.2, 411.4',
   },
   {
     who: 'Check the license first — SCOUT',
     what: 'Every towing business, storage lot and truck in the District has to be licensed. SCOUT will tell you whether this one is. Operating without a license can carry arrest, not just a fine.',
-    how: 'scout.dlcp.dc.gov',
+    links: [['scout.dlcp.dc.gov', 'https://scout.dlcp.dc.gov']],
     cite: '16 DCMR §§ 402.1, 410.1, 411.8',
   },
   {
     who: 'The Office of the Attorney General',
-    what: 'OAG enforces the Consumer Protection Procedures Act and can sue a company for restitution and penalties.',
-    how: 'oag.dc.gov — consumer complaint',
+    what: 'OAG enforces the Consumer Protection Procedures Act and can sue a company for restitution and penalties. Its Consumer and Tenant Response line will also mediate a dispute, though it does not represent you.',
+    links: [
+      ['OAG consumer complaint form', 'https://dcoag.my.site.com/dcoagcomplaints/s/?language=en_US'],
+      ['(202) 442-9828', 'tel:+12024429828'],
+    ],
     cite: 'D.C. Code §§ 28-3901–3913',
   },
   {
     who: 'You, directly',
     what: 'The CPPA lets you sue directly, and recover treble damages or at least $1,500 per violation — whichever is greater — plus your attorney’s fees, punitive damages and an injunction. The regulation above puts more than twenty separate duties on the company, and each breach is a violation. Small claims in D.C. Superior Court is a realistic venue.',
-    how: 'A consumer lawyer, or the Superior Court Small Claims and Conciliation Branch',
+    links: [['Superior Court Small Claims Branch', 'https://www.dccourts.gov/superior-court/superior-court-divisions/civil-division/small-claims']],
+    how: 'Small Claims handles money claims up to $10,000, which is well above what a towing dispute is likely to be worth. A consumer lawyer is the other route.',
     cite: 'D.C. Code § 28-3905(k)(2)',
   },
 ];
@@ -415,6 +432,19 @@ const routes = [
         grades a violation, the class is shown — <strong>Class 1 is the most serious</strong>.
       </p>
 
+      <!-- BLIND-1, Wave 4. Measured: every statement of the delay warning lived only in the
+           JavaScript bundle and fired only after the reader answered a question or typed a
+           figure. Zero static occurrences. So a reader who scrolled met twenty-three infraction
+           badges and nothing about the clock — the project's core standing lens satisfied only
+           for people who interact. This is that sentence, static, immediately above the longest
+           block of "they broke the rule" content on the page. -->
+      <p class="tw-clock">
+        <strong>A broken rule is not a reason to leave the car there.</strong> Storage runs at
+        $20 a day and it keeps running while a complaint is decided, which takes weeks. Nothing
+        below is a reason to refuse payment or to argue at the counter — the way to contest a tow
+        is to pay it, collect the car, keep the itemized receipt, and use &sect; 06.
+      </p>
+
       {byGroup.map((g) => (
         <div class="tw-group">
           <h3 class="tw-group__h">{g.title}</h3>
@@ -562,7 +592,12 @@ const routes = [
           <div class="tw-route">
             <h3 class="tw-route__who">{r.who}</h3>
             <p class="tw-route__what">{r.what}</p>
-            <p class="tw-route__how ps-record">{r.how}</p>
+            {r.how && <p class="tw-route__what">{r.how}</p>}
+            <p class="tw-route__how ps-record">
+              {r.links.map(([label, href], i) => (
+                <>{i > 0 ? ' · ' : ''}<a href={href} rel="noopener noreferrer">{label}</a></>
+              ))}
+            </p>
             <p class="tw-cite ps-record">{r.cite}</p>
           </div>
         ))}
@@ -893,7 +928,16 @@ const routes = [
     margin: 0 0 .4rem;
   }
   .tw-route__what { margin: 0 0 .5rem; }
-  .tw-route__how { margin: 0 0 .3rem; color: var(--ps-ink); }
+  .tw-route__how { margin: 0 0 .3rem; color: var(--ps-ink); line-height: 2; }
+  /* These are the page's primary action targets on a phone, not incidental links
+     in prose. WCAG's inline exception would excuse a 15px tall target here; that
+     misses the point for a reader deciding whether complaining is worth the
+     bother, so they get a real one. */
+  .tw-route__how a {
+    display: inline-block;
+    padding: .4rem 0;
+    color: var(--ps-accent-text);
+  }
   .tw-asof { color: var(--ps-ink-soft); }
 
   /* The one number a person needs before anything else. Given weight because at
@@ -938,6 +982,18 @@ const routes = [
   .tw-dl dt { font-weight: 700; margin-top: .7rem; }
   .tw-dl dd { margin: .15rem 0 0; }
   .tw-caps--tight { margin: .6rem 0; max-width: 22rem; }
+
+  /* The one sentence that must not depend on the reader touching anything. Accent
+     rule rather than a warning color: it is the most important thing on the page
+     for someone who only scrolls, not an alarm. */
+  .tw-clock {
+    border-left: 3px solid var(--ps-accent);
+    background: var(--ps-mark);
+    padding: .9rem 1rem;
+    margin: 1rem 0 1.6rem;
+    max-width: 68ch;
+    border-radius: var(--ps-radius);
+  }
 
   /* The other side of the tow. Deliberately NOT styled as a warning: this reader
      is being armed, not accused, and a red alarm box would undo the copy. */
