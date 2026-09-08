@@ -31,6 +31,12 @@ const ROUTES: { path: string; priority: number; changefreq: string }[] = [
   { path: '/rentals/lease-check',  priority: 0.9, changefreq: 'monthly' },
   { path: '/rentals/move-in',      priority: 0.9, changefreq: 'monthly' },
   { path: '/trash',                priority: 0.8, changefreq: 'weekly' },
+  // Added at ship 2026-09-08. Listed immediately rather than held back the way
+  // /almanac and /on-paper were: it has passed WCAG AA (p2-t5) and the full
+  // persona program (p2-t6, four waves, 17 findings all resolved), and unlike
+  // those two its name and route are settled. It is meant to be found at the
+  // moment someone searches "my car is gone", which is the whole point of it.
+  { path: '/towing',               priority: 0.9, changefreq: 'monthly' },
   { path: '/records',              priority: 0.8, changefreq: 'monthly' },
   // Added at launch 2026-08-16. Unlike /almanac, Ghost Homes has passed its redteam/persona
   // waves and the ship gate, so it is meant to be found.

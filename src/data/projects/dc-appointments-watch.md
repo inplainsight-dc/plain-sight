@@ -3,7 +3,7 @@ title: "DC Appointments Watch"
 description: "Which of the District’s board and commission seats have run past the end of their term, which are closing on the 180-day cap, and which have nobody in them at all?"
 tags: ["Boards & commissions", "MOTA", "Appointments", "Open data"]
 status: "building"
-order: 7
+order: 8
 tier: "soon"
 ---
 

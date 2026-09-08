@@ -4,6 +4,6 @@ description: "Do you need a license to rent out your place — and which one? Tw
 tags: ["Housing", "Short-term rentals", "Licensing", "DLCP"]
 url: "/short-term-rental-rules"
 status: "live"
-order: 6
+order: 7
 tier: "read"
 ---

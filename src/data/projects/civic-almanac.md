@@ -3,7 +3,7 @@ title: "Civic Almanac"
 description: "When can you actually be heard where you live? The election coming at you, the comment window on a rule being written, the budget hearing, the thing on your block worth a record number — each one public, each one with a deadline, each one buried somewhere different."
 tags: ["Elections", "Participation", "Deadlines", "Open data"]
 status: "building"
-order: 9
+order: 10
 tier: "soon"
 ---
 

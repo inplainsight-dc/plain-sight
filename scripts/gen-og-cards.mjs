@@ -142,6 +142,12 @@ const CARDS = {
     sub: 'Whole homes held off the market — look up your block.',
     path: '/ghost-homes',
   },
+  'towing': {
+    eyebrow: 'IN PLAIN SIGHT · DC TOWING',
+    lines: ['Your car is gone.', 'Two questions.'],
+    sub: 'What the tow company owes you, and what it can lawfully charge.',
+    path: '/towing',
+  },
   'default': {
     eyebrow: 'IN PLAIN SIGHT · DC',
     lines: ['Bringing the fine print', 'into plain sight.'],
