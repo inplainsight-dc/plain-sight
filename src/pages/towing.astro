@@ -235,7 +235,7 @@ const routes = [
             <p class="tw-stub__ans">Ask why.</p>
           </div>
           <p class="rk-privacy ps-record">
-            No account. No AI. Nothing you read here leaves your browser. Every duty below is generated
+            No account. No AI. Nothing you read here leaves your browser. Every requirement below is generated
             straight from the regulation — see the method note at the end.
           </p>
         </aside>
@@ -756,7 +756,7 @@ const routes = [
       </div>
       <div class="dc-sources">
         <p>
-          The duties above are not transcribed by hand. They are generated from
+          The requirements above are not transcribed by hand. They are generated from
           <strong>{duties.chapter}</strong>, and each one is bound to a verbatim phrase that has to still
           appear in the section it cites — if the District amends the chapter, this page fails to build
           rather than telling you something that stopped being true.
@@ -768,7 +768,7 @@ const routes = [
         </p>
         <p>
           <strong>Two kinds of fact live on this page, and only one of them is generated.</strong>
-          The duties, the infraction classes and the rate schedule are read from the regulation and
+          The requirements, the infraction classes and the rate schedule are read from the regulation and
           the build stops if they drift. The <em>operational</em> details — the dispatch number, the
           lot addresses and hours, what to bring, the agency phone numbers — are transcribed by hand
           from DPW and DC DMV. Nothing here checks those, so they carry the date they were last
@@ -777,7 +777,7 @@ const routes = [
         </p>
         <p class="ps-record tw-asof">
           Generated from the regulation on {duties.nodeGeneratedAt?.slice(0, 10) ?? 'the date shown above'} &middot;
-          {' '}{duties.duties.length} duties &middot; sources: 16 DCMR chapter 4, D.C. Official Code
+          {' '}{duties.duties.length}&nbsp;requirements &middot; sources: 16 DCMR chapter 4, D.C. Official Code
         </p>
         <!-- C-2, Wave 2. The standing lens: this caveat is ours to state, not theirs to find.
              Framed as arming the reader rather than unsettling them, because a resident who reads
@@ -847,6 +847,21 @@ const routes = [
   .ips-sec-rule { flex: 1; height: 0; border-top: 1px solid var(--ps-ink); align-self: center; }
   .ips-lede { max-width: var(--tw-lede); font-size: 1.12rem; color: var(--ps-ink-soft); margin-bottom: 1.6rem; }
   .ips-lede strong { color: var(--ps-ink); }
+
+  /* LEAD FURNITURE — same omission as the section rules. These are defined
+     per-page across the family and this page shipped without them, so the
+     blurb had no size or measure, the note had no color, and the rail had no
+     left border at all, which is why it floated unattached from the column. */
+  .ips-lead__blurb { color: var(--ps-ink-soft); font-size: 1.15rem; max-width: 52ch; }
+  .ips-lead__note { display: block; margin-top: .9rem; color: var(--ps-ink-soft); }
+  .ips-lead__note strong { color: var(--ps-accent-text); }
+  .ips-lead__rail { border-left: 2px solid var(--ps-ink); padding-left: 1.2rem; }
+
+  /* § 09 wraps paragraphs rather than the list this class carries elsewhere,
+     so it needs the measure but not the list treatment. */
+  .dc-sources { max-width: var(--tw-measure); }
+  .dc-sources p { margin: 0 0 .9rem; }
+  .dc-sources p:last-child { margin-bottom: 0; }
   .ips-lede, .tw-note, .tw-duty__text, .tw-test__text, .tw-test__edge,
   .tw-mgr p, .tw-obj p, .tw-clock, .tw-safety, .tw-rc__foot, .tw-pk__scout {
     text-wrap: pretty;
@@ -1216,13 +1231,17 @@ const routes = [
     gap: .9rem;
     margin: 0 0 1rem;
   }
-  .tw-rc__field { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+  .tw-rc__field { margin: 0; display: flex; flex-direction: column; gap: .3rem;
+    justify-content: flex-end; }
   .tw-rc__field label {
     font-family: var(--ps-font-record);
     font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
     color: var(--ps-ink-soft);
   }
   .tw-rc__field input, .tw-rc__field select {
+    /* An input and a select do not render at the same intrinsic height, which
+       left a 5px step across a row even with the fields bottom-aligned. */
+    height: 2.6rem;
     font: inherit;
     font-variant-numeric: tabular-nums;
     padding: .5rem .55rem;
@@ -1335,13 +1354,17 @@ const routes = [
     gap: .9rem;
     margin: 0 0 1rem;
   }
-  .tw-pk__field { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+  .tw-pk__field { margin: 0; display: flex; flex-direction: column; gap: .3rem;
+    justify-content: flex-end; }
   .tw-pk__field label {
     font-family: var(--ps-font-record);
     font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
     color: var(--ps-ink-soft);
   }
   .tw-pk__field input, .tw-pk__field select {
+    /* An input and a select do not render at the same intrinsic height, which
+       left a 5px step across a row even with the fields bottom-aligned. */
+    height: 2.6rem;
     font: inherit;
     padding: .5rem .55rem;
     min-height: 2.5rem;
@@ -1422,6 +1445,9 @@ const routes = [
   }
 
   @media (max-width: 40rem) {
+    /* The rail sits under the lead on a phone, so its separator becomes a top
+       rule. Matches every sibling surface. */
+    .ips-lead__rail { border-left: 0; border-top: 2px solid var(--ps-ink); padding-left: 0; padding-top: 1.2rem; }
     .tw-test { grid-template-columns: 1fr; gap: .3rem; }
     .tw-caps { font-size: .95rem; }
   }
@@ -1491,7 +1517,7 @@ const routes = [
     twVerdict.textContent = 'Both requirements appear to have been met.';
     twDetail.textContent =
       'That covers whether the tow could be ordered at all. It says nothing about the price or the '
-      + 'paperwork \u2014 the ceiling in section 03 and the duties in section 04 still apply, and those are where '
+      + 'paperwork \u2014 the ceiling in section 03 and the requirements in section 04 still apply, and those are where '
       + 'most of the money goes wrong.';
   }
 
