@@ -45,10 +45,17 @@ const byGroup = duties.groupOrder.map((g) => ({
 
 const publicTowDef = duties.definitions.find((d) => d.term === 'Public tow');
 
-// The two questions the whole page turns on.
+// The two questions the whole page turns on. `key` names the radio group.
+const ANSWERS = [
+  { v: 'yes', label: 'Yes' },
+  { v: 'no', label: 'No' },
+  { v: 'unk', label: 'I don\u2019t know' },
+];
+
 const tests = [
   {
     n: '01',
+    key: 'ticket',
     q: 'Was there a ticket?',
     body: 'A car cannot be towed off private property without your consent unless a police officer or a parking enforcement official issued it a citation — or a police officer directed the tow in an emergency.',
     edge: 'A landlord, a property manager, or the owner of the lot cannot authorize it on their own.',
@@ -56,6 +63,7 @@ const tests = [
   },
   {
     n: '02',
+    key: 'control',
     q: 'Is there a control number?',
     body: 'The company had to get a towing control number from DPW before the tow — and the storage lot has to give you that number when they release the car, along with the legal authority for the removal.',
     edge: 'Even in an emergency they still have to obtain one within two hours.',
@@ -154,6 +162,18 @@ const routes = [
           </p>
         </div>
         <aside class="ips-lead__rail">
+          <div class="tw-stub" aria-hidden="true">
+            <span class="tw-stub__bars"></span>
+            <p class="tw-stub__h">Public tow</p>
+            <p class="tw-stub__sub">16 DCMR &sect; 408.1 &middot; maximum</p>
+            <dl class="tw-stub__lines">
+              <div class="tw-stub__line"><dt>Tow</dt><dd>100.00</dd></div>
+              <div class="tw-stub__line"><dt>Storage / day</dt><dd>20.00</dd></div>
+              <div class="tw-stub__line"><dt>Drop fee</dt><dd>50.00</dd></div>
+            </dl>
+            <p class="tw-stub__ask">Anything else on it?</p>
+            <p class="tw-stub__ans">Ask why.</p>
+          </div>
           <p class="rk-privacy ps-record">
             No account. No AI. Nothing you read here leaves your browser. Every duty below is generated
             straight from the regulation — see the method note at the end.
@@ -219,15 +239,35 @@ const routes = [
               <h3 class="tw-test__q">{t.q}</h3>
               <p class="tw-test__text">{t.body}</p>
               <p class="tw-test__edge"><strong>{t.edge}</strong></p>
+              <fieldset class="tw-ask">
+                <legend class="ps-record tw-ask__legend">Your answer</legend>
+                <div class="tw-ask__opts">
+                  {ANSWERS.map((a) => (
+                    <span class="tw-ask__opt">
+                      <input class="tw-ask__in" type="radio" data-q={t.key}
+                             id={`tw-${t.key}-${a.v}`} name={`tw-${t.key}`} value={a.v} />
+                      <label class="tw-ask__lab" for={`tw-${t.key}-${a.v}`}>{a.label}</label>
+                    </span>
+                  ))}
+                </div>
+              </fieldset>
               <p class="tw-cite ps-record">{t.cite}</p>
             </div>
           </li>
         ))}
       </ol>
 
-      <p class="tw-verdict">
-        If the answer to either is <strong>no</strong>, the tow did not meet the District’s requirements —
-        and each failure is a <strong>Class 1 infraction</strong>, the same tier as towing without a license.
+      <div class="tw-stand" id="twStand" role="status" aria-live="polite">
+        <p class="ps-record tw-stand__label">Where you stand</p>
+        <p class="tw-stand__verdict" id="twVerdict">
+          Answer both and your position appears here. Nothing you tap leaves this page.
+        </p>
+        <p class="tw-stand__detail" id="twDetail"></p>
+      </div>
+
+      <p class="tw-note">
+        This tells you what the regulation required of them. <strong>It does not rule on your tow</strong> —
+        only DLCP, or a court, can do that.
       </p>
     </div>
   </section>
@@ -262,6 +302,40 @@ const routes = [
           ))}
         </tbody>
       </table>
+
+      <div class="tw-rc">
+        <p class="ps-record tw-rc__label">Check it against your receipt</p>
+        <div class="tw-rc__row">
+          <p class="tw-rc__field">
+            <label for="twCharged">What they charged you</label>
+            <span class="tw-rc__money">
+              <span class="tw-rc__cur" aria-hidden="true">$</span>
+              <input type="number" id="twCharged" min="0" step="0.01" inputmode="decimal" placeholder="0.00" />
+            </span>
+          </p>
+          <p class="tw-rc__field">
+            <label for="twDays">Days it sat in the lot</label>
+            <input type="number" id="twDays" min="0" max="365" step="1" inputmode="numeric" placeholder="0" />
+          </p>
+          <p class="tw-rc__field">
+            <label for="twSize">The vehicle</label>
+            <select id="twSize">
+              <option value="100">Car or light truck, 8,000 lb or under</option>
+              <option value="275">Heavy, over 8,000 lb</option>
+            </select>
+          </p>
+        </div>
+        <div class="tw-rc__out" id="twRcOut" role="status" aria-live="polite">
+          <p class="tw-rc__verdict" id="twRcVerdict">Enter what you paid and the lawful ceiling appears here.</p>
+          <p class="tw-rc__detail" id="twRcDetail"></p>
+        </div>
+        <p class="tw-rc__foot">
+          This is the <strong>public-tow</strong> schedule — the one that applies when you didn’t agree to the
+          tow. A tow you called for yourself is a private tow and has <em>no</em> published ceiling; what
+          protects you there is the signed, itemized estimate they owe you <em>before</em> the tow begins.
+          <span class="tw-cite ps-record">16 DCMR &sect;&sect; 408.1, 409.1</span>
+        </p>
+      </div>
 
       <p class="tw-note">
         A heavy vehicle — over 8,000 lb — is capped at $275 instead. That larger figure circulates widely as
@@ -468,13 +542,6 @@ const routes = [
   .tw-test__text, .tw-test__edge { margin: 0 0 .5rem; }
   .tw-test__edge { color: var(--ps-ink); }
 
-  .tw-verdict {
-    background: var(--ps-mark);
-    padding: 1rem 1.1rem;
-    max-width: 68ch;
-    border-radius: var(--ps-radius);
-  }
-
   .tw-caps {
     border-collapse: collapse;
     width: 100%;
@@ -590,8 +657,314 @@ const routes = [
   .tw-dl dd { margin: .15rem 0 0; }
   .tw-caps--tight { margin: .6rem 0; max-width: 22rem; }
 
+  /* ---------------------------------------------------------------------
+     THE TWO QUESTIONS, ANSWERABLE.  Radios, not buttons: arrow keys work,
+     the group is announced as a group, and the answer survives a re-read of
+     the question. The input sits invisibly ON TOP of its own chip, so the
+     whole chip is the target and focus never scrolls somewhere else.
+     --------------------------------------------------------------------- */
+  .tw-ask { border: 0; padding: 0; margin: .3rem 0 .7rem; }
+  .tw-ask__legend { padding: 0; margin-bottom: .35rem; color: var(--ps-ink-soft); }
+  .tw-ask__opts { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .tw-ask__opt { position: relative; display: inline-flex; }
+  .tw-ask__in {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    margin: 0; opacity: 0; cursor: pointer;
+  }
+  .tw-ask__lab {
+    display: inline-block;
+    font-family: var(--ps-font-record);
+    font-size: .82rem; letter-spacing: .06em; text-transform: uppercase;
+    padding: .5rem .85rem;
+    min-height: 1.5rem; line-height: 1.5;
+    border: 1px solid var(--ps-line);
+    border-radius: var(--ps-radius);
+    background: var(--ps-surface);
+    color: var(--ps-ink);
+    cursor: pointer;
+  }
+  .tw-ask__in:hover + .tw-ask__lab { border-color: var(--ps-ink-soft); }
+  .tw-ask__in:focus-visible + .tw-ask__lab {
+    outline: 3px solid var(--ps-accent); outline-offset: 2px;
+  }
+  /* Selection is carried by the FILL and by the radio's own checked state, which
+     assistive tech reads directly. Color is reinforcement, never the only signal. */
+  .tw-ask__in:checked + .tw-ask__lab {
+    background: var(--ps-accent-fill);
+    border-color: var(--ps-accent-fill);
+    color: var(--ps-accent-fill-ink);
+  }
+
+  .tw-stand {
+    background: var(--ps-mark);
+    border-left: 3px solid var(--ps-accent);
+    padding: 1rem 1.1rem;
+    max-width: 68ch;
+    border-radius: var(--ps-radius);
+    margin: 1.4rem 0 1rem;
+  }
+  .tw-stand__label { margin: 0 0 .35rem; color: var(--ps-accent-text-mark); }
+  .tw-stand__verdict {
+    font-family: var(--ps-font-display);
+    font-size: 1.3rem; font-weight: 600; line-height: 1.3;
+    margin: 0;
+  }
+  .tw-stand__detail { margin: .5rem 0 0; }
+  .tw-stand__detail:empty { display: none; }
+
+  /* ---------------------------------------------------------------------
+     RECEIPT CHECKER.  One comparison, on device. It reports the ceiling and
+     the difference; it never says the tow was unlawful, because the schedule
+     applies to public tows and this page cannot know which kind yours was.
+     --------------------------------------------------------------------- */
+  .tw-rc {
+    border: 1px solid var(--ps-line);
+    border-top: 3px solid var(--ps-accent);
+    background: var(--ps-surface);
+    border-radius: var(--ps-radius);
+    padding: 1.1rem;
+    margin: 1.6rem 0;
+    max-width: 46rem;
+  }
+  .tw-rc__label { margin: 0 0 .8rem; color: var(--ps-accent-text); }
+  .tw-rc__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: .9rem;
+    margin: 0 0 1rem;
+  }
+  .tw-rc__field { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+  .tw-rc__field label {
+    font-family: var(--ps-font-record);
+    font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ps-ink-soft);
+  }
+  .tw-rc__field input, .tw-rc__field select {
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    padding: .5rem .55rem;
+    min-height: 2.5rem;
+    border: 1px solid var(--ps-line);
+    border-radius: var(--ps-radius);
+    background: var(--ps-paper);
+    color: var(--ps-ink);
+    width: 100%;
+  }
+  .tw-rc__field input:focus-visible, .tw-rc__field select:focus-visible {
+    outline: 3px solid var(--ps-accent); outline-offset: 2px;
+  }
+  .tw-rc__money { position: relative; display: block; }
+  .tw-rc__cur {
+    position: absolute; left: .55rem; top: 50%; transform: translateY(-50%);
+    color: var(--ps-ink-soft); font-family: var(--ps-font-record);
+  }
+  .tw-rc__money input { padding-left: 1.5rem; }
+  .tw-rc__out {
+    border-top: 1px solid var(--ps-line);
+    padding-top: .9rem;
+  }
+  .tw-rc__verdict {
+    font-family: var(--ps-font-display);
+    font-size: 1.25rem; font-weight: 600; line-height: 1.3;
+    margin: 0;
+  }
+  .tw-rc__verdict--over { color: var(--ps-accent-text); }
+  .tw-rc__detail { margin: .45rem 0 0; }
+  .tw-rc__detail:empty { display: none; }
+  .tw-rc__foot { margin: 1rem 0 0; color: var(--ps-ink-soft); font-size: .96rem; }
+  .tw-rc__foot .tw-cite { display: block; margin-top: .4rem; }
+
+  /* ---------------------------------------------------------------------
+     THE ANCHOR.  A receipt stub: the flag's two bars at the head, mono
+     tabular figures, a torn lower edge. Decorative and aria-hidden — every
+     figure on it is stated in full in section 03.
+     --------------------------------------------------------------------- */
+  .tw-stub {
+    background: var(--ps-surface-2);
+    border: 1px solid var(--ps-line);
+    border-bottom: 0;
+    padding: 1rem 1.1rem 1.2rem;
+    margin: 0 0 1.2rem;
+    font-family: var(--ps-font-record);
+    position: relative;
+  }
+  /* the torn edge, drawn rather than imaged so it themes with everything else */
+  .tw-stub::after {
+    content: '';
+    position: absolute; left: -1px; right: -1px; bottom: -9px; height: 10px;
+    background:
+      radial-gradient(circle at 5px 0, transparent 5px, var(--ps-line) 5px 5.8px, transparent 5.9px)
+      repeat-x 0 0 / 10px 10px,
+      radial-gradient(circle at 5px -1px, transparent 5px, var(--ps-surface-2) 5px) repeat-x 0 0 / 10px 10px;
+  }
+  .tw-stub__bars {
+    display: block; height: 7px; margin-bottom: .7rem;
+    background: linear-gradient(var(--ps-accent) 0 3px, transparent 3px 4px, var(--ps-accent) 4px 7px);
+  }
+  .tw-stub__h {
+    font-family: var(--ps-font-display);
+    font-size: 1.45rem; font-weight: 700; letter-spacing: -.01em;
+    margin: 0;
+  }
+  .tw-stub__sub {
+    margin: .1rem 0 .9rem;
+    font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ps-ink-soft);
+  }
+  .tw-stub__lines { margin: 0; }
+  .tw-stub__line {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 1rem;
+    padding: .3rem 0;
+    border-bottom: 1px dotted var(--ps-line);
+  }
+  .tw-stub__line dt { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ps-ink-soft); }
+  .tw-stub__line dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .tw-stub__ask {
+    margin: .9rem 0 0;
+    font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ps-ink-soft);
+  }
+  .tw-stub__ans {
+    margin: .15rem 0 0;
+    font-family: var(--ps-font-display);
+    font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em;
+    color: var(--ps-accent-text);
+  }
+
   @media (max-width: 40rem) {
     .tw-test { grid-template-columns: 1fr; gap: .3rem; }
     .tw-caps { font-size: .95rem; }
   }
 </style>
+
+<script>
+  // ---------------------------------------------------------------------------
+  // Everything here runs in the reader's browser and nothing is sent anywhere.
+  // No storage either: a towing receipt is a document about a person, and the
+  // page promises it does not keep anything. Reload and it is gone.
+  //
+  // THE RULE THIS CODE OBEYS: the page states what the regulation required. It
+  // never returns a finding about the reader's own tow. Every verdict below is
+  // written about the REQUIREMENT, and every "no" path says the storage clock
+  // keeps running -- because telling someone they may have been wronged, without
+  // that sentence, is what turns this page into a $20-a-day cost.
+  // ---------------------------------------------------------------------------
+
+  // --- Section 02: the two questions ---------------------------------------
+  const twRadios = Array.from(document.querySelectorAll('.tw-ask__in'));
+  const twVerdict = document.getElementById('twVerdict');
+  const twDetail = document.getElementById('twDetail');
+
+  function answerOf(q) {
+    const hit = twRadios.find((r) => r.dataset.q === q && r.checked);
+    return hit ? hit.value : null;
+  }
+
+  function twUpdate() {
+    const ticket = answerOf('ticket');
+    const control = answerOf('control');
+
+    if (!ticket || !control) {
+      twVerdict.textContent = 'Answer both and your position appears here. Nothing you tap leaves this page.';
+      twDetail.textContent = '';
+      return;
+    }
+
+    const answers = [ticket, control];
+    const noes = answers.filter((a) => a === 'no').length;
+    const unknowns = answers.filter((a) => a === 'unk').length;
+
+    if (noes > 0) {
+      twVerdict.textContent = noes === 2
+        ? 'Neither requirement was met.'
+        : 'One of the two requirements was not met.';
+      twDetail.textContent =
+        'On what you have told this page, the tow did not meet what 16 DCMR chapter 4 requires, and each '
+        + 'failure is a Class 1 infraction \u2014 the same tier as towing without a license. That is a matter for '
+        + 'DLCP or a court to decide, not for this page. Collect the car first: storage runs at $20 a day '
+        + 'and a dispute does not stop that clock. Keep the itemized receipt, then use section 06.';
+      return;
+    }
+
+    if (unknowns > 0) {
+      twVerdict.textContent = unknowns === 2
+        ? 'You are entitled to know both of these.'
+        : 'You are entitled to know that one.';
+      twDetail.textContent =
+        'Not knowing is not the same as it being fine. When the lot releases your car it has to hand you the '
+        + 'towing control number and the legal authority for the removal, in writing, along with an itemized '
+        + 'statement, a receipt and a copy of the Owner\u2019s Bill of Rights (16 DCMR \u00a7 408.9). Ask for them in '
+        + 'those words and write down what you are told. If they refuse, that refusal is itself a violation.';
+      return;
+    }
+
+    twVerdict.textContent = 'Both requirements appear to have been met.';
+    twDetail.textContent =
+      'That covers whether the tow could be ordered at all. It says nothing about the price or the '
+      + 'paperwork \u2014 the ceiling in section 03 and the duties in section 04 still apply, and those are where '
+      + 'most of the money goes wrong.';
+  }
+
+  twRadios.forEach((r) => r.addEventListener('change', twUpdate));
+
+  // --- Section 03: the receipt checker --------------------------------------
+  const rcCharged = document.getElementById('twCharged');
+  const rcDays = document.getElementById('twDays');
+  const rcSize = document.getElementById('twSize');
+  const rcVerdict = document.getElementById('twRcVerdict');
+  const rcDetail = document.getElementById('twRcDetail');
+
+  const STORAGE_PER_DAY = 20;   // 16 DCMR s 408.1, per 24 hours or any part of one
+  const money = (n) => '$' + n.toLocaleString('en-US', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
+  });
+
+  function rcUpdate() {
+    const charged = parseFloat(rcCharged.value);
+    // s 408.1 charges storage per 24 hours OR ANY PART OF ONE, so a partial
+    // period rounds UP. Flooring it would understate the ceiling, which would
+    // overstate the overcharge -- an error in the reader's favor, and this page
+    // understates money rather than overstating it.
+    const days = Math.max(0, Math.ceil(parseFloat(rcDays.value) || 0));
+    const base = parseFloat(rcSize.value);
+    const ceiling = base + (STORAGE_PER_DAY * days);
+    const storage = STORAGE_PER_DAY * days;
+
+    const basis = 'That is ' + money(base) + ' for the tow'
+      + (days > 0
+          ? ' plus ' + money(storage) + ' storage, at $20 for each 24 hours or part of one, for '
+            + days + (days === 1 ? ' day' : ' days') + '. '
+          : ', with no storage. ');
+
+    rcVerdict.classList.remove('tw-rc__verdict--over');
+
+    if (!Number.isFinite(charged) || charged < 0) {
+      rcVerdict.textContent = 'The published ceiling is ' + money(ceiling) + '.';
+      rcDetail.textContent = basis + 'Enter what you were charged to compare it.';
+      return;
+    }
+
+    if (charged > ceiling) {
+      const over = charged - ceiling;
+      rcVerdict.classList.add('tw-rc__verdict--over');
+      rcVerdict.textContent = money(charged) + ' is ' + money(over) + ' above the ' + money(ceiling) + ' ceiling.';
+      rcDetail.textContent = basis
+        + 'Charging more than the Director\u2019s schedule allows for a public tow is prohibited outright, and the '
+        + 'infraction schedule treats it as Class 1 (16 DCMR \u00a7\u00a7 410.12, 3304.1(l)). Whether yours was a public '
+        + 'tow is the question in section 02. Storage keeps accruing while a dispute does not stop it, so the '
+        + 'usual order is to pay, collect the car, and take the itemized receipt to DLCP.';
+      return;
+    }
+
+    rcVerdict.textContent = money(charged) + ' is at or under the ' + money(ceiling) + ' ceiling.';
+    rcDetail.textContent = basis
+      + 'The total is within the schedule. That is only the price \u2014 a tow can be correctly priced and still '
+      + 'have been ordered without the citation and the control number section 02 asks about.';
+  }
+
+  [rcCharged, rcDays, rcSize].forEach((el) => {
+    el.addEventListener('input', rcUpdate);
+    el.addEventListener('change', rcUpdate);
+  });
+</script>
