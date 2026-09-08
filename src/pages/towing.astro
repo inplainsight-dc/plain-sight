@@ -612,6 +612,46 @@ const routes = [
           Generated from the regulation on {duties.nodeGeneratedAt?.slice(0, 10) ?? 'the date shown above'} &middot;
           {' '}{duties.duties.length} duties &middot; sources: 16 DCMR chapter 4, D.C. Official Code
         </p>
+        <!-- C-2, Wave 2. The standing lens: this caveat is ours to state, not theirs to find.
+             Framed as arming the reader rather than unsettling them, because a resident who reads
+             "the enabling statute was repealed" and stops there has been harmed by us. The
+             narrower price-control question is kept separate and hedged, because it is derived
+             and untested — and since the receipt-checker now computes against § 408.1, it is
+             load-bearing in a way it was not before. -->
+        <div class="tw-obj">
+          <h3 class="tw-obj__h">The objection an operator may raise</h3>
+          <p>
+            If you take this page to a tow company, this is the argument you might get back. It is a
+            real one, so it is worth knowing it and knowing the answer.
+          </p>
+          <p>
+            <strong>Chapter 4’s enabling act was repealed.</strong> D.C. Code &sect; 47-2850, the Towing
+            Regulation and Enforcement Authority, was repealed by the BEST Act of 2022 with effect from
+            October 1, 2025, and that act carries no savings clause.
+          </p>
+          <p>
+            <strong>The chapter stands anyway, on three grounds.</strong> The District’s Office of
+            Documents still publishes it as in force, and a regulation stays effective until it is
+            itself amended or repealed. The licensing and enforcement machinery has live replacement
+            authority in <strong>D.C. Code &sect; 47-2851.01b</strong>, which directs the
+            Director to issue rules and lets the Department suspend or revoke any license under that
+            subchapter — and towing sits inside it, because “vehicular services” is a license category
+            the statute defines to include towing. And DLCP, the agency that administers all of this,
+            published towing guidance for residents on <strong>June 30, 2026</strong>, nine months after
+            the repeal took effect.
+          </p>
+          <p>
+            <strong>One narrower question is genuinely open</strong>, and it is not the one above.
+            &sect; 47-2851.01b authorizes rules to implement a subchapter about <em>licensing</em>.
+            Whether that also carries a <span class="ps-mark-und">price control</span> — the rate
+            schedule in &sect; 408.1, the ceiling this page checks receipts against — is a narrower
+            question than whether chapter 4 survives, and this page has not found a decision settling
+            it either way. Two things are worth knowing while it is open: those figures are also
+            <strong>DC DMV’s own published fees</strong>, and DLCP’s own guidance tells residents to
+            complain when they are charged too much for a tow.
+          </p>
+        </div>
+
         <p>
           <strong>This is not legal advice</strong>, and it does not tell you whether your own tow was lawful —
           only what the rule requires. If a tow company disagrees with something here, the regulation is
@@ -773,6 +813,25 @@ const routes = [
   .tw-dl dt { font-weight: 700; margin-top: .7rem; }
   .tw-dl dd { margin: .15rem 0 0; }
   .tw-caps--tight { margin: .6rem 0; max-width: 22rem; }
+
+  /* The objection, stated rather than left to be found. Bordered so it reads as a
+     distinct move -- the page raising the argument against itself on purpose. */
+  .tw-obj {
+    border: 1px solid var(--ps-line);
+    border-left: 3px solid var(--ps-accent);
+    background: var(--ps-surface-2);
+    border-radius: var(--ps-radius);
+    padding: 1.1rem 1.2rem;
+    margin: 1.4rem 0;
+    max-width: 68ch;
+  }
+  .tw-obj__h {
+    font-family: var(--ps-font-display);
+    font-size: 1.25rem; font-weight: 600;
+    margin: 0 0 .6rem;
+  }
+  .tw-obj p { margin: 0 0 .7rem; }
+  .tw-obj p:last-child { margin-bottom: 0; }
 
   /* The one action that belongs in the first screen on a phone. */
   .ips-lead__first {
