@@ -1,6 +1,6 @@
 {
   "generatedFrom": "DC Towing · scripts/build_duties.py",
-  "nodeGeneratedAt": "2026-09-08T06:56:04Z",
+  "nodeGeneratedAt": "2026-09-08T08:17:34Z",
   "chapter": "16 DCMR chapter 4 — Towing Service for Motor Vehicles",
   "currencyVerified": "Verified against dcregs.dc.gov on 2026-09-07 across 15 sections. § 406 shows one rulemaking on record (R0028747, 52 DCR 522). The sole amendment anywhere in the chapter is § 405 (storage lots), 56 DCR 3093, April 24, 2009. See docs/FINDING_2026-09-07_p1t1-trespass-tow-authority.md.",
   "groupOrder": [
@@ -135,7 +135,7 @@
       "group": "any-tow",
       "citation": "16 DCMR § 408.7",
       "heading": "PAYMENT FOR SERVICES",
-      "plain": "Once you show ID and proof of ownership and pay what is genuinely owed, they must release the car promptly, unless the government has placed a hold on it.",
+      "plain": "Once you show ID and proof of ownership and pay the towing and storage charges due, they must release the car promptly, unless the government has placed a hold on it. If you think the amount is wrong, pay it and complain afterwards — that argument is won on paper, not at the counter.",
       "infractionClass": "Class 3",
       "infractionClassVia": null
     },
