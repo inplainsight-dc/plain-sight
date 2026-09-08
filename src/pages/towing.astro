@@ -471,11 +471,81 @@ const routes = [
     </div>
   </section>
 
+  <!-- §07 THE PACKET -->
+  <section class="ips-sec" id="packet">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 07</span>
+        <h2 class="ips-sec-title">Put it in writing</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <p class="ips-lede">
+        You have answered the two questions and checked the receipt. <strong>That is most of a
+        complaint already.</strong> Fill in the four things only you know and this assembles the
+        rest — the figures, the citations, and what DLCP is obliged to do with it.
+      </p>
+
+      <p class="tw-note">
+        It is built in this browser and never sent anywhere. Copy it, print it, edit it — it is
+        yours, and it will read better in your own words than in ours.
+      </p>
+
+      <div class="tw-pk">
+        <div class="tw-pk__row">
+          <p class="tw-pk__field">
+            <label for="pkDate">Date of the tow</label>
+            <input type="date" id="pkDate" />
+          </p>
+          <p class="tw-pk__field">
+            <label for="pkFrom">Where it was taken from</label>
+            <input type="text" id="pkFrom" placeholder="street address or lot" autocomplete="off" />
+          </p>
+          <p class="tw-pk__field">
+            <label for="pkCo">Company named on your receipt</label>
+            <input type="text" id="pkCo" placeholder="as printed" autocomplete="off" />
+          </p>
+          <p class="tw-pk__field">
+            <label for="pkLot">Storage lot you collected from</label>
+            <input type="text" id="pkLot" placeholder="address, if you have it" autocomplete="off" />
+          </p>
+          <p class="tw-pk__field">
+            <label for="pkScout">Did SCOUT list that company as licensed?</label>
+            <select id="pkScout">
+              <option value="unchecked">I have not checked yet</option>
+              <option value="listed">Yes, it was listed</option>
+              <option value="absent">No, I could not find it</option>
+            </select>
+          </p>
+        </div>
+
+        <p class="tw-pk__scout">
+          Check it yourself at <a href="https://scout.dlcp.dc.gov" rel="noopener noreferrer">scout.dlcp.dc.gov</a>
+          and note the date you looked. A check you ran on a date you can state is worth more than
+          anything this page could tell you, because a license status changes and yours is the one
+          that was true when you looked.
+          <span class="tw-cite ps-record">16 DCMR &sect;&sect; 402.1, 410.1</span>
+        </p>
+
+        <p class="tw-pk__actions">
+          <button type="button" id="pkBuild" class="tw-pk__btn tw-pk__btn--go">Build my complaint</button>
+          <button type="button" id="pkCopy" class="tw-pk__btn" hidden>Copy it</button>
+          <button type="button" id="pkPrint" class="tw-pk__btn" hidden>Print it</button>
+        </p>
+
+        <p class="tw-pk__status ps-record" id="pkStatus" role="status" aria-live="polite"></p>
+
+        <label for="pkOut" class="tw-pk__outlabel">Your complaint</label>
+        <textarea id="pkOut" class="tw-pk__out" rows="24" spellcheck="true" hidden></textarea>
+      </div>
+    </div>
+  </section>
+
   <!-- METHOD -->
   <section class="ips-sec" id="method">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 07</span>
+        <span class="ps-record ps-record--red">&sect; 08</span>
         <h2 class="ips-sec-title">How this page knows</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -832,6 +902,111 @@ const routes = [
     color: var(--ps-accent-text);
   }
 
+  /* ---------------------------------------------------------------------
+     THE COMPLAINT PACKET.  Assembled on device from what the reader already
+     answered, plus the four things only they know. Editable on purpose: it is
+     their complaint, and it reads better in their words than in ours.
+     --------------------------------------------------------------------- */
+  .tw-pk {
+    border: 1px solid var(--ps-line);
+    border-top: 3px solid var(--ps-accent);
+    background: var(--ps-surface);
+    border-radius: var(--ps-radius);
+    padding: 1.1rem;
+    margin: 1.6rem 0;
+  }
+  .tw-pk__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: .9rem;
+    margin: 0 0 1rem;
+  }
+  .tw-pk__field { margin: 0; display: flex; flex-direction: column; gap: .3rem; }
+  .tw-pk__field label {
+    font-family: var(--ps-font-record);
+    font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ps-ink-soft);
+  }
+  .tw-pk__field input, .tw-pk__field select {
+    font: inherit;
+    padding: .5rem .55rem;
+    min-height: 2.5rem;
+    border: 1px solid var(--ps-line);
+    border-radius: var(--ps-radius);
+    background: var(--ps-paper);
+    color: var(--ps-ink);
+    width: 100%;
+  }
+  .tw-pk__field input:focus-visible, .tw-pk__field select:focus-visible,
+  .tw-pk__out:focus-visible {
+    outline: 3px solid var(--ps-accent); outline-offset: 2px;
+  }
+  .tw-pk__scout { margin: 0 0 1.2rem; color: var(--ps-ink-soft); font-size: .96rem; max-width: 66ch; }
+  .tw-pk__scout .tw-cite { display: block; margin-top: .3rem; }
+
+  .tw-pk__actions { margin: 0 0 .6rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .tw-pk__btn {
+    font-family: var(--ps-font-record);
+    font-size: .82rem; letter-spacing: .08em; text-transform: uppercase;
+    padding: .6rem 1rem;
+    min-height: 2.6rem;
+    border: 1px solid var(--ps-ink);
+    border-radius: var(--ps-radius);
+    background: var(--ps-surface);
+    color: var(--ps-ink);
+    cursor: pointer;
+  }
+  .tw-pk__btn:hover { background: var(--ps-surface-2); }
+  .tw-pk__btn:focus-visible { outline: 3px solid var(--ps-accent); outline-offset: 2px; }
+  /* Red as a verb: the one control that does the thing this section exists for. */
+  .tw-pk__btn--go {
+    background: var(--ps-accent-fill);
+    border-color: var(--ps-accent-fill);
+    color: var(--ps-accent-fill-ink);
+  }
+  .tw-pk__btn--go:hover { background: var(--ps-accent-fill-hover); border-color: var(--ps-accent-fill-hover); }
+  .tw-pk__status { margin: 0 0 .6rem; color: var(--ps-ink-soft); }
+  .tw-pk__status:empty { display: none; }
+
+  .tw-pk__outlabel {
+    display: block;
+    font-family: var(--ps-font-record);
+    font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ps-ink-soft);
+    margin-bottom: .3rem;
+  }
+  .tw-pk__outlabel:has(+ .tw-pk__out[hidden]) { display: none; }
+  .tw-pk__out {
+    width: 100%;
+    font-family: var(--ps-font-record);
+    font-size: .88rem;
+    line-height: 1.5;
+    padding: .9rem;
+    border: 1px solid var(--ps-line);
+    border-radius: var(--ps-radius);
+    background: var(--ps-paper);
+    color: var(--ps-ink);
+    resize: vertical;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+  }
+
+  /* Print gives them the complaint alone, not the website around it. An angry
+     person wants a sheet of paper to hand across a counter. */
+  @media print {
+    body * { visibility: hidden; }
+    #packet, #packet * { visibility: visible; }
+    #packet { position: absolute; inset: 0; padding: 0; }
+    .tw-pk__row, .tw-pk__actions, .tw-pk__scout, .tw-pk__status,
+    .ips-sec-head, .ips-lede, .tw-note, .tw-pk__outlabel { display: none !important; }
+    .tw-pk { border: 0; padding: 0; background: none; }
+    .tw-pk__out {
+      border: 0; padding: 0; background: none; color: #000;
+      height: auto; min-height: 100vh; font-size: 10.5pt; resize: none;
+    }
+  }
+
   @media (max-width: 40rem) {
     .tw-test { grid-template-columns: 1fr; gap: .3rem; }
     .tw-caps { font-size: .95rem; }
@@ -962,6 +1137,185 @@ const routes = [
       + 'The total is within the schedule. That is only the price \u2014 a tow can be correctly priced and still '
       + 'have been ordered without the citation and the control number section 02 asks about.';
   }
+
+
+  // --- Section 07: the complaint packet ------------------------------------
+  //
+  // COMPLAINT REGISTER, decided by Pippa 2026-09-08. Not a neutral record and
+  // not a demand: it names the provisions it asks the regulator to look at, and
+  // it stops there. The closing line is load-bearing -- the reader states what
+  // they observed and what the rule says, and asserts no legal conclusion. That
+  // is the project's standing lens surviving into a document that leaves here.
+  //
+  // A provision is listed ONLY where the reader's own answers put it at issue.
+  // If nothing is at issue the packet says so and does not pretend otherwise:
+  // a tool willing to tell you that you have a complaint has to be equally
+  // willing to tell you that you do not.
+  //
+  // Company names are typed by the reader off their own receipt, stay in their
+  // browser and are never shipped in this page's payload.
+
+  const pk = {
+    date: document.getElementById('pkDate'),
+    from: document.getElementById('pkFrom'),
+    co: document.getElementById('pkCo'),
+    lot: document.getElementById('pkLot'),
+    scout: document.getElementById('pkScout'),
+    build: document.getElementById('pkBuild'),
+    copy: document.getElementById('pkCopy'),
+    print: document.getElementById('pkPrint'),
+    out: document.getElementById('pkOut'),
+    status: document.getElementById('pkStatus'),
+  };
+
+  const PROVISIONS = {
+    '406.7': 'A vehicle may not be towed from private real property without the owner’s\n' +
+             '                    consent unless a police officer or parking enforcement official issued\n' +
+             '                    a citation, or a police officer directed the tow in an emergency.',
+    '406.3': 'A towing control number must be obtained from DPW before the tow.',
+    '408.9': 'On release, the lot must provide the towing control number, the legal\n' +
+             '                    authority for the removal, an itemized statement, a receipt, and a copy\n' +
+             '                    of the Owner’s Bill of Rights.',
+    '408.1': 'Published maximum rates for a public tow.',
+    '410.12': 'Charging more than the Director’s schedule permits for a public tow\n' +
+              '                    is prohibited.',
+    '410.1': 'Operating a towing business without a valid current license is unlawful.',
+  };
+
+  // 32 clears the longest label, 'Citation issued before the tow?', which overran a 30 pad
+  // and silently dropped its dot leader.
+  const pad = (label, value) => '  ' + (label + ' ').padEnd(32, '.') + ' ' + value;
+  const fmtDate = (v) => {
+    if (!v) return '[not given]';
+    const d = new Date(v + 'T12:00:00');
+    return isNaN(d) ? v : d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+  const said = (v) => (v === 'yes' ? 'YES' : v === 'no' ? 'NO' : v === 'unk' ? 'I WAS NOT TOLD' : 'NOT ANSWERED');
+
+  function buildPacket() {
+    const ticket = answerOf('ticket');
+    const control = answerOf('control');
+    const charged = parseFloat(rcCharged.value);
+    const days = Math.max(0, Math.ceil(parseFloat(rcDays.value) || 0));
+    const base = parseFloat(rcSize.value);
+    const ceiling = base + (STORAGE_PER_DAY * days);
+    const overcharged = Number.isFinite(charged) && charged > ceiling;
+
+    // Only what the reader's own answers put at issue.
+    const cites = [];
+    if (ticket === 'no' || ticket === 'unk') cites.push('406.7');
+    if (control === 'no' || control === 'unk') { cites.push('406.3'); cites.push('408.9'); }
+    if (overcharged) { cites.push('408.1'); cites.push('410.12'); }
+    if (pk.scout.value === 'absent') cites.push('410.1');
+
+    const L = [];
+    L.push('TOWING COMPLAINT — PREPARED FROM MY OWN RECORDS');
+    L.push('Prepared ' + new Date().toLocaleDateString('en-US',
+      { day: 'numeric', month: 'long', year: 'numeric' }));
+    L.push('');
+    L.push('WHAT HAPPENED');
+    L.push(pad('Date of tow', fmtDate(pk.date.value)));
+    L.push(pad('Taken from', pk.from.value.trim() || '[not given]'));
+    L.push(pad('Company on receipt', pk.co.value.trim() || '[not given]'));
+    L.push(pad('Storage lot', pk.lot.value.trim() || '[not given]'));
+    if (Number.isFinite(charged)) L.push(pad('Amount I paid', '$' + charged.toFixed(2)));
+    if (days > 0) L.push(pad('Days held', String(days)));
+    L.push('');
+    L.push('WHAT I WAS ABLE TO ESTABLISH');
+    L.push(pad('Citation issued before the tow?', said(ticket)));
+    L.push(pad('Given a towing control number?', said(control)));
+    L.push(pad('Listed as licensed on SCOUT?',
+      pk.scout.value === 'listed' ? 'YES' : pk.scout.value === 'absent' ? 'I COULD NOT FIND IT'
+        : 'I HAVE NOT CHECKED'));
+
+    if (Number.isFinite(charged)) {
+      L.push('');
+      L.push('WHAT THE PUBLISHED SCHEDULE ALLOWS');
+      L.push(pad(base === 275 ? 'Tow, over 8,000 lb' : 'Tow, car under 8,000 lb', '$' + base.toFixed(2)));
+      if (days > 0) L.push(pad('Storage, ' + days + ' at $20', '$' + (STORAGE_PER_DAY * days).toFixed(2)));
+      L.push(pad('Maximum for this tow', '$' + ceiling.toFixed(2)));
+      L.push(pad('I was charged', '$' + charged.toFixed(2)));
+      L.push(pad(overcharged ? 'Charged above the maximum by' : 'Within the maximum by',
+        '$' + Math.abs(charged - ceiling).toFixed(2)));
+      L.push('');
+      L.push('  These maximums apply to a public tow, which under 16 DCMR § 499 means a tow');
+      L.push('  carried out without the consent of the owner, expressly including tows from');
+      L.push('  private real property.');
+    }
+
+    L.push('');
+    if (cites.length) {
+      L.push('PROVISIONS I AM ASKING DLCP TO LOOK AT');
+      cites.forEach((c) => {
+        L.push('  16 DCMR § ' + c.padEnd(7) + ' ' + PROVISIONS[c]);
+      });
+      L.push('');
+      L.push('WHAT I AM ASKING FOR');
+      L.push('  DLCP is required to investigate a complaint against a towing business');
+      L.push('  (16 DCMR § 411.2) and may suspend or revoke a license (§ 411.4).');
+      L.push('  I am asking for an investigation.');
+    } else {
+      L.push('WHERE THIS LEAVES ME');
+      L.push('  On my own answers, nothing above puts a specific provision of 16 DCMR');
+      L.push('  chapter 4 at issue. A citation was issued, I was given a control number,');
+      L.push('  and the amount was within the published maximum. I am recording it here');
+      L.push('  in case something further comes to light.');
+    }
+
+    L.push('');
+    L.push('WHAT I HAVE');
+    ['Photographs of the truck', 'The itemized receipt', 'The towing control number',
+     'Photographs of where I was parked', 'The citation, if there was one'].forEach((x) => {
+      L.push('  [ ] ' + x);
+    });
+    L.push('');
+    L.push('I am stating what I observed and what the regulation says. I am not asserting');
+    L.push('a legal conclusion about this tow.');
+    return L.join('\n');
+  }
+
+  function showPacket() {
+    pk.out.value = buildPacket();
+    pk.out.hidden = false;
+    pk.copy.hidden = false;
+    pk.print.hidden = false;
+    pk.status.textContent = 'Built. Edit it freely — it reads better in your own words.';
+    pk.out.focus();
+  }
+
+  pk.build.addEventListener('click', () => {
+    const already = !pk.out.hidden && pk.out.value.trim();
+    if (already && !confirm('Rebuilding replaces anything you have edited. Continue?')) return;
+    showPacket();
+  });
+
+  pk.copy.addEventListener('click', async () => {
+    // Clipboard access is refused in plenty of ordinary contexts, so it always
+    // falls back to selecting the text rather than failing silently.
+    try {
+      await navigator.clipboard.writeText(pk.out.value);
+      pk.status.textContent = 'Copied to your clipboard.';
+    } catch (e) {
+      pk.out.select();
+      pk.status.textContent = 'Your browser blocked the copy — the text is selected, so press '
+        + (navigator.platform.indexOf('Mac') === 0 ? 'Cmd+C' : 'Ctrl+C') + '.';
+    }
+  });
+
+  pk.print.addEventListener('click', () => window.print());
+
+  // A built packet does NOT follow later edits to the answers above, because
+  // regenerating would silently discard whatever the reader has written into it.
+  // But going stale in silence is its own trap, so say so instead. Announced
+  // through the same live region, so it is not a purely visual cue.
+  function markStale() {
+    if (pk.out.hidden) return;
+    pk.status.textContent = 'Your answers above have changed. Rebuild to bring the complaint '
+      + 'in line — that will replace anything you have edited.';
+  }
+  twRadios.forEach((r) => r.addEventListener('change', markStale));
+  [rcCharged, rcDays, rcSize, pk.date, pk.from, pk.co, pk.lot, pk.scout]
+    .forEach((el) => el.addEventListener('change', markStale));
 
   [rcCharged, rcDays, rcSize].forEach((el) => {
     el.addEventListener('input', rcUpdate);
