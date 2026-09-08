@@ -150,6 +150,19 @@ const routes = [
       <div class="ips-lead__grid">
         <div class="ips-lead__main">
           <h1 class="ips-lead__h">Your car is <span class="ps-highlight">gone</span>. Two questions.</h1>
+
+          <!-- A-1, Wave 1. The dispatch number was 1.44 phone screens down, behind sixty words
+               of orientation and a decorative receipt. Whether the car was towed or stolen is the
+               only question the reader has in the first minute, so the number comes before the
+               explaining. It appears again in § 01 with its context; that repetition is deliberate
+               and it is the one fact on this page worth saying twice. -->
+          <p class="ips-lead__first">
+            <span class="ps-record ips-lead__first-k">First — towed, or stolen?</span>
+            <a class="ips-lead__tel" href="tel:+12025416083">(202) 541-6083</a>
+            <span class="ips-lead__first-n">Towing Control Dispatch. They can tell you whether it
+              was towed and which lot it went to.</span>
+          </p>
+
           <p class="ips-lead__blurb">
             Whoever took it — the District, or a private lot — <strong>you did not consent to it, and the
             District calls that a public tow.</strong> Public tows come with rules that had to be followed
@@ -450,13 +463,47 @@ const routes = [
         <span class="ips-sec-rule"></span>
       </div>
 
-      <ol class="tw-first">
-        <li><strong>Photograph the truck</strong> before it leaves — both cab doors, both sides. The name, address and phone have to be there, and so does the truck’s own ID number.</li>
-        <li><strong>Ask for the towing control number</strong> when you collect the car. They have to give it to you. If there isn’t one, that is the answer to question two.</li>
-        <li><strong>Ask what citation authorized the tow</strong>, and who requested it. The company had to report both to DPW before towing.</li>
-        <li><strong>Ask to inspect the car before you pay.</strong> Refusing that is a violation in itself.</li>
-        <li><strong>Get the itemized receipt.</strong> They cannot refuse it, and they have to accept a card — cash-only is not lawful.</li>
-      </ol>
+      <p class="ips-lede">
+        Two different moments, and only the first one is urgent. Almost nothing here has to happen
+        tonight.
+      </p>
+
+      <div class="tw-when">
+        <div class="tw-when__col">
+          <h3 class="tw-when__h">If the truck is still there</h3>
+          <p class="tw-when__sub ps-record">Minutes matter here, and only here</p>
+          <ol class="tw-first">
+            <li><strong>You can ask them to stop.</strong> If they have hooked your car up but have
+              not driven off, they have to discontinue the tow once you pay the rate set for a
+              discontinued tow — and, where an officer ordered it and is still on the scene, with
+              their agreement. <span class="tw-cite ps-record">16 DCMR &sect; 408.6</span></li>
+            <li><strong>Photograph the truck.</strong> Both cab doors and both sides. The name,
+              address and phone have to be there, and so does the truck’s own ID number.
+              <span class="tw-cite ps-record">16 DCMR &sect;&sect; 404.2, 404.4</span></li>
+          </ol>
+          <p class="tw-safety">
+            <strong>You don’t have to win the argument.</strong> Photographs work from a distance,
+            and the regulation binds the company rather than the person in the cab — a complaint is
+            decided on the paperwork, not on what was said in the lot. If you feel unsafe, leave.
+            Apart from the two steps above, nothing on this page has to happen tonight.
+          </p>
+        </div>
+
+        <div class="tw-when__col">
+          <h3 class="tw-when__h">When you collect the car</h3>
+          <p class="tw-when__sub ps-record">At the counter, in daylight, with a pen</p>
+          <ol class="tw-first">
+            <li><strong>Ask for the towing control number.</strong> They have to give it to you. If
+              there isn’t one, that is the answer to question two.</li>
+            <li><strong>Ask what citation authorized the tow</strong>, and who requested it. The
+              company had to report both to DPW before towing.</li>
+            <li><strong>Ask to inspect the car before you pay.</strong> Refusing that is a violation
+              in itself.</li>
+            <li><strong>Get the itemized receipt.</strong> They cannot refuse it, and they have to
+              accept a card — cash-only is not lawful.</li>
+          </ol>
+        </div>
+      </div>
 
       <div class="tw-routes">
         {routes.map((r) => (
@@ -726,6 +773,50 @@ const routes = [
   .tw-dl dt { font-weight: 700; margin-top: .7rem; }
   .tw-dl dd { margin: .15rem 0 0; }
   .tw-caps--tight { margin: .6rem 0; max-width: 22rem; }
+
+  /* The one action that belongs in the first screen on a phone. */
+  .ips-lead__first {
+    margin: 0 0 1.1rem;
+    padding: .8rem 0 .9rem;
+    border-top: 1px solid var(--ps-line);
+    border-bottom: 1px solid var(--ps-line);
+    max-width: 34rem;
+  }
+  .ips-lead__first-k { display: block; margin-bottom: .1rem; color: var(--ps-ink-soft); }
+  .ips-lead__tel {
+    display: inline-block;
+    font-family: var(--ps-font-display);
+    font-size: 2rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.2;
+    color: var(--ps-accent-text);
+    text-decoration: none;
+    padding: .1rem 0;
+  }
+  .ips-lead__tel:hover, .ips-lead__tel:focus-visible { text-decoration: underline; }
+  .ips-lead__first-n { display: block; color: var(--ps-ink-soft); font-size: .96rem; }
+
+  /* §06, split by moment. The scene column is urgent; the counter column is not,
+     and mixing them is what made the whole list read as things to do tonight. */
+  .tw-when {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: 2rem;
+    margin-top: 1.4rem;
+  }
+  .tw-when__h {
+    font-family: var(--ps-font-display);
+    font-size: 1.3rem; font-weight: 600;
+    margin: 0 0 .2rem;
+    padding-bottom: .4rem;
+    border-bottom: 2px solid var(--ps-ink);
+  }
+  .tw-when__sub { margin: .4rem 0 .9rem; color: var(--ps-ink-soft); }
+  .tw-when .tw-first li .tw-cite { display: block; margin-top: .2rem; }
+  .tw-safety {
+    border-left: 3px solid var(--ps-accent);
+    padding: .1rem 0 .1rem 1rem;
+    margin: 1rem 0 0;
+    color: var(--ps-ink);
+  }
 
   /* ---------------------------------------------------------------------
      THE TWO QUESTIONS, ANSWERABLE.  Radios, not buttons: arrow keys work,
