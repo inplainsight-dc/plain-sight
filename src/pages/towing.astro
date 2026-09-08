@@ -588,11 +588,75 @@ const routes = [
     </div>
   </section>
 
+  <!-- §08 THE OTHER SIDE.  C-1, Wave 2. Before this the property manager appeared on the page
+       exactly twice, both times as a prohibition, and never once as someone with a lawful option.
+       The framework's warning for axis C is that a page which only arms one side gets dismissed by
+       the side that actually orders the tows. Placed after the resident's arc completes rather than
+       inside it, so it interrupts nobody and is still findable by someone sent the link. -->
+  <section class="ips-sec" id="if-you-ordered-it">
+    <div class="ps-container">
+      <div class="ips-sec-head">
+        <span class="ps-record ps-record--red">&sect; 08</span>
+        <h2 class="ips-sec-title">If you manage the property</h2>
+        <span class="ips-sec-rule"></span>
+      </div>
+
+      <p class="ips-lede">
+        Everything above is written for the person whose car was taken. This part is for the person
+        who called the truck — <strong>because the rule that protects them is the same rule that
+        binds you</strong>, and it is easy to get wrong in good faith.
+      </p>
+
+      <div class="tw-mgr">
+        <p>
+          <strong>The problem is real.</strong> Someone blocks the dumpster on collection day.
+          Someone takes a resident’s space and does it again the following week. You have a lot to
+          run and no obvious way to clear it.
+        </p>
+        <p>
+          <strong>But you cannot authorize the tow yourself.</strong> A vehicle may not be towed
+          from private real property without the vehicle owner’s consent unless a police officer or
+          a parking enforcement official has issued it a citation, or a police officer directs the
+          tow in an emergency. Owning or managing the lot does not substitute for that.
+          <span class="tw-cite ps-record">16 DCMR &sect; 406.7</span>
+        </p>
+        <p>
+          <strong>So the lawful route runs through a citation.</strong> Get the vehicle cited first;
+          the tow can follow. A company that tells you a citation is unnecessary is telling you
+          something the regulation does not say.
+        </p>
+        <p>
+          <strong>And your name is on the record either way.</strong> Before a tow from private real
+          property, the towing business has to give DPW the name, address and phone number of the
+          person who requested it, along with the authority they were acting under. Every tow you
+          order is logged with the District against you by name — which is worth knowing before you
+          rely on anyone’s assurance about what is allowed.
+          <span class="tw-cite ps-record">16 DCMR &sect; 406.4</span>
+        </p>
+        <p>
+          <strong>The gap is not one you made.</strong> The District used to have a statutory
+          procedure for vehicles left on private property — D.C. Code &sect;&sect; 50-2621 to
+          50-2624, which &sect; 406.7 still points at today. Those sections were repealed in
+          <strong>October 2003</strong>, fourteen months before this chapter was published citing
+          them, and were never replaced. There is no posted-sign-and-notice regime in the chapter to
+          fall back on. One route was left standing, and it runs through a government official.
+        </p>
+        <p class="tw-mgr__ask">
+          <strong>One thing this page cannot tell you.</strong> Whether parking enforcement will
+          actually come out to private property to write that citation. We do not know, and it is
+          the question the whole subject turns on. <span class="ps-mark-und">If you have tried it,
+          we would genuinely like to know what happened</span> — there is a form at the foot of this
+          page, and it goes to a person, not a database.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- METHOD -->
   <section class="ips-sec" id="method">
     <div class="ps-container">
       <div class="ips-sec-head">
-        <span class="ps-record ps-record--red">&sect; 08</span>
+        <span class="ps-record ps-record--red">&sect; 09</span>
         <h2 class="ips-sec-title">How this page knows</h2>
         <span class="ips-sec-rule"></span>
       </div>
@@ -813,6 +877,17 @@ const routes = [
   .tw-dl dt { font-weight: 700; margin-top: .7rem; }
   .tw-dl dd { margin: .15rem 0 0; }
   .tw-caps--tight { margin: .6rem 0; max-width: 22rem; }
+
+  /* The other side of the tow. Deliberately NOT styled as a warning: this reader
+     is being armed, not accused, and a red alarm box would undo the copy. */
+  .tw-mgr { max-width: 68ch; }
+  .tw-mgr p { margin: 0 0 .9rem; }
+  .tw-mgr .tw-cite { display: block; margin-top: .25rem; }
+  .tw-mgr__ask {
+    border-left: 3px solid var(--ps-accent);
+    padding: .1rem 0 .1rem 1rem;
+    margin-top: 1.2rem;
+  }
 
   /* The objection, stated rather than left to be found. Bordered so it reads as a
      distinct move -- the page raising the argument against itself on purpose. */
