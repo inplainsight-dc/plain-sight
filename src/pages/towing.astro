@@ -91,11 +91,29 @@ const caps = [
 // gated on unpaid tickets; private-lot tows go to the company's own storage
 // lot and are governed by the duties above. Fees below are DC DMV's published
 // figures, which match 16 DCMR § 408.1.
+// ---------------------------------------------------------------------------
+// OPERATIONAL FACTS — hand-transcribed, NOT generated, and the only things on
+// this page nothing checks (Wave 3, D-4). They are also the facts a stranded
+// reader needs first, which is the wrong combination, so they carry a date and
+// their sources, and § 09 says plainly that they are not covered by the build
+// guard the duties are.
+//
+// The finding proved itself on first check: the hours here said 8:30am–4:30pm
+// and DPW publishes 8am–6pm. Someone arriving at 5pm would have been told by
+// this page that the lot was shut, and paid another $20 day of storage for it.
+const operational = {
+  checkedOn: 'September 8, 2026',
+  sources: [
+    ['DPW — Booting and Impoundment', 'https://dpw.dc.gov/page/booting-and-impoundment'],
+    ['DC DMV — Booted/Towed Vehicle Fees', 'https://dmv.dc.gov/book/dmv-fees/bootedtowed-vehicle-fees'],
+  ],
+};
+
 const districtLot = [
   ['Where it goes', 'Blue Plains, 5001 Shepherd Parkway SW — or Bryant Street, 2115 Bryant St NE. Call first; don’t guess.'],
   ['What to bring', 'Your fee payment receipt, the vehicle registration, and a valid driver’s license. Collecting someone else’s car? You need a notarized statement from the owner.'],
-  ['How you pay', 'Card only — Visa or MasterCard. Cash and checks are not accepted.'],
-  ['Hours', 'Monday to Friday, 8:30am to 4:30pm, except District holidays.'],
+  ['How you pay', 'Card only — Visa or MasterCard. Cash and checks are not accepted. Since December 15, 2025 the District adds a 2.5% service fee to card payments, and since cards are the only way to pay, everyone pays it.'],
+  ['Hours', 'Weekdays, 8am to 6pm. Closed weekends, District holidays, and whenever the District government is closed.'],
   ['The catch', 'Every outstanding ticket has to be paid first — including tickets on other plates registered to you. And once you’ve paid the storage, collect the car that day or another day’s storage is added.'],
 ];
 
@@ -329,7 +347,10 @@ const routes = [
         </tbody>
       </table>
 
-      <div class="tw-rc" data-storage-per-day={rates.storage_per_day}>
+      <div class="tw-rc" data-storage-per-day={rates.storage_per_day}
+           data-road-service={rates.road_service}
+           data-mileage-standard={rates.mileage_standard}
+           data-mileage-heavy={rates.mileage_heavy}>
         <p class="ps-record tw-rc__label">Check it against your receipt</p>
         <div class="tw-rc__row">
           <p class="tw-rc__field">
@@ -355,6 +376,12 @@ const routes = [
           <p class="tw-rc__verdict" id="twRcVerdict">Enter what you paid and the lawful ceiling appears here.</p>
           <p class="tw-rc__detail" id="twRcDetail"></p>
         </div>
+        <p class="tw-rc__foot">
+          <strong>The ceiling above is the tow plus storage, and nothing else.</strong> &sect; 408.1
+          also allows road service and a per-mile charge beyond the District line, and neither is in
+          the figure — so a receipt that includes one of those can be lawful and still read as over.
+          Check the itemized statement before you rely on the difference.
+        </p>
         <p class="tw-rc__foot">
           This is the <strong>public-tow</strong> schedule — the one that applies when you didn’t agree to the
           tow. A tow you called for yourself is a private tow and has <em>no</em> published ceiling; what
@@ -444,6 +471,13 @@ const routes = [
           <p class="tw-note">
             The tow and storage figures are the regulation’s own public-tow schedule.
             <span class="tw-cite ps-record">16 DCMR &sect; 408.1</span>
+          </p>
+          <p class="tw-note tw-opnote">
+            The five facts above — the lots, the hours, what to bring, how you pay — are
+            <strong>transcribed by hand from DPW and DC DMV, not generated</strong>, so nothing in
+            this page’s build would catch it if they changed. Checked {operational.checkedOn}
+            against {operational.sources.map(([n, u], i) => (<>{i > 0 ? ' and ' : ''}<a href={u} rel="noopener noreferrer">{n}</a></>))}.
+            Call ahead anyway; a phone call beats any web page, including this one.
           </p>
           <p class="tw-note">
             <strong>Boot removal is the exception.</strong> Booting is not towing, and chapter 4 does
@@ -690,6 +724,15 @@ const routes = [
           prohibition on towing from private property without a citation has one rulemaking on record and
           has never been amended.
         </p>
+        <p>
+          <strong>Two kinds of fact live on this page, and only one of them is generated.</strong>
+          The duties, the infraction classes and the rate schedule are read from the regulation and
+          the build stops if they drift. The <em>operational</em> details — the dispatch number, the
+          lot addresses and hours, what to bring, the agency phone numbers — are transcribed by hand
+          from DPW and DC DMV. Nothing here checks those, so they carry the date they were last
+          checked, in &sect; 05. They are also the facts you need first, which is exactly the wrong
+          combination, and it is why every one of them says to call ahead.
+        </p>
         <p class="ps-record tw-asof">
           Generated from the regulation on {duties.nodeGeneratedAt?.slice(0, 10) ?? 'the date shown above'} &middot;
           {' '}{duties.duties.length} duties &middot; sources: 16 DCMR chapter 4, D.C. Official Code
@@ -924,6 +967,7 @@ const routes = [
     margin: 0 0 .6rem;
   }
   .tw-obj p { margin: 0 0 .7rem; }
+  .tw-opnote a { color: var(--ps-accent-text); }
   .tw-obj p:last-child { margin-bottom: 0; }
 
   /* The one action that belongs in the first screen on a phone. */
@@ -1336,10 +1380,18 @@ const routes = [
   // Read from the DOM, which got it from the generated projection, which parsed it
   // from 16 DCMR 408.1. Never a literal here: this number decides whether the page
   // tells someone they were overcharged.
-  const STORAGE_PER_DAY = Number(document.querySelector('.tw-rc').dataset.storagePerDay);
+  const rcData = document.querySelector('.tw-rc').dataset;
+  const STORAGE_PER_DAY = Number(rcData.storagePerDay);
   if (!Number.isFinite(STORAGE_PER_DAY) || STORAGE_PER_DAY <= 0) {
     throw new Error('towing: storage rate missing from the projection — refusing to compute');
   }
+  // § 408.1 allows two charges on TOP of tow and storage. The ceiling below does
+  // not include them, because this page cannot know whether they applied -- so
+  // the over-the-ceiling path has to say so. Leaving them out silently would
+  // overstate an overcharge, which is the direction the standing lens forbids
+  // and the same error as the day-rounding bug (Wave 3, D-2).
+  const ROAD_SERVICE = Number(rcData.roadService);
+  const MILEAGE = { 100: Number(rcData.mileageStandard), 275: Number(rcData.mileageHeavy) };
   const money = (n) => '$' + n.toLocaleString('en-US', {
     minimumFractionDigits: 2, maximumFractionDigits: 2,
   });
@@ -1373,10 +1425,16 @@ const routes = [
       const over = charged - ceiling;
       rcVerdict.classList.add('tw-rc__verdict--over');
       rcVerdict.textContent = money(charged) + ' is ' + money(over) + ' above the ' + money(ceiling) + ' ceiling.';
+      const mile = MILEAGE[base] || 0;
       rcDetail.textContent = basis
         + 'Charging more than the Director\u2019s schedule allows for a public tow is prohibited outright, and the '
         + 'infraction schedule treats it as Class 1 (16 DCMR \u00a7\u00a7 410.12, 3304.1(l)). Whether yours was a public '
-        + 'tow is the question in section 02. Storage keeps accruing while a dispute does not stop it, so the '
+        + 'tow is the question in section 02. '
+        + 'Two lawful charges are NOT in that ceiling, so check the receipt for them before you rely on the '
+        + 'difference: road service, up to $' + ROAD_SERVICE.toFixed(2) + ', if they jump-started it or changed a '
+        + 'tire, and $' + mile.toFixed(2) + ' a mile beyond the District line if you asked them to take it out of '
+        + 'the city. '
+        + 'Storage keeps accruing while a dispute does not stop it, so the '
         + 'usual order is to pay, collect the car, and take the itemized receipt to DLCP.';
       return;
     }
