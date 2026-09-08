@@ -74,6 +74,28 @@ if (src.schema !== 'towing-duties/1.0') {
        `The node changed its output format; review before shipping.`);
 }
 if (!Array.isArray(src.duties) || src.duties.length === 0) fail('no duties[] in the node output');
+
+// The rate schedule is the page's ONLY source for the figures the receipt checker
+// computes against. It used to hold them as literals in its script, which put the
+// one component that states a dollar conclusion outside the drift guard the page
+// advertises (Wave 3, D-1). Refusing to project without it is the point: a node
+// that stops emitting rates must break the build, not quietly fall back.
+const RATES_REQUIRED = ['standard_tow', 'heavy_tow', 'storage_per_day', 'drop_fee'];
+const rates = src.rate_schedule?.rates;
+if (!rates || typeof rates !== 'object') {
+  fail('no rate_schedule.rates in the node output — the page computes against these, ' +
+       'so it will not build without them. Re-run the node build_duties.py.');
+}
+for (const k of RATES_REQUIRED) {
+  if (typeof rates[k] !== 'number' || !(rates[k] > 0)) {
+    fail(`rate_schedule.rates.${k} is ${JSON.stringify(rates[k])} — expected a positive number. ` +
+         `The receipt checker would compute against it.`);
+  }
+}
+if (!(rates.standard_tow < rates.heavy_tow)) {
+  fail(`rate_schedule: standard tow ${rates.standard_tow} is not below heavy ${rates.heavy_tow} — ` +
+       `the parse is wrong, and the checker would inherit it.`);
+}
 if (!Array.isArray(src.definitions) || src.definitions.length === 0) fail('no definitions[] in the node output');
 
 const seenGroups = new Set(src.duties.map((d) => d.group));
@@ -106,6 +128,7 @@ const projection = {
   chapter: src.provenance?.chapter ?? '16 DCMR chapter 4',
   currencyVerified: src.provenance?.currency_verified ?? null,
   groupOrder: GROUP_ORDER,
+  rateSchedule: { cite: src.rate_schedule.cite, rates },
   definitions: src.definitions.map((d) => ({
     term: d.term,
     citation: d.citation,
@@ -134,7 +157,8 @@ if (CHECK) {
          'Run `npm run sync-towing`.', 2);
   }
   console.log(`${TAG} --check: in step with the research node ` +
-              `(${projection.duties.length} duties, ${classed} classed)`);
+              `(${projection.duties.length} duties, ${classed} classed, ` +
+              `${Object.keys(rates).length} rates from ${src.rate_schedule.cite})`);
   process.exit(0);
 }
 

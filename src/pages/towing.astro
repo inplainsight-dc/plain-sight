@@ -71,10 +71,19 @@ const tests = [
   },
 ];
 
+// EVERY FIGURE BELOW COMES FROM THE GENERATOR (Wave 3, D-1).
+// The receipt checker used to hold 100, 275 and 20 as literals in its script, so
+// the one component that states a dollar conclusion — and feeds it into a
+// complaint addressed to the regulator — sat outside the drift guard § 09
+// advertises. These are parsed from § 408.1 and the sync refuses to run without
+// them, so a change to the Director's schedule now breaks this build too.
+const rates = duties.rateSchedule.rates;
+const money = (n) => '$' + (Number.isInteger(n) ? n : n.toFixed(2));
+
 const caps = [
-  ['Standard tow', 'a car at or under 8,000 lb, towed within the District', '$100'],
-  ['Storage', 'per 24 hours, or any part of one', '$20'],
-  ['Drop fee', 'if you arrive and they stop the tow before removing the car', '$50'],
+  ['Standard tow', 'a car at or under 8,000 lb, towed within the District', money(rates.standard_tow)],
+  ['Storage', 'per 24 hours, or any part of one', money(rates.storage_per_day)],
+  ['Drop fee', 'if you arrive and they stop the tow before removing the car', money(rates.drop_fee)],
 ];
 
 // Retrieval differs completely depending on who took the car, and the reader
@@ -90,11 +99,15 @@ const districtLot = [
   ['The catch', 'Every outstanding ticket has to be paid first — including tickets on other plates registered to you. And once you’ve paid the storage, collect the car that day or another day’s storage is added.'],
 ];
 
+// The first three are the regulation's own figures. Boot removal is NOT — booting
+// is not towing, and "boot", "immobilize" and "wheel lock" appear nowhere in
+// 16 DCMR chapter 4. It stays because a reader collecting a car needs it, but the
+// page no longer claims the regulation is its source (Wave 3, D-3).
 const districtFees = [
-  ['Tow', '$100'],
-  ['Tow, oversized vehicle', '$275'],
-  ['Storage, per day', '$20'],
-  ['Boot removal', '$75'],
+  ['Tow', money(rates.standard_tow), true],
+  ['Tow, oversized vehicle', money(rates.heavy_tow), true],
+  ['Storage, per day', money(rates.storage_per_day), true],
+  ['Boot removal', '$75', false],
 ];
 
 const privateLot = [
@@ -316,7 +329,7 @@ const routes = [
         </tbody>
       </table>
 
-      <div class="tw-rc">
+      <div class="tw-rc" data-storage-per-day={rates.storage_per_day}>
         <p class="ps-record tw-rc__label">Check it against your receipt</p>
         <div class="tw-rc__row">
           <p class="tw-rc__field">
@@ -333,8 +346,8 @@ const routes = [
           <p class="tw-rc__field">
             <label for="twSize">The vehicle</label>
             <select id="twSize">
-              <option value="100">Car or light truck, 8,000 lb or under</option>
-              <option value="275">Heavy, over 8,000 lb</option>
+              <option value={rates.standard_tow}>Car or light truck, 8,000 lb or under</option>
+              <option value={rates.heavy_tow}>Heavy, over 8,000 lb</option>
             </select>
           </p>
         </div>
@@ -429,8 +442,13 @@ const routes = [
             </tbody>
           </table>
           <p class="tw-note">
-            These are the same figures as the regulation’s public-tow schedule.
+            The tow and storage figures are the regulation’s own public-tow schedule.
             <span class="tw-cite ps-record">16 DCMR &sect; 408.1</span>
+          </p>
+          <p class="tw-note">
+            <strong>Boot removal is the exception.</strong> Booting is not towing, and chapter 4 does
+            not reach it — that $75 is a DMV fee for taking a wheel clamp off, not a capped towing
+            charge, and nothing on this page governs it.
           </p>
         </div>
 
@@ -1315,7 +1333,13 @@ const routes = [
   const rcVerdict = document.getElementById('twRcVerdict');
   const rcDetail = document.getElementById('twRcDetail');
 
-  const STORAGE_PER_DAY = 20;   // 16 DCMR s 408.1, per 24 hours or any part of one
+  // Read from the DOM, which got it from the generated projection, which parsed it
+  // from 16 DCMR 408.1. Never a literal here: this number decides whether the page
+  // tells someone they were overcharged.
+  const STORAGE_PER_DAY = Number(document.querySelector('.tw-rc').dataset.storagePerDay);
+  if (!Number.isFinite(STORAGE_PER_DAY) || STORAGE_PER_DAY <= 0) {
+    throw new Error('towing: storage rate missing from the projection — refusing to compute');
+  }
   const money = (n) => '$' + n.toLocaleString('en-US', {
     minimumFractionDigits: 2, maximumFractionDigits: 2,
   });
