@@ -587,6 +587,14 @@ const routes = [
         </div>
       </div>
 
+      <!-- B-3, Wave 4. The routes come before the packet, so a reader met the addresses
+           before they had anything to send, and § 06 had no forward pointer at all. -->
+      <p class="tw-note tw-forward">
+        <strong>Before you send anything, look at &sect; 07.</strong> It assembles what you have
+        already worked out on this page — the two answers, the receipt comparison and the citations
+        — into a complaint you can copy or print. It is easier to send one thing once.
+      </p>
+
       <div class="tw-routes">
         {routes.map((r) => (
           <div class="tw-route">
@@ -982,6 +990,13 @@ const routes = [
   .tw-dl dt { font-weight: 700; margin-top: .7rem; }
   .tw-dl dd { margin: .15rem 0 0; }
   .tw-caps--tight { margin: .6rem 0; max-width: 22rem; }
+
+  .tw-forward {
+    border-left: 3px solid var(--ps-accent);
+    padding: .1rem 0 .1rem 1rem;
+    margin: 1.4rem 0 0;
+    color: var(--ps-ink);
+  }
 
   /* The one sentence that must not depend on the reader touching anything. Accent
      rule rather than a warning color: it is the most important thing on the page
