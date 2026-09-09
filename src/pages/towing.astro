@@ -192,12 +192,12 @@ const routes = [
   </svg>
 
   <!-- LEAD -->
-  <section class="ips-lead">
+  <section class="ips-lead" aria-labelledby="tw-lead-h">
     <div class="ps-container">
       <p class="ps-record ps-record--red ips-dateline">DC TOWING &nbsp;|&nbsp; AFTER A TOW &nbsp;|&nbsp; {today.toUpperCase()}</p>
       <div class="ips-lead__grid">
         <div class="ips-lead__main">
-          <h1 class="ips-lead__h">Your car is <span class="ps-highlight">gone</span>. Two questions.</h1>
+          <h1 class="ips-lead__h" id="tw-lead-h">Your car is <span class="ps-highlight">gone</span>. Two questions.</h1>
 
           <!-- A-1, Wave 1. The dispatch number was 1.44 phone screens down, behind sixty words
                of orientation and a decorative receipt. Whether the car was towed or stolen is the
@@ -221,7 +221,7 @@ const routes = [
             16 DCMR chapter 4 &middot; not legal advice &middot; this page states the rule, not the merits of your tow
           </p>
         </div>
-        <aside class="ips-lead__rail">
+        <aside class="ips-lead__rail" aria-label="Privacy and method note">
           <div class="tw-stub" aria-hidden="true">
             <span class="tw-stub__bars"></span>
             <p class="tw-stub__h">Public tow</p>
@@ -244,11 +244,11 @@ const routes = [
   </section>
 
   <!-- §01 FIND IT FIRST -->
-  <section class="ips-sec" id="find-it">
+  <section class="ips-sec" id="find-it" aria-labelledby="find-it-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 01</span>
-        <h2 class="ips-sec-title">Find it first</h2>
+        <h2 class="ips-sec-title" id="find-it-h">Find it first</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -274,11 +274,11 @@ const routes = [
   </section>
 
   <!-- §01 THE TWO QUESTIONS -->
-  <section class="ips-sec" id="two-questions">
+  <section class="ips-sec" id="two-questions" aria-labelledby="two-questions-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 02</span>
-        <h2 class="ips-sec-title">Ask these two things</h2>
+        <h2 class="ips-sec-title" id="two-questions-h">Ask these two things</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -317,7 +317,7 @@ const routes = [
         ))}
       </ol>
 
-      <div class="tw-stand" id="twStand" role="status" aria-live="polite">
+      <div class="tw-stand" id="twStand" role="status" aria-live="polite" aria-atomic="true">
         <p class="ps-record tw-stand__label">Where you stand</p>
         <p class="tw-stand__verdict" id="twVerdict">
           Answer both and your position appears here. Nothing you tap leaves this page.
@@ -333,11 +333,11 @@ const routes = [
   </section>
 
   <!-- §02 WHAT IT CAN COST -->
-  <section class="ips-sec" id="what-it-costs">
+  <section class="ips-sec" id="what-it-costs" aria-labelledby="what-it-costs-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 03</span>
-        <h2 class="ips-sec-title">What it can cost</h2>
+        <h2 class="ips-sec-title" id="what-it-costs-h">What it can cost</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -388,7 +388,7 @@ const routes = [
             </select>
           </p>
         </div>
-        <div class="tw-rc__out" id="twRcOut" role="status" aria-live="polite">
+        <div class="tw-rc__out" id="twRcOut" role="status" aria-live="polite" aria-atomic="true">
           <p class="tw-rc__verdict" id="twRcVerdict">Enter what you paid and the lawful ceiling appears here.</p>
           <p class="tw-rc__detail" id="twRcDetail"></p>
         </div>
@@ -418,11 +418,11 @@ const routes = [
   </section>
 
   <!-- §03 THE DUTIES -->
-  <section class="ips-sec" id="duties">
+  <section class="ips-sec" id="duties" aria-labelledby="duties-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 04</span>
-        <h2 class="ips-sec-title">What they owe you</h2>
+        <h2 class="ips-sec-title" id="duties-h">What they owe you</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -469,11 +469,11 @@ const routes = [
   </section>
 
   <!-- §05 GETTING IT BACK -->
-  <section class="ips-sec" id="getting-it-back">
+  <section class="ips-sec" id="getting-it-back" aria-labelledby="getting-it-back-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 05</span>
-        <h2 class="ips-sec-title">Getting it back</h2>
+        <h2 class="ips-sec-title" id="getting-it-back-h">Getting it back</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -536,11 +536,11 @@ const routes = [
   </section>
 
   <!-- §04 WHAT TO DO -->
-  <section class="ips-sec" id="what-to-do">
+  <section class="ips-sec" id="what-to-do" aria-labelledby="what-to-do-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 06</span>
-        <h2 class="ips-sec-title">What to do now</h2>
+        <h2 class="ips-sec-title" id="what-to-do-h">What to do now</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -602,7 +602,7 @@ const routes = [
             {r.how && <p class="tw-route__what">{r.how}</p>}
             <p class="tw-route__how ps-record">
               {r.links.map(([label, href], i) => (
-                <>{i > 0 ? ' · ' : ''}<a href={href} rel="noopener noreferrer">{label}</a></>
+                <>{i > 0 ? <>{' '}<span aria-hidden="true">·</span>{' '}</> : null}<a href={href} rel="noopener noreferrer">{label}</a></>
               ))}
             </p>
             <p class="tw-cite ps-record">{r.cite}</p>
@@ -613,11 +613,11 @@ const routes = [
   </section>
 
   <!-- §07 THE PACKET -->
-  <section class="ips-sec" id="packet">
+  <section class="ips-sec" id="packet" aria-labelledby="packet-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 07</span>
-        <h2 class="ips-sec-title">Put it in writing</h2>
+        <h2 class="ips-sec-title" id="packet-h">Put it in writing</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -687,11 +687,11 @@ const routes = [
        The framework's warning for axis C is that a page which only arms one side gets dismissed by
        the side that actually orders the tows. Placed after the resident's arc completes rather than
        inside it, so it interrupts nobody and is still findable by someone sent the link. -->
-  <section class="ips-sec" id="if-you-ordered-it">
+  <section class="ips-sec" id="if-you-ordered-it" aria-labelledby="if-you-ordered-it-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 08</span>
-        <h2 class="ips-sec-title">If you manage the property</h2>
+        <h2 class="ips-sec-title" id="if-you-ordered-it-h">If you manage the property</h2>
         <span class="ips-sec-rule"></span>
       </div>
 
@@ -747,11 +747,11 @@ const routes = [
   </section>
 
   <!-- METHOD -->
-  <section class="ips-sec" id="method">
+  <section class="ips-sec" id="method" aria-labelledby="method-h">
     <div class="ps-container">
       <div class="ips-sec-head">
         <span class="ps-record ps-record--red">&sect; 09</span>
-        <h2 class="ips-sec-title">How this page knows</h2>
+        <h2 class="ips-sec-title" id="method-h">How this page knows</h2>
         <span class="ips-sec-rule"></span>
       </div>
       <div class="dc-sources">
